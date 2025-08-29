@@ -1,12 +1,55 @@
 // script.js
+
+// Rola 'qtd' dados de 'faces' lados. Retorna { total, rolls: [...] }
 function rolarDado(qtd, faces) {
     let total = 0;
+    let rolls = [];
     for (let i = 0; i < qtd; i++) {
-        total += Math.floor(Math.random() * faces) + 1;
+        let roll = Math.floor(Math.random() * faces) + 1;
+        rolls.push(roll);
+        total += roll;
     }
-    return total;
+    return { total, rolls };
 }
 
+// Teste de eficiência: vontadePts × d12, espiritoPts × d6, 1d20, bônus fixo +12, shift por blocos extras
+function rollEficiência(vontadePts, espiritoPts, blocosExtras) {
+    const d20 = rolarDado(1, 20);
+    const vontade = rolarDado(Math.max(0, vontadePts), 12);
+    const espirito = rolarDado(Math.max(0, espiritoPts), 6);
+    const fixedBonus = 12;
+    // totalRoll INCLUI +12 fixo
+    const totalRoll = d20.total + vontade.total + espirito.total + fixedBonus;
+
+    // shift: a cada 2 blocos extras, DT aumenta +1
+    const shift = Math.floor(Math.max(0, blocosExtras) / 2);
+
+    // thresholds ajustados por shift
+    const t1 = 20 + shift;
+    const t2 = 40 + shift;
+    const t3 = 60 + shift;
+    const t4 = 90 + shift;
+
+    let faixa = "Normal", efMul = 1.0;
+    if (totalRoll <= t1) { faixa = "-30%"; efMul = 0.7; }
+    else if (totalRoll <= t2) { faixa = "Normal"; efMul = 1.0; }
+    else if (totalRoll <= t3) { faixa = "+10%"; efMul = 1.1; }
+    else if (totalRoll <= t4) { faixa = "+20%"; efMul = 1.2; }
+    else { faixa = "+30%"; efMul = 1.3; }
+
+    return {
+        totalRoll,
+        parts: {
+            d20: d20.rolls[0],
+            vontade,
+            espirito,
+            fixedBonus
+        },
+        shift,
+        faixa,
+        efMul
+    };
+}
 
 // Md → multiplicador de Dano
 // Mh → multiplicador de Defesa e HP
@@ -20,6 +63,126 @@ const multiplicadores = {
     "Estrutura":  { Md: 1.0,  Mh: 2.0,  Mt: 1.75 }
 };
 
+// Calcula os stats do construto, integrando eficiência
+function calcularStats(params) {
+  const {
+    estilo,
+    alma,
+    blocosDano,
+    blocosDefesa,
+    blocosVitalidade,
+    blocosDuracao,
+    vontadePts,
+    espiritoPts,
+  } = params;
+
+  // Cálculo dos blocos EXTRAS a partir da Alma acima do custo base (base = 6)
+  // Regras: Base = 6 de Alma por ativação; X = Alma adicional; B = floor(X / 2)
+  const blocosExtras = Math.floor(Math.max(0, (alma || 0) - 6) / 2);
+
+  // Para compatibilidade, caso o usuário informe um número de blocos "manualmente",
+  // você pode querer somar blocosExtras + blocosDano etc. Aqui blocosDano é o que o usuário alocou.
+  const { Md, Mh, Mt } = multiplicadores[estilo] || multiplicadores["Padrão"];
+
+// --- DANO: 2d6 base + blocosDano × 2d6
+let baseDano = 0;
+let rollsDano = [];
+
+// Bloco base
+let rBase = rolarDado(2, 6);
+baseDano += rBase.total;
+rollsDano.push({ type: 'base', rolls: rBase.rolls, total: rBase.total });
+
+// Blocos alocados
+for (let i = 0; i < Math.max(0, blocosDano); i++) {
+    let r = rolarDado(2, 6);
+    baseDano += r.total;
+    rollsDano.push({ type: 'bloco', rolls: r.rolls, total: r.total });
+}
+
+// Aplica multiplicador Md (float)
+let danoMultiplicado = baseDano * Md; // ex: 23 * 1.25 = 28.75
+
+// Bônus de Luz: 1d10% (não arredondar agora)
+let bonusLuz = rolarDado(1, 10); // percent 1..10
+let bonusLuzPercent = bonusLuz.total;
+let danoComBonusFloat = danoMultiplicado * (1 + (bonusLuzPercent / 100)); // float, ex: 29.325
+
+// --- DEF: base 3 + 3 por bloco alocado (arredondar no final)
+const baseDEF = 3;
+let defBaseTotal = baseDEF + Math.max(0, blocosDefesa) * 3;
+let defesaFloat = defBaseTotal * Mh; // float
+
+// --- HP: base 6 + 6 por bloco alocado (float)
+const baseHP = 6;
+let hpAntesEficienciaFloat = (baseHP + Math.max(0, blocosVitalidade) * 6) * Mh;
+
+// --- Duração: base 1 + 1 por bloco (float)
+const baseDur = 1;
+let duracaoAntesEficienciaFloat = (baseDur + Math.max(0, blocosDuracao)) * Mt;
+
+// --- Teste de eficiência (usa blocosExtras para shift)
+const resultadoEf = rollEficiência(vontadePts || 0, espiritoPts || 0, blocosExtras);
+const efMul = resultadoEf.efMul;
+
+// --- Aplicar eficiência (em floats)
+let danoFinalFloat = danoComBonusFloat * efMul;
+let hpFinalFloat = hpAntesEficienciaFloat * efMul;
+let duracaoFinalFloat = duracaoAntesEficienciaFloat * efMul;
+
+// --- Arredondar apenas uma vez, no final
+let danoFinal = Math.round(danoFinalFloat);
+let hpFinal = Math.round(hpFinalFloat);
+let duracaoFinal = Math.round(duracaoFinalFloat);
+let defesaFinal = Math.round(defesaFloat); // DEF não usa eficiência, mas arredondamos o resultado final
+
+  return {
+    estilo,
+    alma,
+    blocosExtras,
+    blocosDano,
+    blocosDefesa,
+    blocosVitalidade,
+    blocosDuracao,
+    vontadePts,
+    espiritoPts,
+    rollsDano,
+    baseDano,
+    Md,
+    bonusLuz: bonusLuz.rolls[0],
+    danoMultiplicado,
+    danoFinalFloat,
+    defesaFinal,
+    hpAntesEficienciaFloat,
+    hpFinal,
+    duracaoAntesEficienciaFloat,
+    duracaoFinal,
+    resultadoEf,
+    danoFinal,
+  };
+}
+
+// Formata a saída para exibição
+function formatarSaida(stats) {
+    const ef = stats.resultadoEf;
+    let rolagemEf = `Teste Eficiência: 1d20=${ef.parts.d20} + Vontade(${stats.vontadePts}d12)=[${ef.parts.vontade.rolls.join(",")}]=${ef.parts.vontade.total} + Espírito(${stats.espiritoPts}d6)=[${ef.parts.espirito.rolls.join(",")}]=${ef.parts.espirito.total} +12 => total=${ef.totalRoll} (shift=${ef.shift}) => Faixa: ${ef.faixa} => efMul=${ef.efMul}`;
+    let rolagemDano = `Dano rolls: [${stats.rollsDano.map(r=>r.rolls.join("+")).join(", ")}] × Md(${stats.Md}) + bônus de Luz(1d10%)=${stats.bonusLuz}%`;
+    let efeitoEf = `<em>(Eficiência aplicada em Dano, HP e Duração)</em>`;
+    return `
+        <strong>Estilo:</strong> ${stats.estilo}<br>
+        <strong>Alma Gasta:</strong> ${stats.alma} (blocos extras gerados: ${stats.blocosExtras})<br>
+        <strong>Dano:</strong> ${stats.danoFinal} <br>
+        <strong>Defesa:</strong> ${stats.defesaFinal} <br>
+        <strong>HP:</strong> ${stats.hpFinal} <br>
+        <strong>Duração:</strong> ${stats.duracaoFinal} turno(s)<br>
+        <hr>
+        ${rolagemDano}<br>
+        ${rolagemEf}<br>
+        ${efeitoEf}
+    `;
+}
+
+// Integração com formulário (assumindo ids existentes)
 document.getElementById('forgeForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const estilo = document.getElementById('estilo').value;
@@ -28,41 +191,13 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
     const blocosDefesa = parseInt(document.getElementById('defesa').value) || 0;
     const blocosVitalidade = parseInt(document.getElementById('vitalidade').value) || 0;
     const blocosDuracao = parseInt(document.getElementById('duracao').value) || 0;
+    // Novos campos para eficiência
+    const vontadePts = parseInt(document.getElementById('vontade')?.value) || 3;
+    const espiritoPts = parseInt(document.getElementById('espirito')?.value) || 2;
 
-    // Blocos extras
-    const blocos = Math.floor(alma / 2);
-
-    // Multiplicadores
-    const { Md, Mh, Mt } = multiplicadores[estilo] || multiplicadores['Padrão'];
-
-    // Rola 2d6 para cada bloco de Dano
-    let baseDano = 0;
-    for (let i = 0; i < blocosDano; i++) {
-        baseDano += rolarDado(2, 6);
-    }
-    // Aplica multiplicador Md
-    let danoMultiplicado = baseDano * Md;
-    // Aplica bônus de 1d10% sobre o dano já multiplicado
-    let bonusDano = Math.floor(danoMultiplicado * (rolarDado(1, 10) / 100));
-    // Dano final
-    let danoFinal = Math.floor(danoMultiplicado + bonusDano);
-
-    // Defesa: (3 + blocosDefesa × 3) × Mh
-    let defesaFinal = Math.floor((3 + blocosDefesa * 3) * Mh);
-
-    // HP: (6 + blocosVitalidade × 6) × Mh
-    let hpFinal = Math.floor((6 + blocosVitalidade * 6) * Mh);
-
-    // Duração: (1 + blocosDuracao) × Mt
-    let duracaoFinal = Math.floor((1 + blocosDuracao) * Mt);
-
-    // Exibir resultado
-    document.getElementById('resultado').innerHTML = `
-        <strong>Estilo:</strong> ${estilo}<br>
-        <strong>Alma Gasta:</strong> ${alma} (blocos extras: ${blocos})<br>
-        <strong>Dano:</strong> ${danoFinal}<br>
-        <strong>Defesa:</strong> ${defesaFinal}<br>
-        <strong>HP:</strong> ${hpFinal}<br>
-        <strong>Duração:</strong> ${duracaoFinal} turno(s)
-    `;
+    const stats = calcularStats({
+        estilo, alma, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao,
+        vontadePts, espiritoPts
+    });
+    document.getElementById('resultado').innerHTML = formatarSaida(stats);
 });
