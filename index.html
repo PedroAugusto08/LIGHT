@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forjador de Construtos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Forjador de Construtos</h1>
+        <form id="forgeForm" onsubmit="return false;">
+            <label for="estilo">Estilo do Construto</label>
+            <select id="estilo" name="estilo">
+                <option value="Projétil">Projétil</option>
+                <option value="Padrão">Padrão</option>
+                <option value="Pesado">Pesado</option>
+                <option value="Área">Área</option>
+                <option value="Colossal">Colossal</option>
+                <option value="Estrutura">Estrutura</option>
+            </select>
+
+            <label for="alma">Alma Gasta</label>
+            <input type="number" id="alma" name="alma" min="0" value="0" required>
+
+            <label for="dano">Blocos em Dano</label>
+            <input type="number" id="dano" name="dano" min="0" value="0" required>
+
+            <label for="defesa">Blocos em Defesa</label>
+            <input type="number" id="defesa" name="defesa" min="0" value="0" required>
+
+            <label for="vitalidade">Blocos em Vitalidade</label>
+            <input type="number" id="vitalidade" name="vitalidade" min="0" value="0" required>
+
+            <label for="duracao">Blocos em Duração</label>
+            <input type="number" id="duracao" name="duracao" min="0" value="0" required>
+
+            <button type="submit" id="forjarBtn">Forjar Construto</button>
+        </form>
+        <div class="result" id="resultado">
+            <!-- Resultados aparecerão aqui -->
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
