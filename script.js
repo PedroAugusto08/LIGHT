@@ -1,6 +1,59 @@
+// --- Abas ---
+document.addEventListener('DOMContentLoaded', function() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanes.forEach(p => p.style.display = 'none');
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).style.display = 'flex';
+        });
+    });
+    // Exibe a aba inicial
+    document.getElementById('tab-forja').style.display = 'flex';
+});
+
+// --- Histórico de Alma Gasta ---
+function salvarHistoricoConstruto(almaTotal) {
+    let hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
+    hist.push({ alma: almaTotal, data: new Date().toLocaleString() });
+    localStorage.setItem('historicoAlma', JSON.stringify(hist));
+}
+
+function renderizarHistorico() {
+    let hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
+    const listDiv = document.getElementById('historico-list');
+    const totalDiv = document.getElementById('historico-total');
+    if (!listDiv || !totalDiv) return;
+    if (hist.length === 0) {
+        listDiv.innerHTML = '<em>Nenhum construto registrado ainda.</em>';
+        totalDiv.textContent = '';
+        return;
+    }
+    let soma = 0;
+    let html = '<ul>';
+    hist.forEach((item, i) => {
+        soma += item.alma;
+        html += `<li>Construto #${i+1}: <strong>${item.alma}</strong> de Alma (${item.data})</li>`;
+    });
+    html += '</ul>';
+    listDiv.innerHTML = html;
+    totalDiv.textContent = `Total de Alma Gasta: ${soma}`;
+}
+
+// Botão para limpar histórico (opcional)
+document.addEventListener('DOMContentLoaded', function() {
+    renderizarHistorico();
+    // Atualiza histórico ao abrir aba
+    const histBtn = document.querySelector('.tab-btn[data-tab="historico"]');
+    if (histBtn) {
+        histBtn.addEventListener('click', renderizarHistorico);
+    }
+});
 // --- Controle de blocos disponíveis e inputs ---
 document.addEventListener('DOMContentLoaded', function() {
-    const almaInput = document.getElementById('alma');
+    const almaExtraInput = document.getElementById('almaExtra');
     const inputs = [
         document.getElementById('dano'),
         document.getElementById('defesa'),
@@ -10,8 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const blocosInfo = document.getElementById('blocos-info');
 
     function getMaxBlocos() {
-        const alma = parseInt(almaInput.value) || 0;
-        return Math.floor(alma / 2);
+        const almaExtra = parseInt(almaExtraInput.value) || 0;
+        return Math.floor(almaExtra / 2);
     }
 
     function updateBlocos() {
@@ -33,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    almaInput.addEventListener('input', function() {
+    almaExtraInput.addEventListener('input', function() {
         // Zera blocos se alma mudar
         inputs.forEach(inp => inp.value = 0);
         updateBlocos();
@@ -112,7 +165,7 @@ const multiplicadores = {
 function calcularStats(params) {
   const {
     estilo,
-    alma,
+    almaExtra,
     blocosDano,
     blocosDefesa,
     blocosVitalidade,
@@ -121,9 +174,10 @@ function calcularStats(params) {
     espiritoPts,
   } = params;
 
-  // Cálculo dos blocos EXTRAS a partir da Alma acima do custo base (base = 6)
-  // Regras: Base = 6 de Alma por ativação; X = Alma adicional; B = floor(X / 2)
-  const blocosExtras = Math.floor(Math.max(0, (alma || 0) - 6) / 2);
+    // Cálculo dos blocos EXTRAS a partir da Alma Extra (base = 6)
+    // O campo agora é almaExtra, e a alma total é 6 + almaExtra
+    const almaTotal = 6 + (parseInt(almaExtra) || 0);
+    const blocosExtras = Math.floor((parseInt(almaExtra) || 0) / 2);
 
   // Para compatibilidade, caso o usuário informe um número de blocos "manualmente",
   // você pode querer somar blocosExtras + blocosDano etc. Aqui blocosDano é o que o usuário alocou.
@@ -183,7 +237,8 @@ let defesaFinal = Math.round(defesaFloat); // DEF não usa eficiência, mas arre
 
   return {
     estilo,
-    alma,
+    almaExtra,
+    almaTotal,
     blocosExtras,
     blocosDano,
     blocosDefesa,
@@ -231,30 +286,31 @@ function formatarSaida(stats) {
 
             let efeitoEf = `<em style='color:#888;'>(Eficiência aplicada em Dano, HP e Duração)</em>`;
 
-            return `
-            <div class="result-container">
-                <div class="result-main">
-                    <strong>Estilo:</strong> ${stats.estilo}<br>
-                    <strong>Alma Gasta:</strong> ${stats.alma} (blocos extras gerados: ${stats.blocosExtras})<br>
-                    <strong>Dano:</strong> ${stats.danoFinal} <br>
-                    <strong>Defesa:</strong> ${stats.defesaFinal} <br>
-                    <strong>HP:</strong> ${stats.hpFinal} <br>
-                    <strong>Duração:</strong> ${stats.duracaoFinal} turno(s)<br>
+                return `
+                <div class="result-container">
+                    <div class="result-main">
+                        <strong>Estilo:</strong> ${stats.estilo}<br>
+                        <strong>Alma Extra:</strong> ${stats.almaExtra} (blocos extras gerados: ${stats.blocosExtras})<br>
+                        <strong>Alma total gasta:</strong> ${stats.almaTotal}<br>
+                        <strong>Dano:</strong> ${stats.danoFinal} <br>
+                        <strong>Defesa:</strong> ${stats.defesaFinal} <br>
+                        <strong>HP:</strong> ${stats.hpFinal} <br>
+                        <strong>Duração:</strong> ${stats.duracaoFinal} turno(s)<br>
+                    </div>
+                    <div class="result-details">
+                        ${rolagemDano}
+                        ${rolagemEf}
+                        ${efeitoEf}
+                    </div>
                 </div>
-                <div class="result-details">
-                    ${rolagemDano}
-                    ${rolagemEf}
-                    ${efeitoEf}
-                </div>
-            </div>
-            `;
+                `;
 }
 
 // Integração com formulário (assumindo ids existentes)
 document.getElementById('forgeForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const estilo = document.getElementById('estilo').value;
-    const alma = parseInt(document.getElementById('alma').value) || 0;
+    const almaExtra = parseInt(document.getElementById('almaExtra').value) || 0;
     const blocosDano = parseInt(document.getElementById('dano').value) || 0;
     const blocosDefesa = parseInt(document.getElementById('defesa').value) || 0;
     const blocosVitalidade = parseInt(document.getElementById('vitalidade').value) || 0;
@@ -264,8 +320,10 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
     const espiritoPts = parseInt(document.getElementById('espirito')?.value) || 2;
 
     const stats = calcularStats({
-        estilo, alma, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao,
+        estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao,
         vontadePts, espiritoPts
     });
     document.getElementById('resultado').innerHTML = formatarSaida(stats);
+    // Salvar histórico
+    salvarHistoricoConstruto(stats.almaTotal);
 });
