@@ -165,21 +165,44 @@ let defesaFinal = Math.round(defesaFloat); // DEF não usa eficiência, mas arre
 // Formata a saída para exibição
 function formatarSaida(stats) {
     const ef = stats.resultadoEf;
-    let rolagemEf = `Teste Eficiência: 1d20=${ef.parts.d20} + Vontade(${stats.vontadePts}d12)=[${ef.parts.vontade.rolls.join(",")}]=${ef.parts.vontade.total} + Espírito(${stats.espiritoPts}d6)=[${ef.parts.espirito.rolls.join(",")}]=${ef.parts.espirito.total} +12 => total=${ef.totalRoll} (shift=${ef.shift}) => Faixa: ${ef.faixa} => efMul=${ef.efMul}`;
-    let rolagemDano = `Dano rolls: [${stats.rollsDano.map(r=>r.rolls.join("+")).join(", ")}] × Md(${stats.Md}) + bônus de Luz(1d10%)=${stats.bonusLuz}%`;
-    let efeitoEf = `<em>(Eficiência aplicada em Dano, HP e Duração)</em>`;
-    return `
-        <strong>Estilo:</strong> ${stats.estilo}<br>
-        <strong>Alma Gasta:</strong> ${stats.alma} (blocos extras gerados: ${stats.blocosExtras})<br>
-        <strong>Dano:</strong> ${stats.danoFinal} <br>
-        <strong>Defesa:</strong> ${stats.defesaFinal} <br>
-        <strong>HP:</strong> ${stats.hpFinal} <br>
-        <strong>Duração:</strong> ${stats.duracaoFinal} turno(s)<br>
-        <hr>
-        ${rolagemDano}<br>
-        ${rolagemEf}<br>
-        ${efeitoEf}
-    `;
+            // Dano detalhado
+            let rolagemDano = `<strong>Dano:</strong><ul style='margin:6px 0 10px 18px;padding:0;'>`;
+            stats.rollsDano.forEach((r, i) => {
+                rolagemDano += `<li>${i === 0 ? 'Base' : 'Bloco ' + i}: <span style='color:#1976d2'>${r.rolls.join(' + ')}</span> = <strong>${r.total}</strong></li>`;
+            });
+            rolagemDano += `</ul>`;
+            rolagemDano += `<div style='margin-bottom:6px;'>× <strong>Md</strong> (${stats.Md})<br>Bônus de Luz: <strong>${stats.bonusLuz}%</strong></div>`;
+
+            // Teste de eficiência detalhado
+            let rolagemEf = `<strong>Teste de Eficiência</strong><ul style='margin:6px 0 10px 18px;padding:0;'>`;
+            rolagemEf += `<li>1d20: <span style='color:#1976d2'>${ef.parts.d20}</span></li>`;
+            rolagemEf += `<li>Vontade (${stats.vontadePts}d12): <span style='color:#388e3c'>[${ef.parts.vontade.rolls.join(', ')}]</span> = <strong>${ef.parts.vontade.total}</strong></li>`;
+            rolagemEf += `<li>Espírito (${stats.espiritoPts}d6): <span style='color:#fbc02d'>[${ef.parts.espirito.rolls.join(', ')}]</span> = <strong>${ef.parts.espirito.total}</strong></li>`;
+            rolagemEf += `<li>Bônus fixo: <strong>+12</strong></li>`;
+            rolagemEf += `<li>Total: <strong>${ef.totalRoll}</strong></li>`;
+            rolagemEf += `<li>Shift: <strong>${ef.shift}</strong></li>`;
+            rolagemEf += `<li>Faixa: <strong>${ef.faixa}</strong> (efMul=${ef.efMul})</li>`;
+            rolagemEf += `</ul>`;
+
+            let efeitoEf = `<em style='color:#888;'>(Eficiência aplicada em Dano, HP e Duração)</em>`;
+
+            return `
+            <div class="result-container">
+                <div class="result-main">
+                    <strong>Estilo:</strong> ${stats.estilo}<br>
+                    <strong>Alma Gasta:</strong> ${stats.alma} (blocos extras gerados: ${stats.blocosExtras})<br>
+                    <strong>Dano:</strong> ${stats.danoFinal} <br>
+                    <strong>Defesa:</strong> ${stats.defesaFinal} <br>
+                    <strong>HP:</strong> ${stats.hpFinal} <br>
+                    <strong>Duração:</strong> ${stats.duracaoFinal} turno(s)<br>
+                </div>
+                <div class="result-details">
+                    ${rolagemDano}
+                    ${rolagemEf}
+                    ${efeitoEf}
+                </div>
+            </div>
+            `;
 }
 
 // Integração com formulário (assumindo ids existentes)
