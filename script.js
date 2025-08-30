@@ -1,3 +1,48 @@
+// --- Controle de blocos disponíveis e inputs ---
+document.addEventListener('DOMContentLoaded', function() {
+    const almaInput = document.getElementById('alma');
+    const inputs = [
+        document.getElementById('dano'),
+        document.getElementById('defesa'),
+        document.getElementById('vitalidade'),
+        document.getElementById('duracao')
+    ];
+    const blocosInfo = document.getElementById('blocos-info');
+
+    function getMaxBlocos() {
+        const alma = parseInt(almaInput.value) || 0;
+        return Math.floor(alma / 2);
+    }
+
+    function updateBlocos() {
+        const max = getMaxBlocos();
+        const valores = inputs.map(inp => parseInt(inp.value) || 0);
+        const soma = valores.reduce((a, b) => a + b, 0);
+        blocosInfo.textContent = `Blocos disponíveis: ${max - soma} / ${max}`;
+
+        // Limitar cada input para não ultrapassar o total
+        inputs.forEach((inp, idx) => {
+            const outros = soma - valores[idx];
+            inp.max = Math.max(0, max - outros);
+            // Se já atingiu o máximo, só permite realocação
+            if (soma >= max && valores[idx] === 0) {
+                inp.disabled = true;
+            } else {
+                inp.disabled = false;
+            }
+        });
+    }
+
+    almaInput.addEventListener('input', function() {
+        // Zera blocos se alma mudar
+        inputs.forEach(inp => inp.value = 0);
+        updateBlocos();
+    });
+    inputs.forEach(inp => {
+        inp.addEventListener('input', updateBlocos);
+    });
+    updateBlocos();
+});
 // script.js
 
 // Rola 'qtd' dados de 'faces' lados. Retorna { total, rolls: [...] }
