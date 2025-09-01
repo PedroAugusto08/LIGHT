@@ -9,8 +9,8 @@
 <body>
         <div class="tabs-container">
             <div class="tabs-bar">
-                <button class="tab-btn active" data-tab="forja">Forjar Construto</button>
-                <button class="tab-btn" data-tab="historico">Histórico de Alma</button>
+                <button class="tab-btn active" data-tab="forja">Forja</button>
+                <button class="tab-btn" data-tab="historico">Histórico de Construtos</button>
             </div>
             <div class="tabs-content">
                 <div class="tab-pane" id="tab-forja" style="display: flex;">
@@ -72,6 +72,9 @@
                 <div class="tab-pane" id="tab-historico" style="display: none;">
                     <div class="historico-container">
                         <h2>Histórico de Alma Gasta</h2>
+                        <div class="historico-actions">
+                            <button id="limparHistoricoBtn" type="button" class="clear-history-btn">Limpar histórico</button>
+                        </div>
                         <div id="historico-list"></div>
                         <div id="historico-total" style="margin-top:18px;font-weight:bold;"></div>
                     </div>

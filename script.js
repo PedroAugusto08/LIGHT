@@ -15,34 +15,171 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // --- Histórico de Alma Gasta ---
-function salvarHistoricoConstruto(almaTotal) {
-    let hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
-    hist.push({ alma: almaTotal, data: new Date().toLocaleString() });
-    localStorage.setItem('historicoAlma', JSON.stringify(hist));
+// entry: { data, alma, params: {...}, results: {...} }
+function salvarHistoricoConstruto(entry) {
+    try {
+        let hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
+        if (!Array.isArray(hist)) hist = [];
+        hist.push(entry);
+        // Limite máximo de 20 (remove os mais antigos)
+        if (hist.length > 20) {
+            hist = hist.slice(-20);
+        }
+        localStorage.setItem('historicoAlma', JSON.stringify(hist));
+    } catch (e) {
+        console.error('Erro ao salvar histórico:', e);
+    }
 }
 
 function renderizarHistorico() {
-    let hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
+    const hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
     const listDiv = document.getElementById('historico-list');
     const totalDiv = document.getElementById('historico-total');
+    const clearBtn = document.getElementById('limparHistoricoBtn');
     if (!listDiv || !totalDiv) return;
-    if (hist.length === 0) {
+    if (!Array.isArray(hist) || hist.length === 0) {
         listDiv.innerHTML = '<em>Nenhum construto registrado ainda.</em>';
         totalDiv.textContent = '';
+        if (clearBtn) clearBtn.disabled = true;
         return;
     }
+
+    // Monta cards
+    listDiv.innerHTML = '';
     let soma = 0;
-    let html = '<ul>';
     hist.forEach((item, i) => {
-        soma += item.alma;
-        html += `<li>Construto #${i+1}: <strong>${item.alma}</strong> de Alma (${item.data})</li>`;
+        const idx = i + 1;
+        const alma = item.alma ?? item.results?.almaTotal ?? 0;
+        soma += alma;
+        const data = item.data || '';
+        const params = item.params || {};
+        const results = item.results || {};
+
+        const card = document.createElement('div');
+        card.className = 'history-card';
+
+        const header = document.createElement('div');
+        header.className = 'history-header';
+        header.innerHTML = `
+            <span class="history-title">Construto #${idx} — <strong>${alma}</strong> de Alma</span>
+            <span class="history-date">${data}</span>
+            <span class="history-caret" aria-hidden="true"></span>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'history-body';
+
+        // Conteúdo do body (principais infos)
+        const estilo = results.estilo || params.estilo || '-';
+        const dano = results.danoFinal ?? '-';
+        const def = results.defesaFinal ?? '-';
+        const hp = results.hpFinal ?? '-';
+        const dur = results.duracaoFinal ?? '-';
+        const efData = results.resultadoEf;
+        const ef = efData && typeof efData.totalRoll === 'number'
+            ? `${efData.faixa} (x${efData.efMul}) — Total: ${efData.totalRoll}`
+            : '-';
+
+        body.innerHTML = `
+            <div class="history-grid">
+                <div><strong>Estilo:</strong> ${estilo}</div>
+                <div><strong>Alma total:</strong> ${alma}</div>
+                <div><strong>Dano:</strong> ${dano}</div>
+                <div><strong>Defesa:</strong> ${def}</div>
+                <div><strong>HP:</strong> ${hp}</div>
+                <div><strong>Duração:</strong> ${dur} turno(s)</div>
+                <div><strong>Eficiência:</strong> ${ef}</div>
+            </div>
+            <div class="history-actions">
+                <button class="reforjar-btn" data-index="${i}">Reforjar</button>
+            </div>
+        `;
+
+        header.addEventListener('click', () => {
+            card.classList.toggle('open');
+        });
+
+        card.appendChild(header);
+        card.appendChild(body);
+        listDiv.appendChild(card);
     });
-    html += '</ul>';
-    listDiv.innerHTML = html;
+
     totalDiv.textContent = `Total de Alma Gasta: ${soma}`;
+    if (clearBtn) clearBtn.disabled = false;
+
+    // Ligações dos botões Reforjar
+    listDiv.querySelectorAll('.reforjar-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const index = parseInt(btn.dataset.index);
+            reforjarConstruto(index);
+        });
+    });
 }
 
-// Botão para limpar histórico (opcional)
+// Limpar histórico
+document.addEventListener('DOMContentLoaded', () => {
+    const clearBtn = document.getElementById('limparHistoricoBtn');
+    if (!clearBtn) return;
+    clearBtn.addEventListener('click', () => {
+        let hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
+        if (!Array.isArray(hist) || hist.length === 0) return;
+        const ok = confirm('Tem certeza que deseja limpar todo o histórico de construtos?');
+        if (!ok) return;
+        localStorage.removeItem('historicoAlma');
+        renderizarHistorico();
+    });
+});
+
+function reforjarConstruto(index) {
+    const hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
+    if (!Array.isArray(hist) || !hist[index]) return;
+    const entry = hist[index];
+    const params = entry.params || {};
+
+    // Preenche formulário e aplica alocações
+    const estiloSel = document.getElementById('estilo');
+    const almaExtraInput = document.getElementById('almaExtra');
+    const danoInp = document.getElementById('dano');
+    const defInp = document.getElementById('defesa');
+    const vitInp = document.getElementById('vitalidade');
+    const durInp = document.getElementById('duracao');
+
+    if (estiloSel && params.estilo) estiloSel.value = params.estilo;
+    if (almaExtraInput && typeof params.almaExtra === 'number') almaExtraInput.value = params.almaExtra;
+
+    // Dispara atualização para recalcular limites e barras
+    almaExtraInput && almaExtraInput.dispatchEvent(new Event('input'));
+
+    if (typeof params.blocosDano === 'number') danoInp.value = params.blocosDano;
+    if (typeof params.blocosDefesa === 'number') defInp.value = params.blocosDefesa;
+    if (typeof params.blocosVitalidade === 'number') vitInp.value = params.blocosVitalidade;
+    if (typeof params.blocosDuracao === 'number') durInp.value = params.blocosDuracao;
+
+    // Dispara inputs para sincronizar sliders/barras
+    ;[danoInp, defInp, vitInp, durInp].forEach(inp => inp && inp.dispatchEvent(new Event('input')));
+
+    // Vontade/Espírito (se existirem campos)
+    const vontadeField = document.getElementById('vontade');
+    const espiritoField = document.getElementById('espirito');
+    if (vontadeField && typeof params.vontadePts === 'number') vontadeField.value = params.vontadePts;
+    if (espiritoField && typeof params.espiritoPts === 'number') espiritoField.value = params.espiritoPts;
+
+    // Troca para aba Forja
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(b => b.classList.remove('active'));
+    const forjaBtn = document.querySelector('.tab-btn[data-tab="forja"]');
+    forjaBtn && forjaBtn.classList.add('active');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(p => p.style.display = 'none');
+    const forjaPane = document.getElementById('tab-forja');
+    if (forjaPane) forjaPane.style.display = 'flex';
+
+    // Submete o formulário para refazer os cálculos e salvar novamente no histórico
+    const form = document.getElementById('forgeForm');
+    if (form) form.dispatchEvent(new Event('submit'));
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     renderizarHistorico();
     // Atualiza histórico ao abrir aba
@@ -418,6 +555,11 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
         vontadePts, espiritoPts
     });
     document.getElementById('resultado').innerHTML = formatarSaida(stats);
-    // Salvar histórico
-    salvarHistoricoConstruto(stats.almaTotal);
+    // Salvar histórico completo (params + results), limite 20 na função
+    salvarHistoricoConstruto({
+        data: new Date().toLocaleString(),
+        alma: stats.almaTotal,
+        params: { estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao, vontadePts, espiritoPts },
+        results: stats
+    });
 });
