@@ -60,11 +60,74 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('vitalidade'),
         document.getElementById('duracao')
     ];
+    const sliders = [
+        document.getElementById('danoSlider'),
+        document.getElementById('defesaSlider'),
+        document.getElementById('vitalidadeSlider'),
+        document.getElementById('duracaoSlider'),
+    ];
+    const bars = [
+        document.getElementById('danoBar'),
+        document.getElementById('defesaBar'),
+        document.getElementById('vitalidadeBar'),
+        document.getElementById('duracaoBar'),
+    ];
     const blocosInfo = document.getElementById('blocos-info');
 
     function getMaxBlocos() {
         const almaExtra = parseInt(almaExtraInput.value) || 0;
         return Math.floor(almaExtra / 2);
+    }
+
+    function sumValues() {
+        const valores = inputs.map(inp => parseInt(inp.value) || 0);
+        return valores.reduce((a, b) => a + b, 0);
+    }
+
+    function clampAllocation(idx, desired) {
+        const max = getMaxBlocos();
+        const currentValues = inputs.map(inp => parseInt(inp.value) || 0);
+        const others = sumValues() - currentValues[idx];
+        const allowed = Math.max(0, Math.min(desired, max - others));
+        return allowed;
+    }
+
+    function renderBars(max) {
+        bars.forEach((bar, i) => {
+            if (!bar) return;
+            // default to up to 10 slots; scale to max
+            bar.innerHTML = '';
+            if (max <= 0) {
+                bar.style.gridTemplateColumns = `repeat(1, 1fr)`;
+                return; // nothing to render when no slots available
+            }
+            const slots = max;
+            const val = parseInt(inputs[i].value) || 0;
+            const valoresAll = inputs.map(inp => parseInt(inp.value) || 0);
+            const somaAll = valoresAll.reduce((a,b)=>a+b,0);
+            const outros = somaAll - val;
+            const allowedMaxValue = val + Math.max(0, max - outros);
+            for (let s = 0; s < slots; s++) {
+                const chip = document.createElement('div');
+                let cls = 'block-chip';
+                if (s < val) cls += ' filled';
+                if ((s+1) > allowedMaxValue) cls += ' disabled';
+                chip.className = cls;
+                chip.dataset.slot = s + 1; // 1-indexed intended amount
+                // Click handler will attempt to set this attribute's value to chip.dataset.slot
+                chip.addEventListener('click', () => {
+                    const current = parseInt(inputs[i].value) || 0;
+                    let desired = parseInt(chip.dataset.slot);
+                    // Toggle down if clicking the same filled slot
+                    if (desired === current) desired = desired - 1;
+                    const allowed = clampAllocation(i, desired);
+                    inputs[i].value = allowed;
+                    sliders[i].value = allowed;
+                    updateBlocos();
+                });
+                bar.appendChild(chip);
+            }
+        });
     }
 
     function updateBlocos() {
@@ -84,19 +147,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 inp.disabled = false;
             }
         });
+
+        // Atualiza sliders sincronizados e seus limites
+        sliders.forEach((sl, idx) => {
+            if (!sl) return;
+            const outros = soma - valores[idx];
+            sl.max = Math.max(0, max - outros) + valores[idx]; // permite diminuir e aumentar até o limite
+            sl.value = valores[idx];
+            // Desabilita criação além do teto; permite apenas realocação (via redução primeiro)
+            const shouldDisable = (soma >= max && valores[idx] === 0);
+            sl.disabled = shouldDisable;
+            sl.classList.toggle('disabled', shouldDisable);
+        });
+
+        // Render de chips e estado filled
+        renderBars(max);
     }
 
     almaExtraInput.addEventListener('input', function() {
         // Zera blocos se alma mudar
         inputs.forEach(inp => inp.value = 0);
+        sliders.forEach(sl => sl && (sl.value = 0));
         updateBlocos();
     });
-    inputs.forEach(inp => {
-        inp.addEventListener('input', updateBlocos);
+    inputs.forEach((inp, idx) => {
+        inp.addEventListener('input', () => {
+            const desired = parseInt(inp.value) || 0;
+            const allowed = clampAllocation(idx, desired);
+            if (allowed !== desired) inp.value = allowed;
+            sliders[idx].value = allowed;
+            updateBlocos();
+        });
+    });
+    sliders.forEach((sl, idx) => {
+        if (!sl) return;
+        sl.addEventListener('input', () => {
+            const desired = parseInt(sl.value) || 0;
+            const allowed = clampAllocation(idx, desired);
+            inputs[idx].value = allowed;
+            if (allowed !== desired) sl.value = allowed;
+            updateBlocos();
+        });
     });
     updateBlocos();
 });
-// script.js
 
 // Rola 'qtd' dados de 'faces' lados. Retorna { total, rolls: [...] }
 function rolarDado(qtd, faces) {
