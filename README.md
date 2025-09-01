@@ -6,10 +6,11 @@ O **LIGHT** (Luminar Integrado para Gestão de Habilidades e Testes) é uma apli
 
 ### Funcionalidades Principais:
 - **Criação de Construtos**: 6 estilos diferentes (Projétil, Padrão, Pesado, Área, Colossal, Estrutura)
-- **Sistema de Blocos**: Alocação limitada de blocos baseada na Alma Extra gasta
+- **Interface Híbrida de Blocos**: Controles numéricos + sliders + barras de blocos clicáveis sincronizados
+- **Sistema de Blocos Inteligente**: Alocação limitada com realocação automática baseada na Alma Extra
 - **Rolagens Automáticas**: Simulação de dados (2d6, 1d10, 1d12, 1d20) para cálculos
 - **Teste de Eficiência**: Sistema complexo que pode modificar os resultados finais
-- **Histórico Persistente**: Armazenamento local do total de Alma gasta em todos os construtos
+- **Histórico Avançado**: Cards expansíveis com parâmetros, resultados e função "Reforjar" (máx. 20 entradas)
 
 ## Instalação/Execução
 
@@ -35,12 +36,16 @@ LIGHT/
 ### HTML (index.html)
 - **Sistema de Abas**: Navegação entre "Forjar Construto" e "Histórico de Alma"
 - **Formulário Principal**: Inputs para estilo, alma extra e distribuição de blocos
+- **Interface Híbrida**: Campos numéricos + sliders + barras de blocos clicáveis para cada atributo
 - **Área de Resultados**: Exibição dos stats calculados e detalhes das rolagens
+- **Histórico Interativo**: Cards expansíveis com botão "Reforjar" e "Limpar histórico"
 
 ### CSS (style.css)
 - **Layout Responsivo**: Flex containers que se adaptam a diferentes telas
 - **Sistema de Abas**: Estilização da navegação e conteúdo
 - **Cards Visuais**: Containers com sombras e bordas arredondadas
+- **Controles Híbridos**: Estilização de sliders e barras de blocos clicáveis
+- **Animações Suaves**: Transições para expand/collapse de cards e hover effects
 
 ### JavaScript (script.js)
 
@@ -72,6 +77,19 @@ Calcula o teste de eficiência do construto.
 Função principal que calcula todas as estatísticas do construto.
 - **Parâmetros**: Objeto com todas as configurações do construto
 - **Retorno**: Objeto completo com stats finais e dados intermediários
+
+##### `salvarHistoricoConstruto(entry)`
+Salva um construto completo no histórico (parâmetros + resultados).
+- **Parâmetros**: `{ data, alma, params, results }`
+- **Limite**: Máximo 20 entradas (remove as mais antigas)
+
+##### `renderizarHistorico()`
+Renderiza cards expansíveis do histórico com animações.
+- **Funcionalidades**: Expand/collapse, botão "Reforjar", total de Alma
+
+##### `reforjarConstruto(index)`
+Restaura parâmetros de um construto do histórico no formulário.
+- **Ações**: Preenche campos, sincroniza controles, troca para aba Forja, recalcula
 
 #### Multiplicadores por Estilo
 
@@ -165,39 +183,88 @@ Salvamento no histórico (localStorage)
 
 ## Sistema de Controle de Blocos
 
-A aplicação implementa um sistema inteligente que:
-- **Calcula automaticamente** blocos disponíveis baseado na Alma Extra
-- **Limita a soma** dos blocos alocados ao máximo permitido
-- **Permite realocação** entre diferentes atributos
-- **Bloqueia inputs** quando o limite é atingido
-- **Atualiza em tempo real** a exibição de blocos disponíveis
+A aplicação implementa uma **interface híbrida inteligente** que oferece três formas sincronizadas de alocar blocos:
+
+### 1. Campo Numérico
+- Digite diretamente o número de blocos desejados
+- Validação automática contra limites disponíveis
+
+### 2. Slider (Barra Deslizante)
+- Arraste para ajustar a quantidade
+- Sincronizado em tempo real com o campo numérico
+
+### 3. Barra de Blocos Clicáveis
+- Visualização em "chips" individuais
+- Clique para definir rapidamente a quantidade
+- Estados visuais: vazio, preenchido, desabilitado
+
+### Características do Sistema:
+- **Cálculo automático** de blocos disponíveis baseado na Alma Extra
+- **Limite global inteligente**: Soma dos blocos não pode exceder o máximo
+- **Realocação dinâmica**: Quando no limite, só permite redistribuir entre atributos
+- **Sincronização total**: Mudança em qualquer controle atualiza os outros
+- **Feedback visual**: Blocos restantes exibidos em tempo real
+- **Responsividade**: Barras com scroll horizontal para muitos blocos
 
 ## Persistência de Dados
 
-### localStorage
-O histórico é salvo automaticamente no navegador:
+### localStorage - Histórico Avançado
+O histórico salva automaticamente construtos completos com limite de 20 entradas:
+
 ```javascript
-// Estrutura dos dados salvos
+// Estrutura dos dados salvos (nova versão)
 {
   historicoAlma: [
-    { alma: 16, data: "01/09/2025 14:30:22" },
-    { alma: 22, data: "01/09/2025 14:35:15" }
+    {
+      data: "01/09/2025 14:30:22",
+      alma: 16,
+      params: {
+        estilo: "Padrão",
+        almaExtra: 10,
+        blocosDano: 2,
+        blocosDefesa: 1,
+        // ... outros parâmetros
+      },
+      results: {
+        danoFinal: 23,
+        defesaFinal: 8,
+        hpFinal: 12,
+        // ... outros resultados calculados
+        resultadoEf: {
+          totalRoll: 45,
+          faixa: "+10%",
+          efMul: 1.1
+        }
+      }
+    }
   ]
 }
 ```
+
+### Funcionalidades do Histórico:
+- **Cards Expansíveis**: Clique no cabeçalho para ver detalhes
+- **Informações Completas**: Estilo, parâmetros, resultados e teste de eficiência
+- **Botão "Reforjar"**: Restaura exatamente o mesmo construto
+- **Botão "Limpar"**: Remove todo o histórico com confirmação
+- **Limite Automático**: Mantém apenas os 20 construtos mais recentes
+- **Total Acumulado**: Soma de toda Alma gasta historicamente
 
 ## Boas Práticas
 
 ### Para Usuários
 1. **Planeje a distribuição**: Considere o estilo do construto antes de alocar blocos
-2. **Teste diferentes configurações**: Use a realocação para otimizar
-3. **Monitore o histórico**: Acompanhe o gasto total de Alma
+2. **Use a interface híbrida**: Combine campos numéricos, sliders e barras clicáveis
+3. **Aproveite a realocação**: Quando no limite, redistribua blocos entre atributos
+4. **Explore o histórico**: Use "Reforjar" para repetir construtos bem-sucedidos
+5. **Monitore o total**: Acompanhe o gasto acumulado de Alma
 
 ### Para Desenvolvedores
 1. **Modularização**: Funções separadas para cálculo, interface e persistência
-2. **Validação**: Controle rigoroso dos inputs do usuário
-3. **Responsividade**: Layout que funciona em desktop e mobile
-4. **Performance**: Uso eficiente do localStorage e DOM
+2. **Sincronização de Estado**: Controles híbridos com eventos coordenados
+3. **Validação Inteligente**: Limites dinâmicos com realocação automática
+4. **Persistência Rica**: Histórico completo com parâmetros e resultados
+5. **Responsividade**: Layout que funciona em desktop e mobile
+6. **Performance**: Uso eficiente do localStorage e DOM
 
 ## Tecnologias Utilizadas
 
@@ -214,8 +281,12 @@ O histórico é salvo automaticamente no navegador:
 
 ## Futuras Melhorias
 
-- [ ] Sistema de salvamento/carregamento de construtos
-- [ ] Exportação do histórico para arquivo
+- [ ] Campos dedicados para Vontade e Espírito no formulário
+- [ ] Sistema de templates/presets de construtos
+- [ ] Exportação do histórico para arquivo JSON/CSV
+- [ ] Importação de construtos salvos
 - [ ] Modo escuro
-- [ ] Integração de novas habilidades
+- [ ] Calculadora de custos de evolução
 - [ ] Sistema de favoritos para construtos
+- [ ] Comparação lado a lado de construtos
+- [ ] Gráficos de distribuição de stats
