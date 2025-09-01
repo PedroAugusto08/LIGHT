@@ -233,7 +233,7 @@ input[type="number"], select {
     transition: border 0.2s;
 }
 
-/* Hybrid block controls */
+/* Controles híbridos de blocos */
 .hybrid-control {
     display: flex;
     flex-direction: column;
@@ -247,12 +247,17 @@ input[type="number"], select {
 
 .block-bar {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 22px;
+    /* Quebra os chips para evitar overflow horizontal */
+    grid-template-columns: repeat(auto-fill, 22px);
+    grid-auto-rows: 22px;
+    justify-content: start;
+    align-content: start;
     gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    /* Dark scrollbars in Firefox */
+    /* Mantém os chips dentro da área visível */
+    overflow-x: hidden;
+    padding: 2px 6px;
+    box-sizing: border-box;
+    /* Barras de rolagem escuras no Firefox (mantido por compatibilidade caso overflow seja reativado) */
     scrollbar-width: thin;
     scrollbar-color: var(--accent) var(--surface-2);
 }
@@ -300,7 +305,7 @@ button#forjarBtn:hover {
     box-shadow: 0 4px 16px rgba(34,211,238,0.55);
 }
 
-/* Range styling for dark */
+/* Estilização do range para tema escuro */
 .hybrid-control input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -333,28 +338,10 @@ button#forjarBtn:hover {
     border: 2px solid #0f172a;
 }
 
-/* blocos-info to match dark theme */
+/* blocos-info para combinar com o tema escuro */
 #blocos-info {
     margin: 10px 0 8px 0;
     color: var(--accent);
     font-weight: 500;
     font-size: 1.05em;
 }
-
-/* Dark scrollbar styling for WebKit (Chrome/Edge/Safari) on block bar */
-.block-bar::-webkit-scrollbar {
-    height: 8px; /* horizontal scrollbar height */
-    background: var(--surface-2);
-}
-.block-bar::-webkit-scrollbar-track {
-    background: var(--surface-2); /* make the track dark instead of white */
-    border-radius: 999px;
-}
-.block-bar::-webkit-scrollbar-thumb {
-    background: var(--accent); /* visible thumb color */
-    border-radius: 999px;
-    border: 2px solid var(--surface-2); /* creates a pill and separation from track */
-}
-.block-bar::-webkit-scrollbar-button { display: none; }
-.block-bar::-webkit-scrollbar-corner { background: var(--surface-2); }
-

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // --- Histórico de Alma Gasta ---
-// entry: { data, alma, params: {...}, results: {...} }
+// entrada: { data, alma, params: {...}, results: {...} }
 function salvarHistoricoConstruto(entry) {
     try {
         let hist = JSON.parse(localStorage.getItem('historicoAlma') || '[]');
@@ -232,12 +232,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderBars(max) {
         bars.forEach((bar, i) => {
             if (!bar) return;
-            // default to up to 10 slots; scale to max
+            // padrão: até 10 slots; escala conforme o 'max'
             bar.innerHTML = '';
             if (max <= 0) {
-                bar.style.gridTemplateColumns = `repeat(1, 1fr)`;
+                // Célula placeholder única quando não há slots disponíveis
+                bar.style.gridTemplateColumns = `repeat(1, 22px)`;
                 return; // nothing to render when no slots available
             }
+            // Garante que o CSS controle o layout (grid que quebra); remove qualquer override inline
+            bar.style.gridTemplateColumns = '';
+            // Reinicia posição de scroll anterior por precaução
+            bar.scrollLeft = 0;
             const slots = max;
             const val = parseInt(inputs[i].value) || 0;
             const valoresAll = inputs.map(inp => parseInt(inp.value) || 0);
@@ -250,8 +255,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (s < val) cls += ' filled';
                 if ((s+1) > allowedMaxValue) cls += ' disabled';
                 chip.className = cls;
-                chip.dataset.slot = s + 1; // 1-indexed intended amount
-                // Click handler will attempt to set this attribute's value to chip.dataset.slot
+                chip.dataset.slot = s + 1; // quantidade intencional indexada a partir de 1
+                // O handler de clique tentará definir o valor deste atributo para chip.dataset.slot
                 chip.addEventListener('click', () => {
                     const current = parseInt(inputs[i].value) || 0;
                     let desired = parseInt(chip.dataset.slot);
@@ -297,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sl.classList.toggle('disabled', shouldDisable);
         });
 
-        // Render de chips e estado filled
+    // Renderiza os chips e o estado filled
         renderBars(max);
     }
 
@@ -329,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateBlocos();
 });
 
-// Rola 'qtd' dados de 'faces' lados. Retorna { total, rolls: [...] }
+    // Rola 'qtd' dados de 'faces' lados. Retorna { total, rolls: [...] }
 function rolarDado(qtd, faces) {
     let total = 0;
     let rolls = [];
@@ -347,7 +352,7 @@ function rollEficiência(vontadePts, espiritoPts, blocosExtras) {
     const vontade = rolarDado(Math.max(0, vontadePts), 12);
     const espirito = rolarDado(Math.max(0, espiritoPts), 6);
     const fixedBonus = 12;
-    // totalRoll INCLUI +12 fixo
+    // totalRoll INCLUI o bônus fixo +12
     const totalRoll = d20.total + vontade.total + espirito.total + fixedBonus;
 
     // shift: a cada 2 blocos extras, DT aumenta +1
