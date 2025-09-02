@@ -61,7 +61,7 @@ const PERICIAS_BONUS_FIXO = {
   "SORTE": 0,
   "TÉCNICA": 0,
   "VIGOR": 0,
-  "VONTADE": 0,
+  "VONTADE": 12,
 };
 
 // Utilitário para rolagem de dados
