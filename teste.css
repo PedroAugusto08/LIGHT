@@ -3,11 +3,74 @@
   font-weight: 600;
 }
 
+/* Layout: formulário à esquerda; à direita ficam Favoritos (acima) e Resultado (abaixo) */
+#tab-testes .main-flex { gap: 24px; }
+.right-col {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  flex: 1 1 0;
+  max-width: 520px;
+}
+
+/* Container de Favoritos */
+.favoritos-container {
+  background: var(--surface);
+  padding: 16px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  width: 100%;
+  max-height: 40vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 32px;
+}
+.favoritos-empty {
+  color: var(--muted);
+  font-size: .95em;
+}
+.favorito-item {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  gap: 6px;
+  align-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.favorito-meta { color: var(--muted); font-size: .92em; }
+.favorito-actions { display: flex; gap: 6px; }
+.btn {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { filter: brightness(1.1); }
+.btn.run { border-color: #22c55e; }
+.btn.del { border-color: #ef4444; }
+
+/* Botão secundário do formulário */
+#addFavoritoBtn.sec {
+  margin-top: 6px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 5px;
+}
+
 /* Formulário em coluna, como na aba Forja */
 #testsForm {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 1px;
 }
 
 /* Labels seguem o padrão global; nenhuma regra específica necessária */
@@ -41,6 +104,12 @@
 /* Resultado do teste com leve destaque */
 #resultadoTeste {
   min-width: 320px;
+  width: 100%;
+  max-width: 100%;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 18px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
 }
 #resultadoTeste .result-container {
   display: grid;
@@ -59,7 +128,6 @@
   border-radius: 10px;
   padding: 12px;
 }
-
 /* Micro-efeitos para suavidade */
 #testsForm select,
 #testsForm input[type="number"],

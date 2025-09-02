@@ -109,11 +109,102 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// --------- Favoritos ---------
+const FAVORITOS_KEY = 'testesFavoritos';
+
+function carregarFavoritos() {
+  try {
+    const raw = localStorage.getItem(FAVORITOS_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarFavoritos(lista) {
+  localStorage.setItem(FAVORITOS_KEY, JSON.stringify(lista.slice(0, 50)));
+}
+
+function renderFavoritos() {
+  const box = document.getElementById('favoritos-list');
+  const vazio = document.getElementById('favoritos-vazio');
+  if (!box) return;
+  const lista = carregarFavoritos();
+  box.innerHTML = '';
+  if (vazio) vazio.style.display = lista.length ? 'none' : 'block';
+  lista.forEach((f, idx) => {
+    const el = document.createElement('div');
+    el.className = 'favorito-item';
+    const peritoTxt = f.perito ? 'Perito' : 'Comum';
+    el.innerHTML = `
+      <div>
+        <div><strong>${f.pericia}</strong> + <strong>${f.atributo}</strong></div>
+        <div class="favorito-meta">d20 (${f.vantagens}V/${f.desvantagens}D) • ${peritoTxt} • Bônus ${f.bonusAdicional}</div>
+      </div>
+      <div class="favorito-actions">
+        <button class="btn run" data-i="${idx}">Rolar</button>
+        <button class="btn del" data-i="${idx}">Remover</button>
+      </div>`;
+    box.appendChild(el);
+  });
+
+  // bind actions
+  box.querySelectorAll('.btn.run').forEach(b => b.addEventListener('click', () => executarFavorito(parseInt(b.dataset.i))));
+  box.querySelectorAll('.btn.del').forEach(b => b.addEventListener('click', () => removerFavorito(parseInt(b.dataset.i))));
+}
+
+function adicionarFavorito(cfg) {
+  const lista = carregarFavoritos();
+  // evita favoritos idênticos consecutivos
+  const last = lista[lista.length - 1];
+  const str = JSON.stringify(cfg);
+  if (!last || JSON.stringify(last) !== str) {
+    lista.push(cfg);
+    salvarFavoritos(lista);
+  }
+  renderFavoritos();
+}
+
+function removerFavorito(index) {
+  const lista = carregarFavoritos();
+  if (index >= 0 && index < lista.length) {
+    lista.splice(index, 1);
+    salvarFavoritos(lista);
+  }
+  renderFavoritos();
+}
+
+function executarFavorito(index) {
+  const lista = carregarFavoritos();
+  const f = lista[index];
+  if (!f) return;
+  // Preenche o formulário e envia
+  const pSel = document.getElementById('teste-pericia');
+  const aSel = document.getElementById('teste-atributo');
+  const chk = document.getElementById('teste-perito');
+  const vIn = document.getElementById('teste-vantagens');
+  const dIn = document.getElementById('teste-desvantagens');
+  const bIn = document.getElementById('teste-bonus');
+  if (pSel) pSel.value = f.pericia;
+  if (aSel) aSel.value = f.atributo;
+  if (chk) chk.checked = !!f.perito;
+  if (vIn) vIn.value = f.vantagens|0;
+  if (dIn) dIn.value = f.desvantagens|0;
+  if (bIn) bIn.value = f.bonusAdicional|0;
+  const form = document.getElementById('testsForm');
+  if (form) form.dispatchEvent(new Event('submit'));
+}
+
 // Lógica do formulário de Testes
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('testsForm');
   const saida = document.getElementById('resultadoTeste');
+  const addFavBtn = document.getElementById('addFavoritoBtn');
   if (!form || !saida) return;
+
+  // Render inicial de favoritos
+  renderFavoritos();
 
   form.addEventListener('submit', () => {
     const pericia = document.getElementById('teste-pericia').value;
@@ -161,4 +252,19 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
   });
+
+  // Adicionar aos favoritos
+  if (addFavBtn) {
+    addFavBtn.addEventListener('click', () => {
+      const cfg = {
+        pericia: document.getElementById('teste-pericia').value,
+        atributo: document.getElementById('teste-atributo').value,
+        perito: document.getElementById('teste-perito').checked,
+        vantagens: parseInt(document.getElementById('teste-vantagens').value) || 0,
+        desvantagens: parseInt(document.getElementById('teste-desvantagens').value) || 0,
+        bonusAdicional: parseInt(document.getElementById('teste-bonus').value) || 0,
+      };
+      adicionarFavorito(cfg);
+    });
+  }
 });
