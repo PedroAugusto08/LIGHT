@@ -22,6 +22,7 @@
                                 <h1>Forjador de Construtos</h1>
                                 <form id="forgeForm" onsubmit="return false;">
                                         <label for="estilo">Estilo do Construto</label>
+                                        <div class="select-wrapper">
                                         <select id="estilo" name="estilo">
                                                 <option value="Projétil">Projétil</option>
                                                 <option value="Padrão">Padrão</option>
@@ -30,6 +31,8 @@
                                                 <option value="Colossal">Colossal</option>
                                                 <option value="Estrutura">Estrutura</option>
                                         </select>
+                                        <span class="select-caret" aria-hidden="true"></span>
+                                        </div>
 
                                         <label for="almaExtra">Alma Extra</label>
                                         <input type="number" id="almaExtra" name="almaExtra" min="0" value="0" required>
@@ -79,10 +82,16 @@
                             <h2>Testes Interativos</h2>
                             <form id="testsForm" onsubmit="return false;">
                                 <label for="teste-pericia">Perícia</label>
+                                <div class="select-wrapper">
                                 <select id="teste-pericia"></select>
+                                <span class="select-caret" aria-hidden="true"></span>
+                                </div>
 
                                 <label for="teste-atributo">Atributo</label>
+                                <div class="select-wrapper">
                                 <select id="teste-atributo"></select>
+                                <span class="select-caret" aria-hidden="true"></span>
+                                </div>
 
                                 <div class="inline" style="margin-top:8px;">
                                     <label>

@@ -572,3 +572,15 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
         results: stats
     });
 });
+
+// Caret interativo dos selects: marca wrapper como 'open' quando focado e remove ao desfocar
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.select-wrapper select').forEach(sel => {
+        const wrap = sel.closest('.select-wrapper');
+        if (!wrap) return;
+        sel.addEventListener('focus', () => wrap.classList.add('open'));
+        sel.addEventListener('blur', () => wrap.classList.remove('open'));
+        // click no wrapper foca o select
+        wrap.addEventListener('click', () => sel.focus());
+    });
+});

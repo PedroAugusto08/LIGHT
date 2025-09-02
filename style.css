@@ -270,6 +270,56 @@ input[type="number"], select {
     transition: border 0.2s;
 }
 
+/* Select: remover UI nativa e usar seta escura customizada */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none !important; /* seta estática removida */
+}
+/* Ocultar seta no IE/Edge legado */
+select::-ms-expand { display: none; }
+
+/* Wrapper e caret interativo dos selects */
+.select-wrapper {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+.select-wrapper select {
+    width: 100%;
+    padding-right: 34px; /* espaço para a seta */
+}
+.select-wrapper .select-caret {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform .2s ease;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa4b2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.select-wrapper.open .select-caret,
+.select-wrapper:focus-within .select-caret {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Number: remover setas nativas com fundo claro */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
 /* Controles híbridos de blocos */
 .hybrid-control {
     display: flex;
