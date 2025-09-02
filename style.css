@@ -12,13 +12,26 @@
     --chip-empty: #283241;
 }
 
+/* Fundo com imagem e leve blur */
+.bg-layer {
+    position: fixed;
+    inset: 0;
+    background: var(--bg) url('images/fundo.png') center/cover no-repeat fixed;
+    filter: blur(10px) brightness(0.55);
+    transform: scale(1.05); /* evita bordas ao aplicar blur */
+    z-index: 0;
+    pointer-events: none;
+}
+
 .tabs-container {
     width: 100vw;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: var(--bg);
+    background: transparent;
+    position: relative;
+    z-index: 1;
 }
 .tabs-bar {
     display: flex;
