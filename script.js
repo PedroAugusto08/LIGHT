@@ -535,6 +535,7 @@ function formatarSaida(stats) {
                     </div>
                     <div class="result-details">
                         ${rolagemDano}
+                        <hr class="section-divider">
                         ${rolagemEf}
                         ${efeitoEf}
                     </div>
@@ -559,7 +560,10 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
         estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao,
         vontadePts, espiritoPts
     });
-    document.getElementById('resultado').innerHTML = formatarSaida(stats);
+    const resEl = document.getElementById('resultadoContent') || document.getElementById('resultado');
+    if (resEl) {
+        resEl.innerHTML = formatarSaida(stats);
+    }
     // Salvar histórico completo (params + results), limite 20 na função
     salvarHistoricoConstruto({
         data: new Date().toLocaleString(),

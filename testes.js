@@ -199,7 +199,7 @@ function executarFavorito(index) {
 // Lógica do formulário de Testes
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('testsForm');
-  const saida = document.getElementById('resultadoTeste');
+  const saida = document.getElementById('resultadoTesteContent') || document.getElementById('resultadoTeste');
   const addFavBtn = document.getElementById('addFavoritoBtn');
   if (!form || !saida) return;
 
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bonusFixo) det.push(`<strong>Bônus fixo da perícia</strong>: +${bonusFixo}`);
     if (bonusAdicional) det.push(`<strong>Bônus adicional</strong>: +${bonusAdicional}`);
 
-    saida.innerHTML = `
+  saida.innerHTML = `
       <div class="result-container">
         <div class="result-main">
           <strong>Perícia:</strong> ${pericia}<br>
@@ -251,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
+  // título agora é estático no HTML
   });
 
   // Adicionar aos favoritos

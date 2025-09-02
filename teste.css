@@ -19,7 +19,7 @@
   background: var(--surface);
   padding: 16px 16px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
   width: 100%;
   max-height: 40vh;
   overflow-y: auto;
@@ -102,6 +102,7 @@
 }
 
 /* Resultado do teste com leve destaque */
+#tab-testes .result-heading { margin: 10px 0 6px; font-size: 1rem; color: var(--muted); font-weight: 600; letter-spacing: .3px; }
 #resultadoTeste {
   min-width: 320px;
   width: 100%;
@@ -109,7 +110,7 @@
   background: var(--surface-2);
   border-radius: 10px;
   padding: 18px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
 }
 #resultadoTeste .result-container {
   display: grid;

@@ -74,7 +74,7 @@
 .historico-container {
     background: var(--surface);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
     padding: 32px 28px;
     margin: 32px auto;
     max-width: 500px;
@@ -185,12 +185,36 @@
     padding: 18px 16px;
     border-radius: 10px;
     margin-top: 32px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
     font-size: 1.05em;
     min-width: 320px;
     min-height: 48px;
     max-width: 420px;
     flex: 1 1 0;
+}
+.section-divider {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border));
+    margin: 10px 0 10px 0;
+}
+.result .card-title { 
+    margin: 0 0 10px; 
+    font-size: 1.5rem; 
+    font-weight: 600; 
+    color: var(--text); 
+}
+.result-col {
+    display: flex; 
+    flex-direction: column; 
+    align-items: stretch; 
+}
+.result-heading { 
+    margin: 32px 0 6px; 
+    font-size: 1rem; 
+    color: var(--muted); 
+    font-weight: 600; 
+    letter-spacing: .3px; 
 }
 @media (max-width: 900px) {
     .main-flex { flex-direction: column; gap: 0; align-items: stretch; }
@@ -210,7 +234,7 @@ body {
     background: var(--surface);
     padding: 32px 32px;
     border-radius: 14px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    box-shadow: 0 4px 24px rgba(255, 255, 255, 0.35);
     max-width: 420px;
     width: 100%;
     margin: 32px 0;
