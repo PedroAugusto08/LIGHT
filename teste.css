@@ -1,0 +1,92 @@
+#tab-testes h2 {
+  margin: 6px 0 14px;
+  font-weight: 600;
+}
+
+/* Formulário em coluna, como na aba Forja */
+#testsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Labels seguem o padrão global; nenhuma regra específica necessária */
+#testsForm select,
+#testsForm input[type="number"] {
+  width: 100%;
+}
+
+/* Linha de perito e botões */
+#testsForm .inline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Botão principal do teste */
+#rolarTesteBtn {
+    background: linear-gradient(90deg, #0ea5e9 0%, var(--accent-2) 100%);
+    color: var(--text);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(34,211,238,0.33);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+/* Resultado do teste com leve destaque */
+#resultadoTeste {
+  min-width: 320px;
+}
+#resultadoTeste .result-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+#resultadoTeste .result-main {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+#resultadoTeste .result-details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+/* Micro-efeitos para suavidade */
+#testsForm select,
+#testsForm input[type="number"],
+#rolarTesteBtn {
+  transition: box-shadow .2s ease, transform .05s ease;
+}
+#testsForm select:focus,
+#testsForm input[type="number"]:focus {
+  box-shadow: 0 0 0 2px rgba(24, 216, 237, 0.25);
+}
+#rolarTesteBtn:hover {
+    background: linear-gradient(90deg, var(--accent-2) 0%, #0ea5e9 100%);
+    box-shadow: 0 4px 16px rgba(34,211,238,0.55);
+}
+
+/* Badge do modo perito */
+#teste-perito:checked + span.perito-badge {
+  display: inline-flex;
+}
+span.perito-badge {
+  display: none;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: .85em;
+  border-radius: 999px;
+  color: var(--text);
+  background: linear-gradient(90deg, #0ea5e9 0%, var(--accent-2) 100%);
+}
+
+/* Sem mudanças responsivas adicionais; segue o fluxo em coluna */
