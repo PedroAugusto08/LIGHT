@@ -148,7 +148,6 @@ function renderFavoritos() {
       </div>`;
     box.appendChild(el);
   });
-
   // bind actions
   box.querySelectorAll('.btn.run').forEach(b => b.addEventListener('click', () => executarFavorito(parseInt(b.dataset.i))));
   box.querySelectorAll('.btn.del').forEach(b => b.addEventListener('click', () => removerFavorito(parseInt(b.dataset.i))));
@@ -252,6 +251,31 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
   // título agora é estático no HTML
+
+  // Envio assíncrono para Discord via backend
+  try {
+    const payload = {
+      pericia,
+      atributo,
+      total,
+      d20: { mode: d20.tipo, value: d20.escolha, rolls: d20.rolls },
+      atributoDice: { qty: (ATRIBUTOS[atributo]||0), faces: 6, rolls: rAtrib.rolls, sum: rAtrib.total },
+      periciaDice: { qty: qtdPericia, faces: facesPericia, rolls: rPericia.rolls, sum: rPericia.total },
+      bonus: bonusAdicional,
+      vantagens,
+      desvantagens,
+      perito,
+      timestamp: new Date().toISOString()
+    };
+    fetch('http://localhost:3000/api/discord', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-light-key': 'e2c508801a1121e9c9c8b8f0aaef3a41f878163c1aa3fcc88aafef386e347444'
+      },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+  } catch (_) {}
   });
 
   // Adicionar aos favoritos
