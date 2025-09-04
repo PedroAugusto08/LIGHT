@@ -109,6 +109,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Helper: URL do backend (prioriza window -> localStorage -> default localhost)
+function getBackendUrl() {
+  if (typeof window !== 'undefined' && window.LIGHT_BACKEND_URL) return window.LIGHT_BACKEND_URL;
+  try {
+    const saved = localStorage.getItem('LIGHT_BACKEND_URL');
+    if (saved && saved.startsWith('http')) return saved;
+  } catch (_) {}
+  return 'http://localhost:3000/api/discord';
+}
+
 // --------- Favoritos ---------
 const FAVORITOS_KEY = 'testesFavoritos';
 
@@ -205,7 +215,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render inicial de favoritos
   renderFavoritos();
 
-  form.addEventListener('submit', () => {
+  form.addEventListener('submit', (e) => {
+    // evita reload da página
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
     const pericia = document.getElementById('teste-pericia').value;
     const atributo = document.getElementById('teste-atributo').value;
     const perito = document.getElementById('teste-perito').checked;
@@ -267,14 +280,20 @@ document.addEventListener('DOMContentLoaded', () => {
       perito,
       timestamp: new Date().toISOString()
     };
-    fetch('http://localhost:3000/api/discord', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-light-key': 'e2c508801a1121e9c9c8b8f0aaef3a41f878163c1aa3fcc88aafef386e347444'
-      },
-      body: JSON.stringify(payload)
-    }).catch(() => {});
+    const backendUrl = getBackendUrl();
+    const headers = { 'Content-Type': 'application/json' };
+    try {
+      const apiKey = localStorage.getItem('LIGHT_API_KEY');
+      if (apiKey) headers['x-light-key'] = apiKey;
+    } catch (_) {}
+    if (backendUrl && backendUrl.startsWith('http')) {
+      fetch(backendUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        mode: 'cors'
+      }).catch(() => {});
+    }
   } catch (_) {}
   });
 
