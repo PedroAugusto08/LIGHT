@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render inicial de favoritos
   renderFavoritos();
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     // evita reload da página
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
@@ -305,19 +305,52 @@ document.addEventListener('DOMContentLoaded', () => {
       perito,
       timestamp: new Date().toISOString()
     };
-    const backendUrl = getBackendUrl();
-    const headers = { 'Content-Type': 'application/json' };
+  const backendUrl = getBackendUrl();
+  try { console.debug('LIGHT: usando backend', backendUrl); } catch(_) {}
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
     try {
       const apiKey = localStorage.getItem('LIGHT_API_KEY');
       if (apiKey) headers['x-light-key'] = apiKey;
     } catch (_) {}
     if (backendUrl) {
-      fetch(backendUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-        mode: 'cors'
-      }).catch(() => {});
+      const tryPost = async (url) => {
+        try {
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload),
+            mode: 'cors',
+            redirect: 'follow',
+            cache: 'no-store',
+          });
+          if (!resp.ok) {
+            console.warn('LIGHT: envio Discord falhou', url, resp.status);
+          }
+          return resp;
+        } catch (err) {
+          console.warn('LIGHT: erro de rede ao enviar para', url, err);
+          return null;
+        }
+      };
+
+      // tentativa 1: URL resolvida pelo helper
+      let resp = await tryPost(backendUrl);
+      // fallback se 404/405
+      if (!resp || resp.status === 404 || resp.status === 405) {
+        const fb1 = '/api/discord';
+        if (backendUrl !== fb1) {
+          resp = await tryPost(fb1);
+        }
+      }
+      // fallback 2: absoluto no mesmo host
+      if (!resp || resp.status === 404 || resp.status === 405) {
+        try {
+          const fb2 = (window.location && window.location.origin ? window.location.origin : '') + '/api/discord';
+          if (fb2 && backendUrl !== fb2) {
+            resp = await tryPost(fb2);
+          }
+        } catch (_) {}
+      }
     }
   } catch (_) {}
   });
