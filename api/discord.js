@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   const API_KEY = process.env.LIGHT_API_KEY || '';
   if (API_KEY) {
-    const key = (req.headers['x-light-key'] || req.headers['x-light-key'.toLowerCase()] || '');
+  const key = req.headers['x-light-key'] || '';
     if (key !== API_KEY) return res.status(401).json({ error: 'unauthorized' });
   }
 
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
   if (!WEBHOOK_URL) return res.status(500).json({ error: 'missing_webhook' });
 
   try {
-    const data = req.body || {};
+    const data = typeof req.body === 'string' ? (JSON.parse(req.body || '{}')) : (req.body || {});
     const title = `Teste: ${data.pericia || '—'} + ${data.atributo || '—'}`;
     const descLines = [];
     if (data.d20) descLines.push(`d20 (${data.d20.mode || 'normal'}): ${JSON.stringify(data.d20.rolls || [])} ⇒ ${data.d20.value || ''}`);
