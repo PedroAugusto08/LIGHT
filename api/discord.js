@@ -5,10 +5,11 @@ export default async function handler(req, res) {
     .map(s => s.trim())
     .filter(Boolean);
 
-  const corsOk = allowlist.length === 0 || allowlist.includes(origin);
+  const corsOk = allowlist.length === 0 || allowlist.includes(origin) || origin === '';
+
   const setCors = () => {
     res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Origin', corsOk ? origin : 'https://example.com');
+    res.setHeader('Access-Control-Allow-Origin', corsOk ? (origin || '*') : 'null');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type,x-light-key');
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   };
@@ -24,11 +25,10 @@ export default async function handler(req, res) {
   }
 
   setCors();
-  if (!corsOk) return res.status(403).json({ error: 'forbidden_origin' });
 
   const API_KEY = process.env.LIGHT_API_KEY || '';
   if (API_KEY) {
-    const key = req.headers['x-light-key'];
+    const key = (req.headers['x-light-key'] || req.headers['x-light-key'.toLowerCase()] || '');
     if (key !== API_KEY) return res.status(401).json({ error: 'unauthorized' });
   }
 
@@ -36,25 +36,23 @@ export default async function handler(req, res) {
   if (!WEBHOOK_URL) return res.status(500).json({ error: 'missing_webhook' });
 
   try {
-    const body = req.body;
-    const data = typeof body === 'string' ? JSON.parse(body || '{}') : (body || {});
-
-    const title = `Teste: ${data.pericia} + ${data.atributo}`;
-    const desc =
-      `d20 (${data?.d20?.mode || 'normal'}): ${JSON.stringify(data?.d20?.rolls || [])} ⇒ ${data?.d20?.value}\n` +
-      `${data.atributo} (${data?.atributoDice?.qty}×d${data?.atributoDice?.faces}): ${JSON.stringify(data?.atributoDice?.rolls || [])} = ${data?.atributoDice?.sum || 0}\n` +
-      `${data.pericia} (${data?.periciaDice?.qty}×d${data?.periciaDice?.faces}): ${JSON.stringify(data?.periciaDice?.rolls || [])} = ${data?.periciaDice?.sum || 0}\n` +
-      `Bônus: ${data?.bonus || 0}  |  Vantagens: ${data?.vantagens || 0}  •  Desvantagens: ${data?.desvantagens || 0}  •  Perito: ${data?.perito ? 'Sim' : 'Não'}`;
+    const data = req.body || {};
+    const title = `Teste: ${data.pericia || '—'} + ${data.atributo || '—'}`;
+    const descLines = [];
+    if (data.d20) descLines.push(`d20 (${data.d20.mode || 'normal'}): ${JSON.stringify(data.d20.rolls || [])} ⇒ ${data.d20.value || ''}`);
+    if (data.atributoDice) descLines.push(`${data.atributo} (${data.atributoDice.qty || 0}×d${data.atributoDice.faces || ''}): ${JSON.stringify(data.atributoDice.rolls || [])} = ${data.atributoDice.sum || 0}`);
+    if (data.periciaDice) descLines.push(`${data.pericia} (${data.periciaDice.qty || 0}×d${data.periciaDice.faces || ''}): ${JSON.stringify(data.periciaDice.rolls || [])} = ${data.periciaDice.sum || 0}`);
+    descLines.push(`Bônus: ${data.bonus || 0}  |  Vant: ${data.vantagens || 0}  •  Desv: ${data.desvantagens || 0}`);
 
     const embed = {
       title,
-      description: desc,
+      description: descLines.join('\n'),
       color: 0x00b5d8,
       timestamp: data.timestamp || new Date().toISOString(),
       fields: [
-        { name: 'Total', value: `**${data.total}**`, inline: true },
-        { name: 'Perícia', value: String(data.pericia || ''), inline: true },
-        { name: 'Atributo', value: String(data.atributo || ''), inline: true },
+        { name: 'Total', value: `${data.total ?? '—'}`, inline: true },
+        { name: 'Perícia', value: data.pericia || '—', inline: true },
+        { name: 'Atributo', value: data.atributo || '—', inline: true }
       ],
       footer: { text: 'LIGHT • Testes' }
     };
@@ -66,12 +64,15 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
+
     if (!resp.ok) {
       const txt = await resp.text().catch(() => '');
       return res.status(500).json({ error: 'discord_error', status: resp.status, body: txt });
     }
+
     return res.json({ ok: true });
   } catch (e) {
+    console.error(e);
     return res.status(500).json({ error: 'internal' });
   }
 }
