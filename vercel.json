@@ -1,4 +1,15 @@
 {
+
+  "builds": [
+    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "script.js", "use": "@vercel/static" },
+    { "src": "testes.js", "use": "@vercel/static" },
+    { "src": "style.css", "use": "@vercel/static" },
+    { "src": "teste.css", "use": "@vercel/static" },
+    { "src": "images/**/*", "use": "@vercel/static" }
+  ],
+
   "version": 2,
   "routes": [
     { "src": "/api/discord", "methods": ["POST", "OPTIONS"], "dest": "/api/discord" },
