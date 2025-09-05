@@ -109,15 +109,38 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Helper: URL do backend (prioriza window -> localStorage -> default localhost)
+// Helper: URL do backend (prioriza window -> querystring -> localStorage -> padrão '/api/discord')
 function getBackendUrl() {
-  // Prioriza configuração explícita no `window` (útil para testes locais em dev)
-  if (typeof window !== 'undefined' && window.LIGHT_BACKEND_URL) return window.LIGHT_BACKEND_URL;
+  const normalize = (u) => {
+    if (!u || typeof u !== 'string') return '';
+    const s = u.trim();
+    if (!s) return '';
+    if (s.startsWith('http://') || s.startsWith('https://') || s.startsWith('/')) return s;
+    // permite salvar "api/discord" e normaliza para "/api/discord"
+    return '/' + s;
+  };
+
+  // 1) window override (ex.: window.LIGHT_BACKEND_URL = 'https://...')
+  if (typeof window !== 'undefined' && window.LIGHT_BACKEND_URL) {
+    const v = normalize(window.LIGHT_BACKEND_URL);
+    if (v) return v;
+  }
+
+  // 2) querystring (?backend=... ou ?api=...)
   try {
-    const saved = localStorage.getItem('LIGHT_BACKEND_URL');
-    // aceita URL absoluta (http...) ou relativa (/api/discord)
-    if (saved && (saved.startsWith('http') || saved.startsWith('/'))) return saved;
+    const usp = new URLSearchParams(window.location.search);
+    const q = usp.get('backend') || usp.get('api');
+    const v = normalize(q);
+    if (v) return v;
   } catch (_) {}
+
+  // 3) localStorage override
+  try {
+    const saved = normalize(localStorage.getItem('LIGHT_BACKEND_URL'));
+    if (saved) return saved;
+  } catch (_) {}
+
+  // 4) padrão: relativo (funciona no Vercel)
   return '/api/discord';
 }
 
