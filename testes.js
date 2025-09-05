@@ -111,12 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Helper: URL do backend (prioriza window -> localStorage -> default localhost)
 function getBackendUrl() {
+  // Prioriza configuração explícita no `window` (útil para testes locais em dev)
   if (typeof window !== 'undefined' && window.LIGHT_BACKEND_URL) return window.LIGHT_BACKEND_URL;
   try {
     const saved = localStorage.getItem('LIGHT_BACKEND_URL');
-    if (saved && saved.startsWith('http')) return saved;
+    // aceita URL absoluta (http...) ou relativa (/api/discord)
+    if (saved && (saved.startsWith('http') || saved.startsWith('/'))) return saved;
   } catch (_) {}
-  return 'http://localhost:3000/api/discord';
+  return '/api/discord';
 }
 
 // --------- Favoritos ---------
@@ -286,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const apiKey = localStorage.getItem('LIGHT_API_KEY');
       if (apiKey) headers['x-light-key'] = apiKey;
     } catch (_) {}
-    if (backendUrl && backendUrl.startsWith('http')) {
+    if (backendUrl) {
       fetch(backendUrl, {
         method: 'POST',
         headers,
