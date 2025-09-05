@@ -1,3 +1,5 @@
 # Exclui apenas o servidor local do deploy na Vercel (mantém API e estáticos)
 server.js
 node_modules/
+package.json
+package-lock.json
