@@ -10,9 +10,9 @@
     { "src": "images/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/discord", "methods": ["POST", "OPTIONS"], "dest": "/api/discord" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+  { "src": "/api/discord", "methods": ["POST", "OPTIONS"], "dest": "/api/discord" },
+  { "src": "/api/(.*)", "dest": "/api/$1" },
+  { "handle": "filesystem" },
+  { "src": "/(.*)", "methods": ["GET", "HEAD"], "dest": "/index.html" }
   ]
 }
