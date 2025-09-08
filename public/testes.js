@@ -241,11 +241,13 @@ function executarFavorito(index) {
 }
 
 // Lógica do formulário de Testes
-document.addEventListener('DOMContentLoaded', () => {
+function __lightInitTestesForm(){
+  if (window.__LIGHT_TESTES_FORM_INIT__) return; // evita dupla
   const form = document.getElementById('testsForm');
   const saida = document.getElementById('resultadoTesteContent') || document.getElementById('resultadoTeste');
   const addFavBtn = document.getElementById('addFavoritoBtn');
-  if (!form || !saida) return;
+  if (!form || !saida) return; // tab ainda não montada
+  window.__LIGHT_TESTES_FORM_INIT__ = true;
 
   // Render inicial de favoritos
   renderFavoritos();
@@ -379,6 +381,12 @@ document.addEventListener('DOMContentLoaded', () => {
       adicionarFavorito(cfg);
     });
   }
-});
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', __lightInitTestesForm, { once:true });
+} else {
+  // Executa logo (tab pode não estar visível ainda, mas elementos já existem no DOM)
+  __lightInitTestesForm();
+}
 
 })();
