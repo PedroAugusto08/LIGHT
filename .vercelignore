@@ -1,9 +1,0 @@
-# Impede que o servidor local seja deployado (queremos site estático + /api functions)
-server.js
-
-# Não enviar variáveis locais
-.env
-.env.local
-
-# (Opcional) artefatos locais
-*.log
