@@ -16,7 +16,7 @@
 .bg-layer {
     position: fixed;
     inset: 0;
-    background: var(--bg) url('images/fundo.png') center/cover no-repeat fixed;
+    background: var(--bg) url('/images/fundo.png') center/cover no-repeat fixed;
     filter: blur(10px) brightness(0.55);
     transform: scale(1.05); /* evita bordas ao aplicar blur */
     z-index: 0;

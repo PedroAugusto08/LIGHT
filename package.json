@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "## Visão Geral",
   "type": "module",
-  "main": "server.js",
+  "main": "next.config.mjs",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,8 +22,11 @@
   },
   "homepage": "https://github.com/PedroAugusto08/LIGHT#readme",
   "dependencies": {
-  "cors": "^2.8.5",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "next": "^15.5.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
   }
 }

@@ -1,3 +1,8 @@
+// Guard contra execução múltipla em ambiente Next (Fast Refresh, re-montagem)
+(function(){
+if (window.__LIGHT_SCRIPT_CORE_LOADED__) return; // já rodou
+window.__LIGHT_SCRIPT_CORE_LOADED__ = true;
+
 // --- Abas ---
 document.addEventListener('DOMContentLoaded', function() {
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -584,3 +589,5 @@ document.addEventListener('DOMContentLoaded', () => {
         wrap.addEventListener('click', () => sel.focus());
     });
 });
+
+})();

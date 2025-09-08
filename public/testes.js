@@ -1,7 +1,12 @@
+// Guard contra execução múltipla
+(function(){
+if (window.__LIGHT_TESTES_LOADED__) return;
+window.__LIGHT_TESTES_LOADED__ = true;
+
 // --- Testes Interativos ---
 
 // Atributos (rodados com d6 sempre)
-const ATRIBUTOS = {
+var ATRIBUTOS = {
   "AGILIDADE": 0,
   "CARISMA": 0,
   "CONHECIMENTO": 0,
@@ -13,7 +18,7 @@ const ATRIBUTOS = {
 
 // Perícias
 // Quantidade de dados por perícia (ajuste conforme seu personagem)
-const PERICIAS_QTD = {
+var PERICIAS_QTD = {
   "ARCANISMO": 1,
   "CIÊNCIAS": 0,
   "CULINÁRIA": 0,
@@ -39,7 +44,7 @@ const PERICIAS_QTD = {
 };
 
 // Bônus fixo por perícia (opcional)
-const PERICIAS_BONUS_FIXO = {
+var PERICIAS_BONUS_FIXO = {
   "ARCANISMO": 0,
   "CIÊNCIAS": 0,
   "CULINÁRIA": 0,
@@ -145,7 +150,7 @@ function getBackendUrl() {
 }
 
 // --------- Favoritos ---------
-const FAVORITOS_KEY = 'testesFavoritos';
+var FAVORITOS_KEY = 'testesFavoritos';
 
 function carregarFavoritos() {
   try {
@@ -370,3 +375,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+})();
