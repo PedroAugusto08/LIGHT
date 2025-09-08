@@ -3,15 +3,8 @@ import Script from 'next/script'
 import { useEffect } from 'react'
 
 export default function Home() {
-  useEffect(() => {
-    // Reusa scripts existentes deixando comportamento legacy funcionar
-    const add = (src) => {
-      const s = document.createElement('script');
-      s.src = src; s.defer = true; document.body.appendChild(s);
-    };
-    add('/script.js?v=20250904');
-    add('/testes.js?v=20250904');
-  }, []);
+  // Removido carregamento manual duplicado (Next Script já injeta)
+  useEffect(()=>{},[]);
   return (
     <>
       <Head>

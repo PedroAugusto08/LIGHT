@@ -97,7 +97,7 @@ function rolarD20ComMod(vantagens, desvantagens) {
 }
 
 // Popula selects ao carregar a aba
-document.addEventListener('DOMContentLoaded', () => {
+function __lightInitTestesSelects(){
   const selPericia = document.getElementById('teste-pericia');
   const selAtributo = document.getElementById('teste-atributo');
   if (selPericia && selPericia.options.length === 0) {
@@ -112,7 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
       opt.value = a; opt.textContent = a; selAtributo.appendChild(opt);
     });
   }
-});
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', __lightInitTestesSelects, { once:true });
+} else {
+  __lightInitTestesSelects();
+}
 
 // Helper: URL do backend (prioriza window -> querystring -> localStorage -> padrão '/api/discord')
 function getBackendUrl() {
