@@ -28,8 +28,11 @@ export default async function handler(req, res) {
 
   const API_KEY = process.env.LIGHT_API_KEY || '';
   if (API_KEY) {
-  const key = req.headers['x-light-key'] || '';
-    if (key !== API_KEY) return res.status(401).json({ error: 'unauthorized' });
+    // Chave agora é opcional: só bloqueia se o cliente enviar uma chave diferente
+    const key = req.headers['x-light-key'];
+    if (typeof key !== 'undefined' && key !== API_KEY) {
+      return res.status(401).json({ error: 'unauthorized' });
+    }
   }
 
   const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;

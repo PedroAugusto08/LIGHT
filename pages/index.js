@@ -108,6 +108,8 @@ export default function Home() {
                   <input type="number" id="teste-desvantagens" min="0" defaultValue="0" />
                   <label htmlFor="teste-bonus">Bônus adicional (opcional)</label>
                   <input type="number" id="teste-bonus" defaultValue="0" />
+                  <label htmlFor="lightKey" style={{marginTop:'8px'}}>Chave API (opcional)</label>
+                  <input type="password" id="lightKey" placeholder="LIGHT_API_KEY" />
                   <button type="submit" id="rolarTesteBtn">Rolar Teste</button>
                   <button type="button" id="addFavoritoBtn" className="sec">Adicionar aos Favoritos</button>
                 </form>

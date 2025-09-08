@@ -252,6 +252,19 @@ function __lightInitTestesForm(){
   // Render inicial de favoritos
   renderFavoritos();
 
+  // Preenche / sincroniza chave API opcional
+  try {
+    const keyInput = document.getElementById('lightKey');
+    if (keyInput) {
+      const stored = localStorage.getItem('LIGHT_API_KEY') || '';
+      if (stored) keyInput.value = stored;
+      keyInput.addEventListener('input', () => {
+        const v = keyInput.value.trim();
+        if (v) localStorage.setItem('LIGHT_API_KEY', v); else localStorage.removeItem('LIGHT_API_KEY');
+      });
+    }
+  } catch(_) {}
+
   form.addEventListener('submit', async (e) => {
     // evita reload da página
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
