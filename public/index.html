@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forjador de Construtos</title>
+    <link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/images/favicon.svg">
+    <link rel="preload" as="image" href="/images/fundo.png">
+    <link rel="stylesheet" href="/style.css?v=20250904">
+    <link rel="stylesheet" href="/teste.css?v=20250904">
+</head>
+<body>
+    <div class="bg-layer" aria-hidden="true"></div>
+    <div class="tabs-container">
+            <div class="tabs-bar">
+                <button class="tab-btn active" data-tab="forja">Forja</button>
+                <button class="tab-btn" data-tab="testes">Testes</button>
+                <button class="tab-btn" data-tab="historico">Histórico de Construtos</button>
+            </div>
+            <div class="tabs-content">
+                <div class="tab-pane" id="tab-forja" style="display: flex;">
+                    <div class="main-flex">
+                        <div class="container">
+                                <h1>Forjador de Construtos</h1>
+                                <form id="forgeForm" onsubmit="return false;">
+                                        <label for="estilo">Estilo do Construto</label>
+                                        <div class="select-wrapper">
+                                        <select id="estilo" name="estilo">
+                                                <option value="Projétil">Projétil</option>
+                                                <option value="Padrão">Padrão</option>
+                                                <option value="Pesado">Pesado</option>
+                                                <option value="Área">Área</option>
+                                                <option value="Colossal">Colossal</option>
+                                                <option value="Estrutura">Estrutura</option>
+                                        </select>
+                                        <span class="select-caret" aria-hidden="true"></span>
+                                        </div>
+
+                                        <label for="almaExtra">Alma Extra</label>
+                                        <input type="number" id="almaExtra" name="almaExtra" min="0" value="0" required>
+
+                                        <div id="blocos-info"></div>
+
+                                        <label for="dano">Blocos em Dano</label>
+                                        <input type="number" id="dano" name="dano" min="0" value="0" required>
+                                        <div class="hybrid-control">
+                                            <input type="range" id="danoSlider" min="0" max="0" value="0" step="1">
+                                            <div class="block-bar" id="danoBar"></div>
+                                        </div>
+
+                                        <label for="defesa">Blocos em Defesa</label>
+                                        <input type="number" id="defesa" name="defesa" min="0" value="0" required>
+                                        <div class="hybrid-control">
+                                            <input type="range" id="defesaSlider" min="0" max="0" value="0" step="1">
+                                            <div class="block-bar" id="defesaBar"></div>
+                                        </div>
+
+                                        <label for="vitalidade">Blocos em Vitalidade</label>
+                                        <input type="number" id="vitalidade" name="vitalidade" min="0" value="0" required>
+                                        <div class="hybrid-control">
+                                            <input type="range" id="vitalidadeSlider" min="0" max="0" value="0" step="1">
+                                            <div class="block-bar" id="vitalidadeBar"></div>
+                                        </div>
+
+                                        <label for="duracao">Blocos em Duração</label>
+                                        <input type="number" id="duracao" name="duracao" min="0" value="0" required>
+                                        <div class="hybrid-control">
+                                            <input type="range" id="duracaoSlider" min="0" max="0" value="0" step="1">
+                                            <div class="block-bar" id="duracaoBar"></div>
+                                        </div>
+
+                                        <button type="submit" id="forjarBtn">Forjar Construto</button>
+                                </form>
+                        </div>
+            <div class="result" id="resultado">
+                <h2 class="card-title">Resultado</h2>
+                <div id="resultadoContent"><!-- Resultados aparecerão aqui --></div>
+            </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-testes" style="display: none;">
+                    <div class="main-flex">
+                        <div class="container">
+                            <h2>Testes Interativos</h2>
+                            <form id="testsForm" onsubmit="return false;">
+                                <label for="teste-pericia">Perícia</label>
+                                <div class="select-wrapper">
+                                <select id="teste-pericia"></select>
+                                <span class="select-caret" aria-hidden="true"></span>
+                                </div>
+
+                                <label for="teste-atributo">Atributo</label>
+                                <div class="select-wrapper">
+                                <select id="teste-atributo"></select>
+                                <span class="select-caret" aria-hidden="true"></span>
+                                </div>
+
+                                <div class="inline" style="margin-top:8px;">
+                                    <label>
+                                        <input type="checkbox" id="teste-perito"> Perito na perícia
+                                        <span class="perito-badge">d12</span>
+                                    </label>
+                                </div>
+
+                                <label for="teste-vantagens">Vantagens</label>
+                                <input type="number" id="teste-vantagens" min="0" value="0">
+
+                                <label for="teste-desvantagens">Desvantagens</label>
+                                <input type="number" id="teste-desvantagens" min="0" value="0">
+
+                                <label for="teste-bonus">Bônus adicional (opcional)</label>
+                                <input type="number" id="teste-bonus" value="0">
+
+                                <button type="submit" id="rolarTesteBtn">Rolar Teste</button>
+                                <button type="button" id="addFavoritoBtn" class="sec">Adicionar aos Favoritos</button>
+                            </form>
+                        </div>
+                        <div class="right-col">
+                            <div class="favoritos-container">
+                                <h2>Favoritos</h2>
+                                <div id="favoritos-vazio" class="favoritos-empty">Nenhum favorito ainda.</div>
+                                <div id="favoritos-list"></div>
+                            </div>
+                            <div id="resultadoTeste">
+                                <h2 class="card-title">Resultado</h2>
+                                <div id="resultadoTesteContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-historico" style="display: none;">
+                    <div class="historico-container">
+                        <h2>Histórico de Construtos</h2>
+                        <div class="historico-actions">
+                            <button id="limparHistoricoBtn" type="button" class="clear-history-btn">Limpar histórico</button>
+                        </div>
+                        <div id="historico-list"></div>
+                        <div id="historico-total" style="margin-top:18px;font-weight:bold;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="/script.js?v=20250904"></script>
+    <script src="/testes.js?v=20250904"></script>
+</body>
+</html>
