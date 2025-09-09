@@ -1,0 +1,13 @@
+{
+  "name": "LIGHT",
+  "short_name": "LIGHT",
+  "description": "Forjador de Construtos e Testes Interativos",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0d12",
+  "theme_color": "#0a0d12",
+  "icons": [
+    { "src": "/images/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
