@@ -1,5 +1,5 @@
 #tab-testes h2 {
-  margin: 6px 0 14px;
+  margin: 6px 80px;
   font-weight: 600;
 }
 
@@ -17,7 +17,7 @@
 /* Container de Favoritos */
 .favoritos-container {
   background: var(--surface);
-  padding: 16px 16px;
+  padding: 12px 10px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
   width: 100%;
@@ -109,7 +109,7 @@
   max-width: 100%;
   background: var(--surface-2);
   border-radius: 10px;
-  padding: 18px 16px;
+  padding: 18px 10px;
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
 }
 #resultadoTeste .result-container {
