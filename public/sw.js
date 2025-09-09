@@ -8,7 +8,9 @@ const CORE_ASSETS = [
   '/script.js?v=20250904',
   '/testes.js?v=20250904',
   '/images/fundo.png',
-  '/images/favicon.png'
+  '/images/favicon.png',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {
