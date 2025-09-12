@@ -65,6 +65,13 @@ export default async function handler(req, res) {
     if (data.bonusAdicional) rows.push(`Bonus Adic.      : +${data.bonusAdicional}`);
     // Retrocompatibilidade: se veio só 'bonus' (antigo significado = adicional)
     if (!data.bonusAdicional && !data.bonusFixo && data.bonus) rows.push(`Bonus            : +${data.bonus}`);
+
+    // Inferência de bônus total se não recebemos nenhum campo de bônus explícito
+    const baseSoma = (typeof d20Val === 'number' ? d20Val : 0) + (data.atributoDice?.sum || 0) + (data.periciaDice?.sum || 0);
+    const diffInferido = (data.total || 0) - baseSoma;
+    if (diffInferido !== 0 && !data.bonusFixo && !data.bonusAdicional && !data.bonus) {
+      rows.push(`Bonus (inferido) : ${diffInferido > 0 ? '+'+diffInferido : diffInferido}`);
+    }
     const codeBlock = rows.length ? '```txt\n' + rows.join('\n') + '\n```' : '';
 
     const footerParts = [];
@@ -83,12 +90,16 @@ export default async function handler(req, res) {
     if (data.atributoDice || data.periciaDice) {
       const detalLines = [];
       if (data.d20) detalLines.push(`d20 = **${d20Val ?? '?'}**`);
-  if (data.atributoDice) detalLines.push(`${data.atributo} = **${data.atributoDice.sum || 0}**`);
-  if (data.periciaDice) detalLines.push(`${data.pericia} = **${data.periciaDice.sum || 0}**`);
-  if (data.bonusFixo) detalLines.push(`Bônus Fixo = **${data.bonusFixo}**`);
-  if (data.bonusAdicional) detalLines.push(`Bônus Adic. = **${data.bonusAdicional}**`);
-  // Retrocompatibilidade: campo antigo 'bonus'
-  if (!data.bonusAdicional && !data.bonusFixo && data.bonus) detalLines.push(`Bônus = **${data.bonus}**`);
+      if (data.atributoDice) detalLines.push(`${data.atributo} = **${data.atributoDice.sum || 0}**`);
+      if (data.periciaDice) detalLines.push(`${data.pericia} = **${data.periciaDice.sum || 0}**`);
+      if (data.bonusFixo) detalLines.push(`Bônus Fixo = **${data.bonusFixo}**`);
+      if (data.bonusAdicional) detalLines.push(`Bônus Adic. = **${data.bonusAdicional}**`);
+      // Retrocompatibilidade: campo antigo 'bonus'
+      if (!data.bonusAdicional && !data.bonusFixo && data.bonus) detalLines.push(`Bônus = **${data.bonus}**`);
+      // Inferido
+      if (!data.bonusFixo && !data.bonusAdicional && !data.bonus && diffInferido !== 0) {
+        detalLines.push(`Bônus (inferido) = **${diffInferido > 0 ? '+'+diffInferido : diffInferido}**`);
+      }
       fields.push({ name: 'Componentes', value: detalLines.join(' + '), inline: false });
     }
 
