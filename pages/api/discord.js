@@ -40,24 +40,58 @@ export default async function handler(req, res) {
 
   try {
     const data = typeof req.body === 'string' ? (JSON.parse(req.body || '{}')) : (req.body || {});
+
+    // ---------- Construção aprimorada do embed ----------
+    const d20Info = data.d20 || {};
+    const d20Val = typeof d20Info.value === 'number' ? d20Info.value : undefined;
+    let color = 0x00b5d8; // padrão (ciano)
+    let destaque = '';
+    if (typeof d20Val === 'number') {
+      if (d20Val === 20) { color = 0x10b981; destaque = '✅ Crítico'; }
+      else if (d20Val === 1) { color = 0xef4444; destaque = '❌ Falha Crítica'; }
+      else if (d20Val >= 15) { color = 0x3b82f6; destaque = '✔ Alto'; }
+      else if (d20Val <= 5) { color = 0xf59e0b; destaque = '⚠ Baixo'; }
+    }
+
     const title = `Teste: ${data.pericia || '—'} + ${data.atributo || '—'}`;
-    const descLines = [];
-    if (data.d20) descLines.push(`d20 (${data.d20.mode || 'normal'}): ${JSON.stringify(data.d20.rolls || [])} ⇒ ${data.d20.value || ''}`);
-    if (data.atributoDice) descLines.push(`${data.atributo} (${data.atributoDice.qty || 0}×d${data.atributoDice.faces || ''}): ${JSON.stringify(data.atributoDice.rolls || [])} = ${data.atributoDice.sum || 0}`);
-    if (data.periciaDice) descLines.push(`${data.pericia} (${data.periciaDice.qty || 0}×d${data.periciaDice.faces || ''}): ${JSON.stringify(data.periciaDice.rolls || [])} = ${data.periciaDice.sum || 0}`);
-    descLines.push(`Bônus: ${data.bonus || 0}  |  Vant: ${data.vantagens || 0}  •  Desv: ${data.desvantagens || 0}`);
+
+    // Blocos de rolagens formatados em estilo tabela monospace dentro de code block
+    const rows = [];
+    if (data.d20) rows.push(`d20 ${`(${data.d20.mode||'normal'})`.padEnd(11)}: ${JSON.stringify(data.d20.rolls||[])}`.trim());
+    if (data.atributoDice) rows.push(`${(data.atributo||'ATR').slice(0,12).padEnd(12)} ${(data.atributoDice.qty||0)}d${data.atributoDice.faces||''}: ${JSON.stringify(data.atributoDice.rolls||[])}`);
+    if (data.periciaDice) rows.push(`${(data.pericia||'PER').slice(0,12).padEnd(12)} ${(data.periciaDice.qty||0)}d${data.periciaDice.faces||''}: ${JSON.stringify(data.periciaDice.rolls||[])}`);
+    if (data.bonus) rows.push(`Bonus            : +${data.bonus}`);
+    const codeBlock = rows.length ? '```txt\n' + rows.join('\n') + '\n```' : '';
+
+    const footerParts = [];
+    footerParts.push(`Vant ${data.vantagens||0}/Desv ${data.desvantagens||0}`);
+    if (data.perito) footerParts.push('Perito');
+    footerParts.push(new Date(data.timestamp || Date.now()).toLocaleString('pt-BR'));
+
+    const fields = [
+      { name: 'Total', value: `${data.total ?? '—'}`, inline: true },
+      { name: 'Perícia', value: data.pericia || '—', inline: true },
+      { name: 'Atributo', value: data.atributo || '—', inline: true },
+    ];
+    if (destaque) fields.unshift({ name: 'Resultado', value: destaque, inline: true });
+
+    // Campo de detalhes das somas (mantém compacto)
+    if (data.atributoDice || data.periciaDice) {
+      const detalLines = [];
+      if (data.d20) detalLines.push(`d20 = **${d20Val ?? '?'}**`);
+      if (data.atributoDice) detalLines.push(`${data.atributo} = **${data.atributoDice.sum || 0}**`);
+      if (data.periciaDice) detalLines.push(`${data.pericia} = **${data.periciaDice.sum || 0}**`);
+      if (data.bonus) detalLines.push(`Bônus = **${data.bonus}**`);
+      fields.push({ name: 'Componentes', value: detalLines.join(' + '), inline: false });
+    }
 
     const embed = {
       title,
-      description: descLines.join('\n'),
-      color: 0x00b5d8,
+      description: codeBlock,
+      color,
       timestamp: data.timestamp || new Date().toISOString(),
-      fields: [
-        { name: 'Total', value: `${data.total ?? '—'}`, inline: true },
-        { name: 'Perícia', value: data.pericia || '—', inline: true },
-        { name: 'Atributo', value: data.atributo || '—', inline: true }
-      ],
-      footer: { text: 'LIGHT • Testes' }
+      fields,
+      footer: { text: 'LIGHT • Testes • ' + footerParts.join(' • ') }
     };
 
     const payload = { username: 'LIGHT', embeds: [embed] };
