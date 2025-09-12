@@ -60,7 +60,11 @@ export default async function handler(req, res) {
     if (data.d20) rows.push(`d20 ${`(${data.d20.mode||'normal'})`.padEnd(11)}: ${JSON.stringify(data.d20.rolls||[])}`.trim());
     if (data.atributoDice) rows.push(`${(data.atributo||'ATR').slice(0,12).padEnd(12)} ${(data.atributoDice.qty||0)}d${data.atributoDice.faces||''}: ${JSON.stringify(data.atributoDice.rolls||[])}`);
     if (data.periciaDice) rows.push(`${(data.pericia||'PER').slice(0,12).padEnd(12)} ${(data.periciaDice.qty||0)}d${data.periciaDice.faces||''}: ${JSON.stringify(data.periciaDice.rolls||[])}`);
-    if (data.bonus) rows.push(`Bonus            : +${data.bonus}`);
+    // Exibe bônus fixo e adicional separadamente se existirem
+    if (data.bonusFixo) rows.push(`Bonus Fixo       : +${data.bonusFixo}`);
+    if (data.bonusAdicional) rows.push(`Bonus Adic.      : +${data.bonusAdicional}`);
+    // Retrocompatibilidade: se veio só 'bonus' (antigo significado = adicional)
+    if (!data.bonusAdicional && !data.bonusFixo && data.bonus) rows.push(`Bonus            : +${data.bonus}`);
     const codeBlock = rows.length ? '```txt\n' + rows.join('\n') + '\n```' : '';
 
     const footerParts = [];
@@ -79,9 +83,12 @@ export default async function handler(req, res) {
     if (data.atributoDice || data.periciaDice) {
       const detalLines = [];
       if (data.d20) detalLines.push(`d20 = **${d20Val ?? '?'}**`);
-      if (data.atributoDice) detalLines.push(`${data.atributo} = **${data.atributoDice.sum || 0}**`);
-      if (data.periciaDice) detalLines.push(`${data.pericia} = **${data.periciaDice.sum || 0}**`);
-      if (data.bonus) detalLines.push(`Bônus = **${data.bonus}**`);
+  if (data.atributoDice) detalLines.push(`${data.atributo} = **${data.atributoDice.sum || 0}**`);
+  if (data.periciaDice) detalLines.push(`${data.pericia} = **${data.periciaDice.sum || 0}**`);
+  if (data.bonusFixo) detalLines.push(`Bônus Fixo = **${data.bonusFixo}**`);
+  if (data.bonusAdicional) detalLines.push(`Bônus Adic. = **${data.bonusAdicional}**`);
+  // Retrocompatibilidade: campo antigo 'bonus'
+  if (!data.bonusAdicional && !data.bonusFixo && data.bonus) detalLines.push(`Bônus = **${data.bonus}**`);
       fields.push({ name: 'Componentes', value: detalLines.join(' + '), inline: false });
     }
 
