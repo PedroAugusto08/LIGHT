@@ -53,7 +53,12 @@ export default async function handler(req, res) {
       else if (d20Val <= 5) { color = 0xf59e0b; destaque = '⚠ Baixo'; }
     }
 
-    const title = `Teste: ${data.pericia || '—'} + ${data.atributo || '—'}`;
+    const capFirst = (s) => {
+      if (!s) return '—';
+      const str = String(s).toLocaleLowerCase('pt-BR');
+      return str.charAt(0).toLocaleUpperCase('pt-BR') + str.slice(1);
+    };
+    const title = `Oliver Spectend - ${capFirst(data.pericia)} + ${capFirst(data.atributo)}`;
 
     // ===== Novo formato simplificado =====
     // Paleta e helpers ANSI
@@ -115,7 +120,7 @@ export default async function handler(req, res) {
     if (!bonusTotal && data.total && somaBase && (data.total - somaBase) !== 0) {
       bonusTotal = data.total - somaBase;
     }
-    const bonusExpr = bonusTotal ? `Bônus [${bonusTotal}]` : '';
+  const bonusExpr = bonusTotal ? `Bônus[${bonusTotal}]` : '';
 
     // Monta a linha final
     const RESET = '\u001b[0m';
@@ -128,9 +133,11 @@ export default async function handler(req, res) {
     // Sem fields agora; tudo está na descrição
     const fields = [];
 
+    // Estilo tipo "Mordred - Dados a parte": colocar o título como blockquote dentro da descrição
+  const description = `> ${title}\n\n${codeBlock}`;
     const embed = {
-      title,
-      description: codeBlock,
+      // removemos title para usar só o blockquote no corpo
+      description,
       color,
       fields,
     };
