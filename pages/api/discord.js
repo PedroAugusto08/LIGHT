@@ -55,12 +55,12 @@ export default async function handler(req, res) {
 
     const title = `Teste: ${data.pericia || '—'} + ${data.atributo || '—'}`;
 
-    // Helpers para coloração ANSI
+    // ===== Novo formato simplificado =====
+    // Paleta e helpers ANSI
     const ANSI = {
       reset: '\u001b[0m',
-      red: (s) => `\u001b[31m${s}\u001b[0m`,
-      green: (s) => `\u001b[32m${s}\u001b[0m`,
-      dim: (s) => `\u001b[2m${s}\u001b[0m`,
+      red: (n) => `\u001b[31m${n}\u001b[0m`,
+      green: (n) => `\u001b[32m${n}\u001b[0m`,
     };
     const colorNum = (n, faces) => {
       if (typeof n !== 'number') return String(n);
@@ -68,54 +68,63 @@ export default async function handler(req, res) {
       if (faces && n === faces) return ANSI.green(n);
       return String(n);
     };
-    const fmtLine = (label, qty, faces, rolls) => {
-      const colored = (Array.isArray(rolls) ? rolls : []).map(v => colorNum(v, faces)).join(', ');
-      return `${label} ${qty}d${faces}: [${colored}]`;
-    };
 
-    // Blocos de rolagens formatados com ANSI
-    const rows = [];
-    if (data.d20) {
-      const rolls = Array.isArray(data.d20.rolls) ? data.d20.rolls : [];
-      const colored = rolls.map(v => colorNum(v, 20)).join(', ');
-      rows.push(`d20 ${`(${data.d20.mode||'normal'})`.padEnd(11)}: [${colored}]`.trim());
+    // d20 (com vantagem/desvantagem) -> Xd20 [a, b, c] com escolhido sublinhado
+    let d20Expr = '';
+    if (data.d20 && Array.isArray(data.d20.rolls)) {
+      const rolls = data.d20.rolls.slice();
+      const qty = rolls.length || 1;
+      let underlinedApplied = false;
+      const rollsFmt = rolls.map(v => {
+        let txt = colorNum(v, 20);
+        if (!underlinedApplied && qty > 1 && typeof d20Val === 'number' && v === d20Val) {
+          // sublinha o escolhido
+            txt = `\u001b[4m${txt}`; // underline on antes da cor (se houver)
+          // adiciona reset final se não existir (já existe no colorNum, então só garantimos underline sai após reset geral mais tarde)
+          underlinedApplied = true;
+        }
+        return txt;
+      }).join(', ');
+      d20Expr = `${qty}d20 [${rollsFmt}]`;
+      if (!d20Expr && typeof d20Val === 'number') d20Expr = `1d20 [${colorNum(d20Val,20)}]`;
     }
-    if (data.atributoDice) {
-      rows.push(fmtLine((data.atributo||'ATR').slice(0,12).padEnd(12), data.atributoDice.qty||0, data.atributoDice.faces||6, data.atributoDice.rolls||[]));
-    }
-    if (data.periciaDice) {
-      rows.push(fmtLine((data.pericia||'PER').slice(0,12).padEnd(12), data.periciaDice.qty||0, data.periciaDice.faces||10, data.periciaDice.rolls||[]));
-    }
-    // Exibe bônus fixo e adicional separadamente se existirem
-    if (data.bonusFixo) rows.push(`Bonus Fixo       : +${data.bonusFixo}`);
-    if (data.bonusAdicional) rows.push(`Bonus Adic.      : +${data.bonusAdicional}`);
-    // Retrocompatibilidade: se veio só 'bonus' (antigo significado = adicional)
-    if (!data.bonusAdicional && !data.bonusFixo && data.bonus) rows.push(`Bonus            : +${data.bonus}`);
 
-    // Inferência de bônus total se não recebemos nenhum campo de bônus explícito
-    const baseSoma = (typeof d20Val === 'number' ? d20Val : 0) + (data.atributoDice?.sum || 0) + (data.periciaDice?.sum || 0);
-    const diffInferido = (data.total || 0) - baseSoma;
-    if (diffInferido !== 0 && !data.bonusFixo && !data.bonusAdicional && !data.bonus) {
-      rows.push(`Bonus (inferido) : ${diffInferido > 0 ? '+'+diffInferido : diffInferido}`);
+    // Atributo: só se qty > 0
+    let atribExpr = '';
+    if (data.atributoDice && (data.atributoDice.qty||0) > 0) {
+      const faces = data.atributoDice.faces || 6;
+      const rolls = (data.atributoDice.rolls||[]).map(v => colorNum(v, faces)).join(', ');
+      atribExpr = `${data.atributoDice.qty}d${faces} [${rolls}]`;
     }
-  const codeBlock = rows.length ? '```ansi\n' + rows.join('\n') + '\n```' : '';
 
-    // Monta expressão dos componentes para exibir após a seta
-    const totalParts = [];
-    if (typeof d20Val === 'number') totalParts.push(String(d20Val));
-    if (data.atributoDice && data.atributoDice.sum) totalParts.push(String(data.atributoDice.sum));
-    if (data.periciaDice && data.periciaDice.sum) totalParts.push(String(data.periciaDice.sum));
-    if (data.bonusFixo) totalParts.push(String(data.bonusFixo));
-    if (data.bonusAdicional) totalParts.push(String(data.bonusAdicional));
-    // Se não houver partes (raro), mostra 0
-    const partsExpr = totalParts.length ? totalParts.join('+') : '0';
-    const BLUE = '\u001b[34m';
+    // Perícia: só se qty > 0
+    let periciaExpr = '';
+    if (data.periciaDice && (data.periciaDice.qty||0) > 0) {
+      const faces = data.periciaDice.faces || 10;
+      const rolls = (data.periciaDice.rolls||[]).map(v => colorNum(v, faces)).join(', ');
+      periciaExpr = `${data.periciaDice.qty}d${faces} [${rolls}]`;
+    }
+
+    // Bônus agregado (fixo + adicional ou inferido)
+    let bonusTotal = 0;
+    if (data.bonusFixo) bonusTotal += data.bonusFixo;
+    if (data.bonusAdicional) bonusTotal += data.bonusAdicional;
+    // Inferência se não informado explicitamente
+    const somaBase = (typeof d20Val === 'number' ? d20Val : 0) + (data.atributoDice?.sum||0) + (data.periciaDice?.sum||0);
+    if (!bonusTotal && data.total && somaBase && (data.total - somaBase) !== 0) {
+      bonusTotal = data.total - somaBase;
+    }
+    const bonusExpr = bonusTotal ? `Bônus [${bonusTotal}]` : '';
+
+    // Monta a linha final
     const RESET = '\u001b[0m';
-    const totalAnsi = `${BLUE}${data.total ?? '—'}${RESET} <- ${partsExpr}`;
-    const totalFieldValue = '```ansi\n' + totalAnsi + '\n```';
-    const fields = [
-      { name: 'Total', value: totalFieldValue, inline: false },
-    ];
+    const COLOR_TOTAL = '\u001b[38;5;39m';
+    const parts = [d20Expr, atribExpr, periciaExpr, bonusExpr].filter(Boolean);
+    const fullExpr = `${COLOR_TOTAL}${data.total ?? '—'}${RESET} ⟵ ${parts.join(' + ')}`;
+    const codeBlock = '```ansi\n' + fullExpr + '\n```';
+
+    // Sem fields agora; tudo está na descrição
+    const fields = [];
 
     const embed = {
       title,
