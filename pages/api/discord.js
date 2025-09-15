@@ -119,7 +119,8 @@ export default async function handler(req, res) {
 
     // Monta a linha final
     const RESET = '\u001b[0m';
-    const COLOR_TOTAL = '\u001b[38;5;39m';
+  // Usar azul básico (34) ao invés de 256-color (38;5;39) para máxima compatibilidade
+  const COLOR_TOTAL = '\u001b[34m';
     const parts = [d20Expr, atribExpr, periciaExpr, bonusExpr].filter(Boolean);
     const fullExpr = `${COLOR_TOTAL}${data.total ?? '—'}${RESET} ⟵ ${parts.join(' + ')}`;
     const codeBlock = '```ansi\n' + fullExpr + '\n```';
