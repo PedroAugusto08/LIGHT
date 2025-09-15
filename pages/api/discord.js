@@ -74,42 +74,15 @@ export default async function handler(req, res) {
     }
     const codeBlock = rows.length ? '```txt\n' + rows.join('\n') + '\n```' : '';
 
-    const footerParts = [];
-    footerParts.push(`Vant ${data.vantagens||0}/Desv ${data.desvantagens||0}`);
-    if (data.perito) footerParts.push('Perito');
-    footerParts.push(new Date(data.timestamp || Date.now()).toLocaleString('pt-BR'));
-
     const fields = [
-      { name: 'Total', value: `${data.total ?? '—'}`, inline: true },
-      { name: 'Perícia', value: data.pericia || '—', inline: true },
-      { name: 'Atributo', value: data.atributo || '—', inline: true },
+      { name: 'Total', value: `${data.total ?? '—'}`, inline: false },
     ];
-    if (destaque) fields.unshift({ name: 'Resultado', value: destaque, inline: true });
-
-    // Campo de detalhes das somas (mantém compacto)
-    if (data.atributoDice || data.periciaDice) {
-      const detalLines = [];
-      if (data.d20) detalLines.push(`d20 = **${d20Val ?? '?'}**`);
-      if (data.atributoDice) detalLines.push(`${data.atributo} = **${data.atributoDice.sum || 0}**`);
-      if (data.periciaDice) detalLines.push(`${data.pericia} = **${data.periciaDice.sum || 0}**`);
-      if (data.bonusFixo) detalLines.push(`Bônus Fixo = **${data.bonusFixo}**`);
-      if (data.bonusAdicional) detalLines.push(`Bônus Adic. = **${data.bonusAdicional}**`);
-      // Retrocompatibilidade: campo antigo 'bonus'
-      if (!data.bonusAdicional && !data.bonusFixo && data.bonus) detalLines.push(`Bônus = **${data.bonus}**`);
-      // Inferido
-      if (!data.bonusFixo && !data.bonusAdicional && !data.bonus && diffInferido !== 0) {
-        detalLines.push(`Bônus (inferido) = **${diffInferido > 0 ? '+'+diffInferido : diffInferido}**`);
-      }
-      fields.push({ name: 'Componentes', value: detalLines.join(' + '), inline: false });
-    }
 
     const embed = {
       title,
       description: codeBlock,
       color,
-      timestamp: data.timestamp || new Date().toISOString(),
       fields,
-      footer: { text: 'LIGHT • Testes • ' + footerParts.join(' • ') }
     };
 
     const payload = { username: 'LIGHT', embeds: [embed] };

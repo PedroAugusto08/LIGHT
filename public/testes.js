@@ -312,7 +312,6 @@ function __lightInitTestesForm(){
       d20: { mode: d20.tipo, value: d20.escolha, rolls: d20.rolls },
       atributoDice: { qty: (ATRIBUTOS[atributo]||0), faces: 6, rolls: rAtrib.rolls, sum: rAtrib.total },
       periciaDice: { qty: qtdPericia, faces: facesPericia, rolls: rPericia.rolls, sum: rPericia.total },
-      // Mantemos 'bonus' para retrocompatibilidade (bonusAdicional) e enviamos separadamente bonusFixo
       bonus: bonusAdicional,
       bonusFixo,
       bonusAdicional,
