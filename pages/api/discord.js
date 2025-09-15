@@ -100,8 +100,21 @@ export default async function handler(req, res) {
     }
   const codeBlock = rows.length ? '```ansi\n' + rows.join('\n') + '\n```' : '';
 
+    // Monta expressão dos componentes para exibir após a seta
+    const totalParts = [];
+    if (typeof d20Val === 'number') totalParts.push(String(d20Val));
+    if (data.atributoDice && data.atributoDice.sum) totalParts.push(String(data.atributoDice.sum));
+    if (data.periciaDice && data.periciaDice.sum) totalParts.push(String(data.periciaDice.sum));
+    if (data.bonusFixo) totalParts.push(String(data.bonusFixo));
+    if (data.bonusAdicional) totalParts.push(String(data.bonusAdicional));
+    // Se não houver partes (raro), mostra 0
+    const partsExpr = totalParts.length ? totalParts.join('+') : '0';
+    const BLUE = '\u001b[34m';
+    const RESET = '\u001b[0m';
+    const totalAnsi = `${BLUE}${data.total ?? '—'}${RESET} <- ${partsExpr}`;
+    const totalFieldValue = '```ansi\n' + totalAnsi + '\n```';
     const fields = [
-      { name: 'Total', value: `${data.total ?? '—'}`, inline: false },
+      { name: 'Total', value: totalFieldValue, inline: false },
     ];
 
     const embed = {
