@@ -55,11 +55,37 @@ export default async function handler(req, res) {
 
     const title = `Teste: ${data.pericia || '—'} + ${data.atributo || '—'}`;
 
-    // Blocos de rolagens formatados em estilo tabela monospace dentro de code block
+    // Helpers para coloração ANSI
+    const ANSI = {
+      reset: '\u001b[0m',
+      red: (s) => `\u001b[31m${s}\u001b[0m`,
+      green: (s) => `\u001b[32m${s}\u001b[0m`,
+      dim: (s) => `\u001b[2m${s}\u001b[0m`,
+    };
+    const colorNum = (n, faces) => {
+      if (typeof n !== 'number') return String(n);
+      if (n === 1) return ANSI.red(n);
+      if (faces && n === faces) return ANSI.green(n);
+      return String(n);
+    };
+    const fmtLine = (label, qty, faces, rolls) => {
+      const colored = (Array.isArray(rolls) ? rolls : []).map(v => colorNum(v, faces)).join(', ');
+      return `${label} ${qty}d${faces}: [${colored}]`;
+    };
+
+    // Blocos de rolagens formatados com ANSI
     const rows = [];
-    if (data.d20) rows.push(`d20 ${`(${data.d20.mode||'normal'})`.padEnd(11)}: ${JSON.stringify(data.d20.rolls||[])}`.trim());
-    if (data.atributoDice) rows.push(`${(data.atributo||'ATR').slice(0,12).padEnd(12)} ${(data.atributoDice.qty||0)}d${data.atributoDice.faces||''}: ${JSON.stringify(data.atributoDice.rolls||[])}`);
-    if (data.periciaDice) rows.push(`${(data.pericia||'PER').slice(0,12).padEnd(12)} ${(data.periciaDice.qty||0)}d${data.periciaDice.faces||''}: ${JSON.stringify(data.periciaDice.rolls||[])}`);
+    if (data.d20) {
+      const rolls = Array.isArray(data.d20.rolls) ? data.d20.rolls : [];
+      const colored = rolls.map(v => colorNum(v, 20)).join(', ');
+      rows.push(`d20 ${`(${data.d20.mode||'normal'})`.padEnd(11)}: [${colored}]`.trim());
+    }
+    if (data.atributoDice) {
+      rows.push(fmtLine((data.atributo||'ATR').slice(0,12).padEnd(12), data.atributoDice.qty||0, data.atributoDice.faces||6, data.atributoDice.rolls||[]));
+    }
+    if (data.periciaDice) {
+      rows.push(fmtLine((data.pericia||'PER').slice(0,12).padEnd(12), data.periciaDice.qty||0, data.periciaDice.faces||10, data.periciaDice.rolls||[]));
+    }
     // Exibe bônus fixo e adicional separadamente se existirem
     if (data.bonusFixo) rows.push(`Bonus Fixo       : +${data.bonusFixo}`);
     if (data.bonusAdicional) rows.push(`Bonus Adic.      : +${data.bonusAdicional}`);
@@ -72,7 +98,7 @@ export default async function handler(req, res) {
     if (diffInferido !== 0 && !data.bonusFixo && !data.bonusAdicional && !data.bonus) {
       rows.push(`Bonus (inferido) : ${diffInferido > 0 ? '+'+diffInferido : diffInferido}`);
     }
-    const codeBlock = rows.length ? '```txt\n' + rows.join('\n') + '\n```' : '';
+  const codeBlock = rows.length ? '```ansi\n' + rows.join('\n') + '\n```' : '';
 
     const fields = [
       { name: 'Total', value: `${data.total ?? '—'}`, inline: false },
