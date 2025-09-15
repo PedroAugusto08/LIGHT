@@ -74,19 +74,20 @@ export default async function handler(req, res) {
     if (data.d20 && Array.isArray(data.d20.rolls)) {
       const rolls = data.d20.rolls.slice();
       const qty = rolls.length || 1;
-      let underlinedApplied = false;
+      const chosen = typeof d20Val === 'number' ? d20Val : null;
       const rollsFmt = rolls.map(v => {
-        let txt = colorNum(v, 20);
-        if (!underlinedApplied && qty > 1 && typeof d20Val === 'number' && v === d20Val) {
-          // sublinha o escolhido
-            txt = `\u001b[4m${txt}`; // underline on antes da cor (se houver)
-          // adiciona reset final se não existir (já existe no colorNum, então só garantimos underline sai após reset geral mais tarde)
-          underlinedApplied = true;
-        }
-        return txt;
+        const isMin = v === 1;
+        const isMax = v === 20;
+        const isChosen = qty > 1 && chosen !== null && v === chosen; // só sublinha se múltiplas rolagens
+        // Monta lista de códigos (underline + cor) em uma única sequência ANSI
+        const codes = [];
+        if (isChosen) codes.push(4); // underline
+        if (isMin) codes.push(31); else if (isMax) codes.push(32); // cores
+        if (codes.length) return `\u001b[${codes.join(';')}m${v}\u001b[0m`;
+        return String(v);
       }).join(', ');
-      d20Expr = `${qty}d20 [${rollsFmt}]`;
-      if (!d20Expr && typeof d20Val === 'number') d20Expr = `1d20 [${colorNum(d20Val,20)}]`;
+  d20Expr = `${qty}d20[${rollsFmt}]`;
+  if (!d20Expr && chosen !== null) d20Expr = `1d20[${chosen}]`;
     }
 
     // Atributo: só se qty > 0
@@ -94,7 +95,7 @@ export default async function handler(req, res) {
     if (data.atributoDice && (data.atributoDice.qty||0) > 0) {
       const faces = data.atributoDice.faces || 6;
       const rolls = (data.atributoDice.rolls||[]).map(v => colorNum(v, faces)).join(', ');
-      atribExpr = `${data.atributoDice.qty}d${faces} [${rolls}]`;
+  atribExpr = `${data.atributoDice.qty}d${faces}[${rolls}]`;
     }
 
     // Perícia: só se qty > 0
@@ -102,7 +103,7 @@ export default async function handler(req, res) {
     if (data.periciaDice && (data.periciaDice.qty||0) > 0) {
       const faces = data.periciaDice.faces || 10;
       const rolls = (data.periciaDice.rolls||[]).map(v => colorNum(v, faces)).join(', ');
-      periciaExpr = `${data.periciaDice.qty}d${faces} [${rolls}]`;
+  periciaExpr = `${data.periciaDice.qty}d${faces}[${rolls}]`;
     }
 
     // Bônus agregado (fixo + adicional ou inferido)
