@@ -133,11 +133,9 @@ export default async function handler(req, res) {
     // Sem fields agora; tudo está na descrição
     const fields = [];
 
-    // Estilo tipo "Mordred - Dados a parte": colocar o título como blockquote dentro da descrição
-  const description = `> ${title}\n\n${codeBlock}`;
     const embed = {
-      // removemos title para usar só o blockquote no corpo
-      description,
+      title,
+      description: codeBlock,
       color,
       fields,
     };
