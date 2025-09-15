@@ -303,8 +303,10 @@ function __lightInitTestesForm(){
     `;
   // título agora é estático no HTML
 
-  // Envio assíncrono para Discord via backend
+  // Envio assíncrono para Discord via backend (se permitido)
   try {
+    const naoEnviar = !!(document.getElementById('teste-no-discord') && document.getElementById('teste-no-discord').checked);
+    if (naoEnviar) return; // usuário optou por não enviar
     const payload = {
       pericia,
       atributo,
@@ -327,7 +329,7 @@ function __lightInitTestesForm(){
       const apiKey = localStorage.getItem('LIGHT_API_KEY');
       if (apiKey) headers['x-light-key'] = apiKey;
     } catch (_) {}
-    if (backendUrl) {
+  if (backendUrl) {
       const tryPost = async (url) => {
         try {
           const resp = await fetch(url, {

@@ -110,6 +110,11 @@ export default function Home() {
                   <input type="number" id="teste-bonus" defaultValue="0" />
                   <button type="submit" id="rolarTesteBtn">Rolar Teste</button>
                   <button type="button" id="addFavoritoBtn" className="sec">Adicionar aos Favoritos</button>
+                  <div className="inline" style={{marginTop:'8px'}}>
+                    <label>
+                      <input type="checkbox" id="teste-no-discord" /> Não enviar ao Discord
+                    </label>
+                  </div>
                 </form>
               </div>
               <div className="right-col">
