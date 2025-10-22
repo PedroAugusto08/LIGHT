@@ -606,13 +606,14 @@ function executarAtaqueDoConstruto(stats, btnEl) {
         let dano = Math.round(danoFloat);
 
         // Aplicar Fúria Ancestral se armada (usa localStorage do módulo de habilidades)
+        // Regra correta: +100% no dano (×2) e +15 NO TESTE DE ATAQUE (não no dano)
         let furiaConsumida = false;
         try {
             const raw = localStorage.getItem('skills_state_v1');
             if (raw) {
                 const s = JSON.parse(raw);
                 if (s && s.furyPrimed) {
-                    dano = Math.floor(dano * 2) + 15; // +100% dano e +15 fixo
+                    dano = Math.floor(dano * 2); // apenas dobra o dano
                     s.furyPrimed = false; // consome
                     localStorage.setItem('skills_state_v1', JSON.stringify(s));
                     furiaConsumida = true;
@@ -626,6 +627,7 @@ function executarAtaqueDoConstruto(stats, btnEl) {
             atributo: { nome: 'ESPÍRITO', qty: 0, faces: 6, rolls: [], total: 0 },
             pericia: { nome: 'FULGOR', qty: 1, faces: 10, rolls: [], total: 0, perito: false },
             bonusFixo: 0,
+            furiaBonus: 0,
             total: 0
         };
         try {
@@ -646,13 +648,19 @@ function executarAtaqueDoConstruto(stats, btnEl) {
             const d20h = rolarDado(1, 20);
             const rAtr = rolarDado(Math.max(0, qtdAtr), 6);
             const rPer = rolarDado(Math.max(0, qtdPer), facesPer);
-            const totalHit = d20h.total + rAtr.total + rPer.total + bonusFixo;
+            let totalHit = d20h.total + rAtr.total + rPer.total + bonusFixo;
+            let furiaBonus = 0;
+            if (furiaConsumida) {
+                furiaBonus = 15;
+                totalHit += furiaBonus;
+            }
 
             hitInfo = {
                 d20: { roll: d20h.rolls[0] },
                 atributo: { nome: 'ESPÍRITO', qty: qtdAtr, faces: 6, rolls: rAtr.rolls, total: rAtr.total },
                 pericia: { nome: 'FULGOR', qty: qtdPer, faces: facesPer, rolls: rPer.rolls, total: rPer.total, perito },
                 bonusFixo,
+                furiaBonus,
                 total: totalHit
             };
         } catch(_) {}
@@ -664,14 +672,16 @@ function executarAtaqueDoConstruto(stats, btnEl) {
             const detailsEl = detailsList[detailsList.length - 1] || resEl;
 
             // Teste de Acerto — mesma estrutura/cores do Teste de Eficiência
+            const hitBadge = hitInfo.furiaBonus ? ` <span class="furia-badge" style="display:inline-flex;margin-left:6px;padding:2px 6px;border-radius:999px;font-size:.85em;color:var(--text);background:linear-gradient(90deg,#f59e0b 0,#f97316 100%)">(com Fúria)</span>` : '';
             const hitHtml = `
                 <hr class="section-divider">
-                <strong>Teste de Acerto</strong>
+                <strong>Teste de Acerto</strong>${hitBadge}
                 <ul style='margin:6px 0 10px 18px;padding:0;'>
                     <li>1d20: <span style='color:#1976d2'>${hitInfo.d20.roll}</span></li>
                     <li>Espírito (${hitInfo.atributo.qty}d6): <span style='color:#fbc02d'>[${hitInfo.atributo.rolls.join(', ')}]</span> = <strong>${hitInfo.atributo.total}</strong></li>
                     <li>Fulgor (${hitInfo.pericia.qty}×d${hitInfo.pericia.faces}${hitInfo.pericia.perito ? ' • perito' : ''}): <span style='color:#388e3c'>[${hitInfo.pericia.rolls.join(', ')}]</span> = <strong>${hitInfo.pericia.total}</strong></li>
                     ${hitInfo.bonusFixo ? `<li>Bônus fixo: <strong>+${hitInfo.bonusFixo}</strong></li>` : ''}
+                    ${hitInfo.furiaBonus ? `<li>Bônus Fúria: <strong>+${hitInfo.furiaBonus}</strong></li>` : ''}
                     <li>Total: <strong>${hitInfo.total}</strong></li>
                 </ul>`;
 
@@ -685,7 +695,7 @@ function executarAtaqueDoConstruto(stats, btnEl) {
                     <li>Luz: <strong>× (1 + ${bonusLuzPercent}%)</strong></li>
                     <li>Eficiência: <strong>× ${efMul}</strong></li>
                     <li>Subtotal: <strong>${subtotal}</strong></li>
-                    ${furiaConsumida ? `<li>Fúria Ancestral: <strong>×2 + 15</strong></li>` : ''}
+                    ${furiaConsumida ? `<li>Fúria Ancestral (no dano): <strong>×2</strong></li>` : ''}
                     <li>Resultado: <strong>${dano}</strong></li>
                 </ul>`;
 
