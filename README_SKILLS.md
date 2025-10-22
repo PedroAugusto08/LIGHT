@@ -75,6 +75,7 @@ SkillEngine.armFuria();       // marca o próximo ataque (custo 15 Alma)
 ## Observações
 
 - O estado persiste em `localStorage` usando a chave `skills_state_v1`.
+- O estado inclui: `alma` (atual), `almaMax`, `vitalidadeAtual`, `maxVitalidade`, `defesaBase`, timers do Insano e flag da Fúria.
 - A Defesa adicional do Insano é recalculada dinamicamente com base na Alma atual; se a Alma variar durante a duração, o bônus acompanha.
+- A cura de Alma por bloqueio respeita o teto `almaMax` (não ultrapassa o máximo).
 - As funções do engine são stateful (lêem/escrevem no estado persistido). Caso prefira, você pode ler o estado, aplicar só os cálculos desejados e sobrescrever valores com `setState/replaceState`.
-- Nenhum limite máximo de Alma foi imposto; ajuste conforme sua regra de mesa, se necessário.

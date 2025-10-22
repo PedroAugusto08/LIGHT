@@ -74,11 +74,17 @@ export default function HabilidadesTab() {
       {/* Coluna esquerda: formulário de estado e ações */}
       <div className="container">
         <h2 style={{textAlign:'center', marginBottom: 6}}>Habilidades</h2>
-        <label>Alma atual</label>
-        <input type="number" min={0} value={state.alma} onChange={(e)=>updateField('alma')(Number(e.target.value))} />
+  <label>Alma atual</label>
+  <input type="number" min={0} value={state.alma} onChange={(e)=>updateField('alma')(Number(e.target.value))} />
 
-        <label>Vitalidade Máxima</label>
-        <input type="number" min={1} value={state.maxVitalidade} onChange={(e)=>updateField('maxVitalidade')(Number(e.target.value))} />
+  <label>Alma máxima</label>
+  <input type="number" min={0} value={state.almaMax} onChange={(e)=>updateField('almaMax')(Number(e.target.value))} />
+
+  <label>Vitalidade Máxima</label>
+  <input type="number" min={1} value={state.maxVitalidade} onChange={(e)=>updateField('maxVitalidade')(Number(e.target.value))} />
+
+  <label>Vitalidade Atual</label>
+  <input type="number" min={0} value={state.vitalidadeAtual} onChange={(e)=>updateField('vitalidadeAtual')(Number(e.target.value))} />
 
         <label>Defesa base</label>
         <input type="number" min={0} value={state.defesaBase} onChange={(e)=>updateField('defesaBase')(Number(e.target.value))} />
@@ -142,6 +148,9 @@ export default function HabilidadesTab() {
       <div className="result">
         <h2 className="card-title">Estado Atual</h2>
         <div className="result-col">
+          <div className="result-heading">Recursos</div>
+          <div>Alma: <strong>{state.alma}</strong> / <strong>{state.almaMax}</strong></div>
+          <div>Vitalidade: <strong>{state.vitalidadeAtual}</strong> / <strong>{state.maxVitalidade}</strong></div>
           <div className="result-heading">Insano & Forte</div>
           <div>Ativo por: <strong>{state.insano.activeRounds}</strong> rodada(s)</div>
           <div>Recarga: <strong>{state.insano.cooldownRounds}</strong> rodada(s)</div>
