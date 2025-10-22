@@ -7,7 +7,7 @@ Não altera nenhum arquivo existente. Você escolhe onde importar e renderizar.
 ## Arquivos
 
 - `lib/skills/engine.js`: lógica e estado das habilidades.
-- `components/SkillsWidget.jsx`: widget de UI opcional (fixo no canto inferior direito) para controlar/visualizar o estado.
+- `components/HabilidadesTab.jsx`: aba de UI dentro da página principal para controlar/visualizar o estado e rodar testes rápidos.
 
 ## Habilidades
 
@@ -26,25 +26,14 @@ Fúria Ancestral (custo 15 Alma)
 
 ## Uso (UI)
 
-Em qualquer página, importe e renderize o widget (client-side) para controlar o estado:
+Agora a interface vive em uma aba dedicada dentro da página principal:
 
-```jsx
-import dynamic from 'next/dynamic';
-const SkillsWidget = dynamic(() => import('../components/SkillsWidget'), { ssr: false });
-
-export default function Page() {
-  return (
-    <>
-      {/* ...sua página... */}
-      <SkillsWidget />
-    </>
-  );
-}
-```
+- Abra a aplicação e clique na aba "Habilidades" (barra superior de abas).
+- Lá você controla o estado (Alma, Vitalidade, Defesa), ativa/desativa efeitos e roda testes rápidos.
 
 ## Uso (APIs para integrar às rolagens)
 
-Importe o engine:
+Importe o engine (para integrar no seu fluxo fora da aba, se desejar):
 
 ```js
 import SkillEngine from '../lib/skills/engine';

@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Script from 'next/script'
 import { useEffect } from 'react'
+import HabilidadesTab from '../components/HabilidadesTab'
 
 export default function Home() {
   // Removido carregamento manual duplicado (Next Script já injeta)
@@ -25,6 +26,7 @@ export default function Home() {
         <div className="tabs-bar">
           <button className="tab-btn active" data-tab="forja">Forja</button>
           <button className="tab-btn" data-tab="testes">Testes</button>
+          <button className="tab-btn" data-tab="habilidades">Habilidades</button>
           <button className="tab-btn" data-tab="historico">Histórico de Construtos</button>
         </div>
         <div className="tabs-content">
@@ -129,6 +131,9 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+          <div className="tab-pane" id="tab-habilidades" style={{display:'none'}}>
+            <HabilidadesTab />
           </div>
           <div className="tab-pane" id="tab-historico" style={{display:'none'}}>
             <div className="historico-container">
