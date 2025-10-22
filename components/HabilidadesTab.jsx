@@ -10,9 +10,7 @@ export default function HabilidadesTab() {
   const [testVitMaxAlvo, setTestVitMaxAlvo] = useState(200);
   const [testBlockSuccess, setTestBlockSuccess] = useState(true);
   const [lastInRes, setLastInRes] = useState(null);
-  const [testBaseDamage, setTestBaseDamage] = useState(100);
-  const [testFixedSum, setTestFixedSum] = useState(0);
-  const [lastOutRes, setLastOutRes] = useState(null);
+  // Removido: teste rápido de ataque (ataque agora acontece com construtos na aba Forja)
 
   const defesaTotal = useMemo(() => SkillEngine.getDefesaTotal(), [state.almaMax, state.defesaBase, state.insano.activeRounds]);
 
@@ -60,14 +58,7 @@ export default function HabilidadesTab() {
     setLastInRes(res);
   }
 
-  function onTestOutgoing() {
-    const res = SkillEngine.processOutgoingAttack({
-      baseDamage: Number(testBaseDamage) || 0,
-      fixedSum: Number(testFixedSum) || 0,
-    });
-    setState(res.state);
-    setLastOutRes(res);
-  }
+  // Sem simulador de ataque aqui
 
   return (
     <div className="main-flex">
@@ -127,21 +118,7 @@ export default function HabilidadesTab() {
           </div>
         )}
 
-        <hr className="section-divider" />
-        <h3 className="result-heading">Testes rápidos — ataque</h3>
-        <label>Dano base do ataque</label>
-        <input type="number" min={0} value={testBaseDamage} onChange={(e)=>setTestBaseDamage(Number(e.target.value))} />
-        <label>Soma fixa</label>
-        <input type="number" value={testFixedSum} onChange={(e)=>setTestFixedSum(Number(e.target.value))} />
-        <button type="button" onClick={onTestOutgoing} style={{ marginTop: 8 }}>Simular ataque</button>
-
-        {lastOutRes && (
-          <div style={{ marginTop: 8 }}>
-            <div>Dano final: <strong>{lastOutRes.damage}</strong></div>
-            <div>Soma fixa final: <strong>{lastOutRes.fixedSum}</strong></div>
-            <div>Fúria consumida? <strong>{lastOutRes.consumed ? 'Sim' : 'Não'}</strong></div>
-          </div>
-        )}
+        {/* Removido bloco de Testes rápidos — ataque */}
       </div>
 
       {/* Coluna direita: estado e indicadores */}

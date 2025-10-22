@@ -413,7 +413,7 @@ function calcularStats(params) {
     blocosDuracao,
     vontadePts,
     espiritoPts,
-  } = params;
+    } = params;
 
     // Cálculo dos blocos EXTRAS a partir da Alma Extra (base = 6)
     // O campo agora é almaExtra, e a alma total é 6 + almaExtra
@@ -424,29 +424,12 @@ function calcularStats(params) {
   // você pode querer somar blocosExtras + blocosDano etc. Aqui blocosDano é o que o usuário alocou.
   const { Md, Mh, Mt } = multiplicadores[estilo] || multiplicadores["Padrão"];
 
-// --- DANO: 2d6 base + blocosDano × 2d6
-let baseDano = 0;
-let rollsDano = [];
-
-// Bloco base
-let rBase = rolarDado(2, 6);
-baseDano += rBase.total;
-rollsDano.push({ type: 'base', rolls: rBase.rolls, total: rBase.total });
-
-// Blocos alocados
-for (let i = 0; i < Math.max(0, blocosDano); i++) {
-    let r = rolarDado(2, 6);
-    baseDano += r.total;
-    rollsDano.push({ type: 'bloco', rolls: r.rolls, total: r.total });
-}
-
-// Aplica multiplicador Md (float)
-let danoMultiplicado = baseDano * Md; // ex: 23 * 1.25 = 28.75
-
-// Bônus de Luz: 1d10% (não arredondar agora)
-let bonusLuz = rolarDado(1, 10); // percent 1..10
-let bonusLuzPercent = bonusLuz.total;
-let danoComBonusFloat = danoMultiplicado * (1 + (bonusLuzPercent / 100)); // float, ex: 29.325
+// --- DANO (separado para o momento do ataque)
+// Agora NÃO rolamos dano na forja. Apenas definimos a "receita" do dano.
+// Receita: grupos de 2d6 (1 base + blocosDano), multiplicador Md e um bônus de Luz estático (1d10%) definido na forja.
+const diceGroups2d6 = 1 + Math.max(0, blocosDano);
+const bonusLuz = rolarDado(1, 10); // percentual 1..10, fixado na forja
+const bonusLuzPercent = bonusLuz.total;
 
 // --- DEF: base 3 + 3 por bloco alocado (arredondar no final)
 const baseDEF = 3;
@@ -462,16 +445,16 @@ const baseDur = 1;
 let duracaoAntesEficienciaFloat = (baseDur + Math.max(0, blocosDuracao)) * Mt;
 
 // --- Teste de eficiência (usa blocosExtras para shift)
+// Forja usa Vontade + Espírito para eficiência (HP/Duração). Não se aplica ao dano aqui.
 const resultadoEf = rollEficiência(vontadePts || 0, espiritoPts || 0, blocosExtras);
 const efMul = resultadoEf.efMul;
 
 // --- Aplicar eficiência (em floats)
-let danoFinalFloat = danoComBonusFloat * efMul;
+// Atenção: eficiência NÃO é aplicada ao dano na forja (agora fica para o ataque).
 let hpFinalFloat = hpAntesEficienciaFloat * efMul;
 let duracaoFinalFloat = duracaoAntesEficienciaFloat * efMul;
 
 // --- Arredondar apenas uma vez, no final
-let danoFinal = Math.round(danoFinalFloat);
 let hpFinal = Math.round(hpFinalFloat);
 let duracaoFinal = Math.round(duracaoFinalFloat);
 let defesaFinal = Math.round(defesaFloat); // DEF não usa eficiência, mas arredondamos o resultado final
@@ -487,38 +470,35 @@ let defesaFinal = Math.round(defesaFloat); // DEF não usa eficiência, mas arre
     blocosDuracao,
     vontadePts,
     espiritoPts,
-    rollsDano,
-    baseDano,
     Md,
-    bonusLuz: bonusLuz.rolls[0],
-    danoMultiplicado,
-    danoFinalFloat,
+        bonusLuz: bonusLuz.rolls[0],
+        danoRecipe: { diceGroups2d6, Md, bonusLuzPercent },
     defesaFinal,
     hpAntesEficienciaFloat,
     hpFinal,
     duracaoAntesEficienciaFloat,
     duracaoFinal,
     resultadoEf,
-    danoFinal,
   };
 }
 
 // Formata a saída para exibição
 function formatarSaida(stats) {
     const ef = stats.resultadoEf;
-            // Dano detalhado
-            let rolagemDano = `<strong>Dano:</strong><ul style='margin:6px 0 10px 18px;padding:0;'>`;
-            stats.rollsDano.forEach((r, i) => {
-                rolagemDano += `<li>${i === 0 ? 'Base' : 'Bloco ' + i}: <span style='color:#1976d2'>${r.rolls.join(' + ')}</span> = <strong>${r.total}</strong></li>`;
-            });
-            rolagemDano += `</ul>`;
-            rolagemDano += `<div style='margin-bottom:6px;'>× <strong>Md</strong> (${stats.Md})<br>Bônus de Luz: <strong>${stats.bonusLuz}%</strong></div>`;
+                        // Dano: agora rolado no momento do ataque
+                        let rolagemDano = `<strong>Dano:</strong> <em>rolado no ataque</em><div style='margin:6px 0 10px 0;'>
+                            Receita: <code>${stats.danoRecipe.diceGroups2d6}×(2d6)</code>
+                            × <strong>Md</strong> (${stats.Md})
+                            × <strong>(1 + ${stats.danoRecipe.bonusLuzPercent}% Luz)</strong>
+                        </div>`;
 
             // Teste de eficiência detalhado
             let rolagemEf = `<strong>Teste de Eficiência</strong><ul style='margin:6px 0 10px 18px;padding:0;'>`;
             rolagemEf += `<li>1d20: <span style='color:#1976d2'>${ef.parts.d20}</span></li>`;
-            rolagemEf += `<li>Vontade (${stats.vontadePts}d12): <span style='color:#388e3c'>[${ef.parts.vontade.rolls.join(', ')}]</span> = <strong>${ef.parts.vontade.total}</strong></li>`;
-            rolagemEf += `<li>Espírito (${stats.espiritoPts}d6): <span style='color:#fbc02d'>[${ef.parts.espirito.rolls.join(', ')}]</span> = <strong>${ef.parts.espirito.total}</strong></li>`;
+                        rolagemEf += `<li>Vontade (${stats.vontadePts}d12): <span style='color:#388e3c'>[${ef.parts.vontade.rolls.join(', ')}]</span> = <strong>${ef.parts.vontade.total}</strong></li>`;
+                        if ((stats.espiritoPts|0) > 0) {
+                            rolagemEf += `<li>Espírito (${stats.espiritoPts}d6): <span style='color:#fbc02d'>[${ef.parts.espirito.rolls.join(', ')}]</span> = <strong>${ef.parts.espirito.total}</strong></li>`;
+                        }
             rolagemEf += `<li>Bônus fixo: <strong>+12</strong></li>`;
             rolagemEf += `<li>Total: <strong>${ef.totalRoll}</strong></li>`;
             rolagemEf += `<li>Shift: <strong>${ef.shift}</strong></li>`;
@@ -527,16 +507,20 @@ function formatarSaida(stats) {
 
             let efeitoEf = `<em style='color:#888;'>(Eficiência aplicada em Dano, HP e Duração)</em>`;
 
+                const ataqueBtnId = `btnAtacar_${Date.now()}`;
                 return `
                 <div class="result-container">
                     <div class="result-main">
                         <strong>Estilo:</strong> ${stats.estilo}<br>
                         <strong>Alma Extra:</strong> ${stats.almaExtra} (blocos extras gerados: ${stats.blocosExtras})<br>
                         <strong>Alma total gasta:</strong> ${stats.almaTotal}<br>
-                        <strong>Dano:</strong> ${stats.danoFinal} <br>
+                        <strong>Dano:</strong> — (rolado no ataque) <br>
                         <strong>Defesa:</strong> ${stats.defesaFinal} <br>
                         <strong>HP:</strong> ${stats.hpFinal} <br>
                         <strong>Duração:</strong> ${stats.duracaoFinal} turno(s)<br>
+                        <div style="margin-top:10px;">
+                          <button type="button" class="reforjar-btn" id="${ataqueBtnId}">Atacar com este Construto (FULGOR + ESPÍRITO)</button>
+                        </div>
                     </div>
                     <div class="result-details">
                         ${rolagemDano}
@@ -567,7 +551,14 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
     });
     const resEl = document.getElementById('resultadoContent') || document.getElementById('resultado');
     if (resEl) {
-        resEl.innerHTML = formatarSaida(stats);
+                resEl.innerHTML = formatarSaida(stats);
+                // Bind do botão de ataque para este resultado
+                const btn = resEl.querySelector('button[id^="btnAtacar_"]');
+                if (btn) {
+                    btn.addEventListener('click', function(){
+                        executarAtaqueDoConstruto(stats);
+                    });
+                }
     }
     // Salvar histórico completo (params + results), limite 20 na função
     salvarHistoricoConstruto({
@@ -577,6 +568,66 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
         results: stats
     });
 });
+
+// --- Execução do ataque do construto ---
+function executarAtaqueDoConstruto(stats) {
+    try {
+        const { diceGroups2d6, Md, bonusLuzPercent } = stats.danoRecipe || {};
+        if (!diceGroups2d6 || !Md) throw new Error('Receita de dano inválida/ausente. Reforje o construto.');
+        const efMul = (stats && stats.resultadoEf && typeof stats.resultadoEf.efMul === 'number') ? stats.resultadoEf.efMul : 1.0;
+
+        // Rola dano base: N × (2d6)
+        let base = 0; let detalhes = [];
+        for (let i = 0; i < diceGroups2d6; i++) {
+            const r = rolarDado(2, 6);
+            base += r.total; detalhes.push(r.rolls.join(' + '));
+        }
+        // Multiplicador e bônus de luz
+        const mult = Md;
+        const luz = 1 + (Math.max(0, bonusLuzPercent|0) / 100);
+        let danoFloat = base * mult * luz * efMul; // Eficiência influencia o DANO também
+        let dano = Math.round(danoFloat);
+
+        // Aplicar Fúria Ancestral se armada (usa localStorage do módulo de habilidades)
+        let furiaConsumida = false;
+        try {
+            const raw = localStorage.getItem('skills_state_v1');
+            if (raw) {
+                const s = JSON.parse(raw);
+                if (s && s.furyPrimed) {
+                    dano = Math.floor(dano * 2) + 15; // +100% dano e +15 fixo
+                    s.furyPrimed = false; // consome
+                    localStorage.setItem('skills_state_v1', JSON.stringify(s));
+                    furiaConsumida = true;
+                }
+            }
+        } catch(_) {}
+
+        // Render do resultado do ataque (aba Forja)
+        const resEl = document.getElementById('resultadoContent') || document.getElementById('resultado');
+        if (resEl) {
+            const box = document.createElement('div');
+            box.className = 'result';
+                    box.innerHTML = `
+                <h2 class="card-title">Ataque do Construto</h2>
+                <div class="result-col">
+                    <div class="result-heading">Rolagem</div>
+                    <div>${diceGroups2d6}×(2d6): [${detalhes.join('] + [')}] = <strong>${base}</strong></div>
+                            <div>× Md (${mult}) × (1 + ${bonusLuzPercent}%) × Eficiência (${efMul}) ⇒ <strong>${Math.round(base*mult*luz*efMul)}</strong></div>
+                    <div class="result-heading">Resultado</div>
+                    <div>Dano final${furiaConsumida ? ' (com Fúria)' : ''}: <strong>${dano}</strong></div>
+                    <div style="margin-top:6px;color:var(--muted)">Teste de ataque (para acerto) use a aba "Testes" com Perícia FULGOR + Atributo ESPÍRITO.</div>
+                </div>
+            `;
+            // Inserimos abaixo do resultado principal
+            resEl.appendChild(box);
+            // Auto-scroll para ver o ataque
+            try { box.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(_) {}
+        }
+    } catch (err) {
+        alert('Não foi possível executar o ataque: ' + (err && err.message ? err.message : err));
+    }
+}
 
 // Caret interativo dos selects: marca wrapper como 'open' quando focado e remove ao desfocar
 document.addEventListener('DOMContentLoaded', () => {
