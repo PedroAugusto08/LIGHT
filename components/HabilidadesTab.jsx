@@ -14,7 +14,7 @@ export default function HabilidadesTab() {
   const [testFixedSum, setTestFixedSum] = useState(0);
   const [lastOutRes, setLastOutRes] = useState(null);
 
-  const defesaTotal = useMemo(() => SkillEngine.getDefesaTotal(), [state.alma, state.defesaBase, state.insano.activeRounds]);
+  const defesaTotal = useMemo(() => SkillEngine.getDefesaTotal(), [state.almaMax, state.defesaBase, state.insano.activeRounds]);
 
   useEffect(() => {
     setState(SkillEngine.getState());

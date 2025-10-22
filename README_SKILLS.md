@@ -18,7 +18,7 @@ Insano & Forte
 - Ativo (custo 15 Alma):
   - Duração: 1d6 rodadas.
   - Todo bloqueio (falho ou sucesso): causa 1d4% da Vitalidade Máxima do alvo como dano direto.
-  - +1/4 da Alma atual como Defesa adicional (dinâmico enquanto durar).
+  - +1/4 da Alma máxima como Defesa adicional (dinâmico enquanto durar).
   - Ao terminar: entra em recarga por 1d10+2 rodadas.
 
 Fúria Ancestral (custo 15 Alma)
@@ -76,6 +76,6 @@ SkillEngine.armFuria();       // marca o próximo ataque (custo 15 Alma)
 
 - O estado persiste em `localStorage` usando a chave `skills_state_v1`.
 - O estado inclui: `alma` (atual), `almaMax`, `vitalidadeAtual`, `maxVitalidade`, `defesaBase`, timers do Insano e flag da Fúria.
-- A Defesa adicional do Insano é recalculada dinamicamente com base na Alma atual; se a Alma variar durante a duração, o bônus acompanha.
+- A Defesa adicional do Insano é recalculada dinamicamente com base na Alma máxima; se o valor máximo variar durante a duração, o bônus acompanha.
 - A cura de Alma por bloqueio respeita o teto `almaMax` (não ultrapassa o máximo).
 - As funções do engine são stateful (lêem/escrevem no estado persistido). Caso prefira, você pode ler o estado, aplicar só os cálculos desejados e sobrescrever valores com `setState/replaceState`.
