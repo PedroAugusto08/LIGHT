@@ -657,31 +657,42 @@ function executarAtaqueDoConstruto(stats, btnEl) {
             };
         } catch(_) {}
 
-        // Render do resultado do ataque (aba Forja)
+        // Render do resultado do ataque dentro do container de detalhes já existente (sem criar novo "card")
         const resEl = document.getElementById('resultadoContent') || document.getElementById('resultado');
         if (resEl) {
-            const box = document.createElement('div');
-        box.className = 'result';
-            box.innerHTML = `
-                <h2 class="card-title">Ataque do Construto</h2>
-                <div class="result-col">
-                    <div class="result-heading">Rolagem</div>
-                    <div>${diceGroups2d6}×(2d6): [${detalhes.join('] + [')}] = <strong>${base}</strong></div>
-                            <div>× Md (${mult}) × (1 + ${bonusLuzPercent}%) × Eficiência (${efMul}) ⇒ <strong>${Math.round(base*mult*luz*efMul)}</strong></div>
-            <div class="result-heading">Teste de Acerto (FULGOR + ESPÍRITO)</div>
-            <div>d20: <strong>${hitInfo.d20.roll}</strong></div>
-            <div>ESPÍRITO (${hitInfo.atributo.qty}d6): [${hitInfo.atributo.rolls.join(', ')}] = <strong>${hitInfo.atributo.total}</strong></div>
-            <div>FULGOR (${hitInfo.pericia.qty}×d${hitInfo.pericia.faces}${hitInfo.pericia.perito ? ' • perito' : ''}): [${hitInfo.pericia.rolls.join(', ')}] = <strong>${hitInfo.pericia.total}</strong></div>
-            ${hitInfo.bonusFixo ? `<div>Bônus fixo (FULGOR): +${hitInfo.bonusFixo}</div>` : ''}
-            <div><strong>Total do Teste de Ataque:</strong> ${hitInfo.total}</div>
-                    <div class="result-heading">Resultado</div>
-                    <div>Dano final${furiaConsumida ? ' (com Fúria)' : ''}: <strong>${dano}</strong></div>
-                </div>
-            `;
-            // Inserimos abaixo do resultado principal
-            resEl.appendChild(box);
-            // Auto-scroll para ver o ataque
-            try { box.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(_) {}
+            const detailsList = resEl.querySelectorAll('.result-container .result-details');
+            const detailsEl = detailsList[detailsList.length - 1] || resEl;
+
+            // Teste de Acerto — mesma estrutura/cores do Teste de Eficiência
+            const hitHtml = `
+                <hr class="section-divider">
+                <strong>Teste de Acerto</strong>
+                <ul style='margin:6px 0 10px 18px;padding:0;'>
+                    <li>1d20: <span style='color:#1976d2'>${hitInfo.d20.roll}</span></li>
+                    <li>Espírito (${hitInfo.atributo.qty}d6): <span style='color:#fbc02d'>[${hitInfo.atributo.rolls.join(', ')}]</span> = <strong>${hitInfo.atributo.total}</strong></li>
+                    <li>Fulgor (${hitInfo.pericia.qty}×d${hitInfo.pericia.faces}${hitInfo.pericia.perito ? ' • perito' : ''}): <span style='color:#388e3c'>[${hitInfo.pericia.rolls.join(', ')}]</span> = <strong>${hitInfo.pericia.total}</strong></li>
+                    ${hitInfo.bonusFixo ? `<li>Bônus fixo: <strong>+${hitInfo.bonusFixo}</strong></li>` : ''}
+                    <li>Total: <strong>${hitInfo.total}</strong></li>
+                </ul>`;
+
+            // Rolagem do Ataque — organização passo a passo
+            const subtotal = Math.round(base * mult * luz * efMul);
+            const danoHtml = `
+                <strong>Rolagem do Ataque</strong>
+                <ul style='margin:6px 0 10px 18px;padding:0;'>
+                    <li>Base (${diceGroups2d6}×2d6): [${detalhes.join('] + [')}] = <strong>${base}</strong></li>
+                    <li>Md: <strong>× ${mult}</strong></li>
+                    <li>Luz: <strong>× (1 + ${bonusLuzPercent}%)</strong></li>
+                    <li>Eficiência: <strong>× ${efMul}</strong></li>
+                    <li>Subtotal: <strong>${subtotal}</strong></li>
+                    ${furiaConsumida ? `<li>Fúria Ancestral: <strong>×2 + 15</strong></li>` : ''}
+                    <li>Resultado: <strong>${dano}</strong></li>
+                </ul>`;
+
+            const wrap = document.createElement('div');
+            wrap.innerHTML = hitHtml + danoHtml;
+            detailsEl.appendChild(wrap);
+            try { wrap.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(_) {}
         }
     } catch (err) {
         alert('Não foi possível executar o ataque: ' + (err && err.message ? err.message : err));
