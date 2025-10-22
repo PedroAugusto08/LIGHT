@@ -69,6 +69,44 @@ var PERICIAS_BONUS_FIXO = {
   "VONTADE": 12,
 };
 
+// Mapa fixo de Peritos por perícia (true = usa d12; false = usa d10)
+// Edite este objeto quando você se tornar perito em alguma perícia.
+// Ex.: PERICIAS_PERITO['FULGOR'] = true
+var PERICIAS_PERITO = {
+  "ARCANISMO": false,
+  "CIÊNCIAS": false,
+  "CULINÁRIA": false,
+  "DIPLOMACIA": false,
+  "DESTREZA": false,
+  "FURTIVIDADE": false,
+  "FULGOR": true,
+  "INVESTIGAÇÃO": false,
+  "INTELIGÊNCIA": false,
+  "INTUIÇÃO": false,
+  "INICIATIVA": false,
+  "LUTA": false,
+  "MENTE": false,
+  "MEDICINA": false,
+  "OBSERVAÇÃO": false,
+  "PONTARIA": false,
+  "REFLEXO": false,
+  "SOBREVIVÊNCIA": false,
+  "SORTE": false,
+  "TÉCNICA": false,
+  "VIGOR": false,
+  "VONTADE": true,
+};
+
+// Expõe configuração básica para outros módulos (ataque automático da Forja)
+try {
+  window.__LIGHT_RULES = {
+    ATRIBUTOS,
+    PERICIAS_QTD,
+    PERICIAS_BONUS_FIXO,
+    PERICIAS_PERITO,
+  };
+} catch (_) {}
+
 // Utilitário para rolagem de dados
 function rolar(qtd, faces) {
   let total = 0; let rolls = [];
@@ -181,7 +219,7 @@ function renderFavoritos() {
   lista.forEach((f, idx) => {
     const el = document.createElement('div');
     el.className = 'favorito-item';
-    const peritoTxt = f.perito ? 'Perito' : 'Comum';
+  const peritoTxt = (typeof PERICIAS_PERITO !== 'undefined' && PERICIAS_PERITO[f.pericia]) ? 'Perito' : 'Comum';
     el.innerHTML = `
       <div>
         <div><strong>${f.pericia}</strong> + <strong>${f.atributo}</strong></div>
@@ -226,13 +264,11 @@ function executarFavorito(index) {
   // Preenche o formulário e envia
   const pSel = document.getElementById('teste-pericia');
   const aSel = document.getElementById('teste-atributo');
-  const chk = document.getElementById('teste-perito');
   const vIn = document.getElementById('teste-vantagens');
   const dIn = document.getElementById('teste-desvantagens');
   const bIn = document.getElementById('teste-bonus');
   if (pSel) pSel.value = f.pericia;
   if (aSel) aSel.value = f.atributo;
-  if (chk) chk.checked = !!f.perito;
   if (vIn) vIn.value = f.vantagens|0;
   if (dIn) dIn.value = f.desvantagens|0;
   if (bIn) bIn.value = f.bonusAdicional|0;
@@ -259,7 +295,7 @@ function __lightInitTestesForm(){
 
     const pericia = document.getElementById('teste-pericia').value;
     const atributo = document.getElementById('teste-atributo').value;
-    const perito = document.getElementById('teste-perito').checked;
+  const perito = !!PERICIAS_PERITO[pericia];
     const vantagens = parseInt(document.getElementById('teste-vantagens').value) || 0;
     const desvantagens = parseInt(document.getElementById('teste-desvantagens').value) || 0;
     const bonusAdicional = parseInt(document.getElementById('teste-bonus').value) || 0;
@@ -286,7 +322,7 @@ function __lightInitTestesForm(){
     det.push(`<strong>d20 (${d20.tipo})</strong>: [${d20.rolls.join(', ')}] ⇒ <strong>${d20.escolha}</strong>`);
     det.push(`<strong>${atributo}</strong> (${(ATRIBUTOS[atributo]||0)}d6): [${rAtrib.rolls.join(', ')}] = <strong>${rAtrib.total}</strong>`);
   det.push(`<strong>${pericia}</strong> (${qtdPericia}×${perito ? 'd12' : 'd10'}): [${rPericia.rolls.join(', ')}] = <strong>${rPericia.total}</strong>`);
-    if (bonusFixo) det.push(`<strong>Bônus fixo da perícia</strong>: +${bonusFixo}`);
+  if (bonusFixo) det.push(`<strong>Bônus fixo da perícia</strong>: +${bonusFixo}`);
     if (bonusAdicional) det.push(`<strong>Bônus adicional</strong>: +${bonusAdicional}`);
 
   saida.innerHTML = `
@@ -378,7 +414,6 @@ function __lightInitTestesForm(){
       const cfg = {
         pericia: document.getElementById('teste-pericia').value,
         atributo: document.getElementById('teste-atributo').value,
-        perito: document.getElementById('teste-perito').checked,
         vantagens: parseInt(document.getElementById('teste-vantagens').value) || 0,
         desvantagens: parseInt(document.getElementById('teste-desvantagens').value) || 0,
         bonusAdicional: parseInt(document.getElementById('teste-bonus').value) || 0,

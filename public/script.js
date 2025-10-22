@@ -426,8 +426,8 @@ function calcularStats(params) {
 
 // --- DANO (separado para o momento do ataque)
 // Agora NÃO rolamos dano na forja. Apenas definimos a "receita" do dano.
-// Receita: grupos de 2d6 (1 base + blocosDano), multiplicador Md e um bônus de Luz estático (1d10%) definido na forja.
-const diceGroups2d6 = 1 + Math.max(0, blocosDano);
+// Receita: grupos de 2d6 (2 base + blocosDano), multiplicador Md e um bônus de Luz estático (1d10%) definido na forja.
+const diceGroups2d6 = 2 + Math.max(0, blocosDano);
 const bonusLuz = rolarDado(1, 10); // percentual 1..10, fixado na forja
 const bonusLuzPercent = bonusLuz.total;
 
@@ -553,12 +553,13 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
     if (resEl) {
                 resEl.innerHTML = formatarSaida(stats);
                 // Bind do botão de ataque para este resultado
-                const btn = resEl.querySelector('button[id^="btnAtacar_"]');
-                if (btn) {
-                    btn.addEventListener('click', function(){
-                        executarAtaqueDoConstruto(stats);
-                    });
-                }
+                        const btn = resEl.querySelector('button[id^="btnAtacar_"]');
+                        if (btn) {
+                            // Desabilita após o primeiro clique; só reativa ao forjar novamente (novo botão)
+                            btn.addEventListener('click', function(){
+                                executarAtaqueDoConstruto(stats, btn);
+                            }, { once: true });
+                        }
     }
     // Salvar histórico completo (params + results), limite 20 na função
     salvarHistoricoConstruto({
@@ -570,11 +571,27 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
 });
 
 // --- Execução do ataque do construto ---
-function executarAtaqueDoConstruto(stats) {
+function executarAtaqueDoConstruto(stats, btnEl) {
     try {
         const { diceGroups2d6, Md, bonusLuzPercent } = stats.danoRecipe || {};
         if (!diceGroups2d6 || !Md) throw new Error('Receita de dano inválida/ausente. Reforje o construto.');
         const efMul = (stats && stats.resultadoEf && typeof stats.resultadoEf.efMul === 'number') ? stats.resultadoEf.efMul : 1.0;
+
+        // Marca o botão como usado/indisponível a partir de agora
+        if (btnEl) {
+            try {
+                btnEl.disabled = true;
+                btnEl.style.opacity = '0.6';
+                btnEl.style.cursor = 'not-allowed';
+                btnEl.setAttribute('aria-disabled', 'true');
+                btnEl.title = 'Ataque já executado para este construto';
+                // feedback de ação
+                const prevText = btnEl.textContent;
+                if (prevText && !/executado/i.test(prevText)) {
+                    btnEl.textContent = 'Ataque executado';
+                }
+            } catch(_) {}
+        }
 
         // Rola dano base: N × (2d6)
         let base = 0; let detalhes = [];
@@ -603,20 +620,62 @@ function executarAtaqueDoConstruto(stats) {
             }
         } catch(_) {}
 
+        // Teste de acerto automático (Perícia: FULGOR, Atributo: ESPÍRITO)
+        let hitInfo = {
+            d20: { roll: 0 },
+            atributo: { nome: 'ESPÍRITO', qty: 0, faces: 6, rolls: [], total: 0 },
+            pericia: { nome: 'FULGOR', qty: 1, faces: 10, rolls: [], total: 0, perito: false },
+            bonusFixo: 0,
+            total: 0
+        };
+        try {
+            const rules = (typeof window !== 'undefined' && window.__LIGHT_RULES) ? window.__LIGHT_RULES : null;
+            const ATR = rules && rules.ATRIBUTOS ? rules.ATRIBUTOS : {};
+            const PQ = rules && rules.PERICIAS_QTD ? rules.PERICIAS_QTD : {};
+            const PB = rules && rules.PERICIAS_BONUS_FIXO ? rules.PERICIAS_BONUS_FIXO : {};
+            const PP = rules && rules.PERICIAS_PERITO ? rules.PERICIAS_PERITO : {};
+            // Quantidades
+            const qtdAtr = (ATR['ESPÍRITO'] ?? ATR['ESPIRITO'] ?? 0) | 0;
+            // Se não houver mapeado, usa 1 como fallback conservador para perícia
+            const qtdPer = (typeof PQ['FULGOR'] === 'number') ? PQ['FULGOR'] : 1;
+            const bonusFixo = (PB['FULGOR']|0);
+            // perito definido no mapa fixo (PERICIAS_PERITO)
+            let perito = !!PP['FULGOR'];
+            const facesPer = perito ? 12 : 10;
+
+            const d20h = rolarDado(1, 20);
+            const rAtr = rolarDado(Math.max(0, qtdAtr), 6);
+            const rPer = rolarDado(Math.max(0, qtdPer), facesPer);
+            const totalHit = d20h.total + rAtr.total + rPer.total + bonusFixo;
+
+            hitInfo = {
+                d20: { roll: d20h.rolls[0] },
+                atributo: { nome: 'ESPÍRITO', qty: qtdAtr, faces: 6, rolls: rAtr.rolls, total: rAtr.total },
+                pericia: { nome: 'FULGOR', qty: qtdPer, faces: facesPer, rolls: rPer.rolls, total: rPer.total, perito },
+                bonusFixo,
+                total: totalHit
+            };
+        } catch(_) {}
+
         // Render do resultado do ataque (aba Forja)
         const resEl = document.getElementById('resultadoContent') || document.getElementById('resultado');
         if (resEl) {
             const box = document.createElement('div');
-            box.className = 'result';
-                    box.innerHTML = `
+        box.className = 'result';
+            box.innerHTML = `
                 <h2 class="card-title">Ataque do Construto</h2>
                 <div class="result-col">
                     <div class="result-heading">Rolagem</div>
                     <div>${diceGroups2d6}×(2d6): [${detalhes.join('] + [')}] = <strong>${base}</strong></div>
                             <div>× Md (${mult}) × (1 + ${bonusLuzPercent}%) × Eficiência (${efMul}) ⇒ <strong>${Math.round(base*mult*luz*efMul)}</strong></div>
+            <div class="result-heading">Teste de Acerto (FULGOR + ESPÍRITO)</div>
+            <div>d20: <strong>${hitInfo.d20.roll}</strong></div>
+            <div>ESPÍRITO (${hitInfo.atributo.qty}d6): [${hitInfo.atributo.rolls.join(', ')}] = <strong>${hitInfo.atributo.total}</strong></div>
+            <div>FULGOR (${hitInfo.pericia.qty}×d${hitInfo.pericia.faces}${hitInfo.pericia.perito ? ' • perito' : ''}): [${hitInfo.pericia.rolls.join(', ')}] = <strong>${hitInfo.pericia.total}</strong></div>
+            ${hitInfo.bonusFixo ? `<div>Bônus fixo (FULGOR): +${hitInfo.bonusFixo}</div>` : ''}
+            <div><strong>Total do Teste de Ataque:</strong> ${hitInfo.total}</div>
                     <div class="result-heading">Resultado</div>
                     <div>Dano final${furiaConsumida ? ' (com Fúria)' : ''}: <strong>${dano}</strong></div>
-                    <div style="margin-top:6px;color:var(--muted)">Teste de ataque (para acerto) use a aba "Testes" com Perícia FULGOR + Atributo ESPÍRITO.</div>
                 </div>
             `;
             // Inserimos abaixo do resultado principal

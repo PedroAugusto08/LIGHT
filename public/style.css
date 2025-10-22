@@ -171,6 +171,7 @@
 }
 .reforjar-btn:hover { background: #1565c0; }
 .reforjar-btn:active { transform: translateY(1px); }
+.reforjar-btn:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.3); }
 #historico-total {
     color: var(--accent);
     font-size: 1.12em;

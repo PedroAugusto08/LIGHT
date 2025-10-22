@@ -98,12 +98,7 @@ export default function Home() {
                     <select id="teste-atributo"></select>
                     <span className="select-caret" aria-hidden="true"></span>
                   </div>
-                  <div className="inline" style={{marginTop:'8px'}}>
-                    <label>
-                      <input type="checkbox" id="teste-perito" /> Perito na perícia
-                      <span className="perito-badge">d12</span>
-                    </label>
-                  </div>
+                  {/* Perícia perito agora é configurada no código (public/testes.js → PERICIAS_PERITO) */}
                   <label htmlFor="teste-vantagens">Vantagens</label>
                   <input type="number" id="teste-vantagens" min="0" defaultValue="0" />
                   <label htmlFor="teste-desvantagens">Desvantagens</label>
