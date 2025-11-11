@@ -27,7 +27,8 @@ window.createModal = function createModal(title) {
     
     document.body.appendChild(overlay);
     
-    // Bloqueia scroll do body
+    // Bloqueia scroll do body com classe e estilo inline
+    document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
     
     // Ativa com animação
@@ -38,9 +39,22 @@ window.createModal = function createModal(title) {
     // Handler para fechar com ESC
     let escHandler;
     
-    // Handler para prevenir scroll
+    // Handler para prevenir scroll da página de fundo
+    const modalContainer = overlay.querySelector('.modal-container');
     const preventScroll = (e) => {
-        if (!overlay.querySelector('.modal-container').contains(e.target)) {
+        // Verifica se o evento foi disparado dentro do modal-container
+        const isInsideModal = modalContainer.contains(e.target);
+        
+        if (!isInsideModal) {
+            // Fora do modal: sempre bloqueia
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    };
+    
+    // Handler para prevenir scroll/touch na overlay (fundo)
+    const preventOverlayScroll = (e) => {
+        if (e.target === overlay) {
             e.preventDefault();
         }
     };
@@ -52,12 +66,14 @@ window.createModal = function createModal(title) {
             overlay.remove();
             // Restaura scroll do body APENAS quando não houver mais modais
             if (!document.querySelector('.modal-overlay')) {
+                document.body.classList.remove('modal-open');
                 document.body.style.overflow = '';
             }
         }, 300);
         // Remove listeners
         document.removeEventListener('keydown', escHandler);
         document.removeEventListener('wheel', preventScroll);
+        overlay.removeEventListener('touchmove', preventOverlayScroll);
     };
     
     // Bind do botão fechar
@@ -77,6 +93,9 @@ window.createModal = function createModal(title) {
     
     // Previne scroll com roda do mouse fora do modal
     document.addEventListener('wheel', preventScroll, { passive: false });
+    
+    // Previne scroll/touch na overlay
+    overlay.addEventListener('touchmove', preventOverlayScroll, { passive: false });
     
     return overlay.querySelector('#modal-body-content');
 };
@@ -799,7 +818,16 @@ function executarAtaqueDoConstruto(stats, btnEl) {
             const wrap = document.createElement('div');
             wrap.innerHTML = hitHtml + danoHtml;
             detailsEl.appendChild(wrap);
-            try { wrap.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(_) {}
+            // Scroll dentro do modal-container, não da página
+            try { 
+                const modalContainer = document.querySelector('.modal-container');
+                if (modalContainer) {
+                    // Aguarda um tick para o conteúdo ser renderizado
+                    setTimeout(() => {
+                        modalContainer.scrollTop = modalContainer.scrollHeight;
+                    }, 50);
+                }
+            } catch(_) {}
         }
     } catch (err) {
         alert('Não foi possível executar o ataque: ' + (err && err.message ? err.message : err));
