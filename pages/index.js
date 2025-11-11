@@ -82,10 +82,6 @@ export default function Home() {
                   <button type="submit" id="forjarBtn">Forjar Construto</button>
                 </form>
               </div>
-              <div className="result" id="resultado">
-                <h2 className="card-title">Resultado</h2>
-                <div id="resultadoContent"></div>
-              </div>
             </div>
           </div>
           <div className="tab-pane" id="tab-testes" style={{display:'none'}}>
@@ -119,16 +115,10 @@ export default function Home() {
                   </div>
                 </form>
               </div>
-              <div className="right-col">
-                <div className="favoritos-container">
-                  <h2>Favoritos</h2>
-                  <div id="favoritos-vazio" className="favoritos-empty">Nenhum favorito ainda.</div>
-                  <div id="favoritos-list"></div>
-                </div>
-                <div id="resultadoTeste">
-                  <h2 className="card-title">Resultado</h2>
-                  <div id="resultadoTesteContent"></div>
-                </div>
+              <div className="favoritos-container" style={{maxWidth:'500px',margin:'0 auto'}}>
+                <h2>Favoritos</h2>
+                <div id="favoritos-vazio" className="favoritos-empty">Nenhum favorito ainda.</div>
+                <div id="favoritos-list"></div>
               </div>
             </div>
           </div>

@@ -325,19 +325,38 @@ function __lightInitTestesForm(){
   if (bonusFixo) det.push(`<strong>Bônus fixo da perícia</strong>: +${bonusFixo}`);
     if (bonusAdicional) det.push(`<strong>Bônus adicional</strong>: +${bonusAdicional}`);
 
-  saida.innerHTML = `
-      <div class="result-container">
-        <div class="result-main">
-          <strong>Perícia:</strong> ${pericia}<br>
-          <strong>Atributo:</strong> ${atributo}<br>
-          <strong>Total do Teste:</strong> ${total}
+    // Abre modal com resultado (usa função global do script.js)
+    if (typeof window.createModal === 'function') {
+      const modalBody = window.createModal('Resultado do Teste');
+      if (modalBody) {
+        modalBody.innerHTML = `
+          <div class="result-container">
+            <div class="result-main">
+              <strong>Perícia:</strong> ${pericia}<br>
+              <strong>Atributo:</strong> ${atributo}<br>
+              <strong>Total do Teste:</strong> ${total}
+            </div>
+            <div class="result-details">
+              ${det.map(li => `<div style='margin:4px 0;'>${li}</div>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      // Fallback se createModal não estiver disponível
+      saida.innerHTML = `
+        <div class="result-container">
+          <div class="result-main">
+            <strong>Perícia:</strong> ${pericia}<br>
+            <strong>Atributo:</strong> ${atributo}<br>
+            <strong>Total do Teste:</strong> ${total}
+          </div>
+          <div class="result-details">
+            ${det.map(li => `<div style='margin:4px 0;'>${li}</div>`).join('')}
+          </div>
         </div>
-        <div class="result-details">
-          ${det.map(li => `<div style='margin:4px 0;'>${li}</div>`).join('')}
-        </div>
-      </div>
-    `;
-  // título agora é estático no HTML
+      `;
+    }
 
   // Envio assíncrono para Discord via backend (se permitido)
   try {

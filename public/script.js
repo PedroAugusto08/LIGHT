@@ -3,6 +3,60 @@
 if (window.__LIGHT_SCRIPT_CORE_LOADED__) return; // já rodou
 window.__LIGHT_SCRIPT_CORE_LOADED__ = true;
 
+// --- Funções de Modal ---
+window.createModal = function createModal(title) {
+    // Remove modal anterior se existir
+    const existing = document.getElementById('result-modal');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'result-modal';
+    
+    overlay.innerHTML = `
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">${title}</h2>
+            </div>
+            <div class="modal-body" id="modal-body-content"></div>
+            <div class="modal-footer">
+                <button class="modal-close-btn" id="modal-close-btn">Ok</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Ativa com animação
+    requestAnimationFrame(() => {
+        overlay.classList.add('active');
+    });
+    
+    // Bind do botão fechar
+    const closeBtn = overlay.querySelector('#modal-close-btn');
+    const close = () => {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.remove(), 300);
+    };
+    closeBtn.addEventListener('click', close);
+    
+    // Fechar ao clicar fora
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) close();
+    });
+    
+    // Fechar com ESC
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            close();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+    
+    return overlay.querySelector('#modal-body-content');
+};
+
 // --- Abas ---
 document.addEventListener('DOMContentLoaded', function() {
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -15,8 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('tab-' + btn.dataset.tab).style.display = 'flex';
         });
     });
-    // Exibe a aba inicial
-    document.getElementById('tab-forja').style.display = 'flex';
+    // Exibe a aba inicial (Personagem agora é a primeira)
+    const firstTab = document.getElementById('tab-personagem');
+    if (firstTab) firstTab.style.display = 'flex';
 });
 
 // --- Histórico de Alma Gasta ---
@@ -549,17 +604,19 @@ document.getElementById('forgeForm').addEventListener('submit', function(e) {
         estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao,
         vontadePts, espiritoPts
     });
-    const resEl = document.getElementById('resultadoContent') || document.getElementById('resultado');
-    if (resEl) {
-                resEl.innerHTML = formatarSaida(stats);
-                // Bind do botão de ataque para este resultado
-                        const btn = resEl.querySelector('button[id^="btnAtacar_"]');
-                        if (btn) {
-                            // Desabilita após o primeiro clique; só reativa ao forjar novamente (novo botão)
-                            btn.addEventListener('click', function(){
-                                executarAtaqueDoConstruto(stats, btn);
-                            }, { once: true });
-                        }
+    
+    // Abre modal com resultado
+    const modalBody = createModal('Construto Forjado');
+    if (modalBody) {
+        modalBody.innerHTML = formatarSaida(stats);
+        // Bind do botão de ataque para este resultado
+        const btn = modalBody.querySelector('button[id^="btnAtacar_"]');
+        if (btn) {
+            // Desabilita após o primeiro clique; só reativa ao forjar novamente (novo botão)
+            btn.addEventListener('click', function(){
+                executarAtaqueDoConstruto(stats, btn);
+            }, { once: true });
+        }
     }
     // Salvar histórico completo (params + results), limite 20 na função
     salvarHistoricoConstruto({
@@ -669,11 +726,11 @@ function executarAtaqueDoConstruto(stats, btnEl) {
             };
         } catch(_) {}
 
-        // Render do resultado do ataque dentro do container de detalhes já existente (sem criar novo "card")
-        const resEl = document.getElementById('resultadoContent') || document.getElementById('resultado');
-        if (resEl) {
-            const detailsList = resEl.querySelectorAll('.result-container .result-details');
-            const detailsEl = detailsList[detailsList.length - 1] || resEl;
+        // Render do resultado do ataque dentro do modal (busca o modal-body-content)
+        const modalBody = document.getElementById('modal-body-content');
+        if (modalBody) {
+            const detailsList = modalBody.querySelectorAll('.result-container .result-details');
+            const detailsEl = detailsList[detailsList.length - 1] || modalBody;
 
             // Teste de Acerto — mesma estrutura/cores do Teste de Eficiência
             const hitBadge = hitInfo.furiaBonus ? ` <span class="furia-badge">Fúria</span>` : '';
