@@ -672,7 +672,7 @@ function executarAtaqueDoConstruto(stats, btnEl) {
             const detailsEl = detailsList[detailsList.length - 1] || resEl;
 
             // Teste de Acerto — mesma estrutura/cores do Teste de Eficiência
-            const hitBadge = hitInfo.furiaBonus ? ` <span class="furia-badge" style="display:inline-flex;margin-left:6px;padding:2px 6px;border-radius:999px;font-size:.85em;color:var(--text);background:linear-gradient(90deg,#f59e0b 0,#f97316 100%)">(com Fúria)</span>` : '';
+            const hitBadge = hitInfo.furiaBonus ? ` <span class="furia-badge">Fúria</span>` : '';
             const hitHtml = `
                 <hr class="section-divider">
                 <strong>Teste de Acerto</strong>${hitBadge}
