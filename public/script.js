@@ -617,6 +617,10 @@ function executarAtaqueDoConstruto(stats, btnEl) {
                     s.furyPrimed = false; // consome
                     localStorage.setItem('skills_state_v1', JSON.stringify(s));
                     furiaConsumida = true;
+                    // Dispara evento para notificar componentes React que o estado mudou
+                    try {
+                        window.dispatchEvent(new CustomEvent('skills_state_changed', { detail: 'skills_state_changed' }));
+                    } catch(_) {}
                 }
             }
         } catch(_) {}

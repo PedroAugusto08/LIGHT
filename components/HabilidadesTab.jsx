@@ -16,6 +16,25 @@ export default function HabilidadesTab() {
 
   useEffect(() => {
     setState(SkillEngine.getState());
+    
+    // Listener para sincronizar quando o localStorage mudar externamente (ex: ataque consumiu Fúria)
+    const syncFromStorage = () => {
+      setState(SkillEngine.getState());
+    };
+    window.addEventListener('storage', syncFromStorage);
+    
+    // Listener customizado para mudanças na mesma aba/janela
+    const syncLocal = (e) => {
+      if (e.detail === 'skills_state_changed') {
+        setState(SkillEngine.getState());
+      }
+    };
+    window.addEventListener('skills_state_changed', syncLocal);
+    
+    return () => {
+      window.removeEventListener('storage', syncFromStorage);
+      window.removeEventListener('skills_state_changed', syncLocal);
+    };
   }, []);
 
   const updateField = (field) => (val) => {
