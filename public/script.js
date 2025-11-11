@@ -35,16 +35,33 @@ window.createModal = function createModal(title) {
         overlay.classList.add('active');
     });
     
-    // Bind do botão fechar
-    const closeBtn = overlay.querySelector('#modal-close-btn');
+    // Handler para fechar com ESC
+    let escHandler;
+    
+    // Handler para prevenir scroll
+    const preventScroll = (e) => {
+        if (!overlay.querySelector('.modal-container').contains(e.target)) {
+            e.preventDefault();
+        }
+    };
+    
+    // Função de fechar (única versão)
     const close = () => {
         overlay.classList.remove('active');
         setTimeout(() => {
             overlay.remove();
-            // Restaura scroll do body
-            document.body.style.overflow = '';
+            // Restaura scroll do body APENAS quando não houver mais modais
+            if (!document.querySelector('.modal-overlay')) {
+                document.body.style.overflow = '';
+            }
         }, 300);
+        // Remove listeners
+        document.removeEventListener('keydown', escHandler);
+        document.removeEventListener('wheel', preventScroll);
     };
+    
+    // Bind do botão fechar
+    const closeBtn = overlay.querySelector('#modal-close-btn');
     closeBtn.addEventListener('click', close);
     
     // Fechar ao clicar fora
@@ -53,29 +70,13 @@ window.createModal = function createModal(title) {
     });
     
     // Fechar com ESC
-    const escHandler = (e) => {
-        if (e.key === 'Escape') {
-            close();
-            document.removeEventListener('keydown', escHandler);
-        }
+    escHandler = (e) => {
+        if (e.key === 'Escape') close();
     };
     document.addEventListener('keydown', escHandler);
     
     // Previne scroll com roda do mouse fora do modal
-    const preventScroll = (e) => {
-        if (!overlay.querySelector('.modal-container').contains(e.target)) {
-            e.preventDefault();
-        }
-    };
     document.addEventListener('wheel', preventScroll, { passive: false });
-    
-    // Limpa listener ao fechar
-    const originalClose = close;
-    close = () => {
-        document.removeEventListener('wheel', preventScroll);
-        originalClose();
-    };
-    closeBtn.addEventListener('click', close);
     
     return overlay.querySelector('#modal-body-content');
 };
@@ -611,44 +612,56 @@ function formatarSaida(stats) {
 }
 
 // Integração com formulário (assumindo ids existentes)
-document.getElementById('forgeForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const estilo = document.getElementById('estilo').value;
-    const almaExtra = parseInt(document.getElementById('almaExtra').value) || 0;
-    const blocosDano = parseInt(document.getElementById('dano').value) || 0;
-    const blocosDefesa = parseInt(document.getElementById('defesa').value) || 0;
-    const blocosVitalidade = parseInt(document.getElementById('vitalidade').value) || 0;
-    const blocosDuracao = parseInt(document.getElementById('duracao').value) || 0;
-    // Novos campos para eficiência
-    const vontadePts = parseInt(document.getElementById('vontade')?.value) || 3;
-    const espiritoPts = parseInt(document.getElementById('espirito')?.value) || 2;
-
-    const stats = calcularStats({
-        estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao,
-        vontadePts, espiritoPts
-    });
+function initForgeForm() {
+    const forgeForm = document.getElementById('forgeForm');
+    if (!forgeForm) return;
     
-    // Abre modal com resultado
-    const modalBody = createModal('Construto Forjado');
-    if (modalBody) {
-        modalBody.innerHTML = formatarSaida(stats);
-        // Bind do botão de ataque para este resultado
-        const btn = modalBody.querySelector('button[id^="btnAtacar_"]');
-        if (btn) {
-            // Desabilita após o primeiro clique; só reativa ao forjar novamente (novo botão)
-            btn.addEventListener('click', function(){
-                executarAtaqueDoConstruto(stats, btn);
-            }, { once: true });
+    forgeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const estilo = document.getElementById('estilo').value;
+        const almaExtra = parseInt(document.getElementById('almaExtra').value) || 0;
+        const blocosDano = parseInt(document.getElementById('dano').value) || 0;
+        const blocosDefesa = parseInt(document.getElementById('defesa').value) || 0;
+        const blocosVitalidade = parseInt(document.getElementById('vitalidade').value) || 0;
+        const blocosDuracao = parseInt(document.getElementById('duracao').value) || 0;
+        // Novos campos para eficiência
+        const vontadePts = parseInt(document.getElementById('vontade')?.value) || 3;
+        const espiritoPts = parseInt(document.getElementById('espirito')?.value) || 2;
+
+        const stats = calcularStats({
+            estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao,
+            vontadePts, espiritoPts
+        });
+        
+        // Abre modal com resultado
+        const modalBody = createModal('Construto Forjado');
+        if (modalBody) {
+            modalBody.innerHTML = formatarSaida(stats);
+            // Bind do botão de ataque para este resultado
+            const btn = modalBody.querySelector('button[id^="btnAtacar_"]');
+            if (btn) {
+                // Desabilita após o primeiro clique; só reativa ao forjar novamente (novo botão)
+                btn.addEventListener('click', function(){
+                    executarAtaqueDoConstruto(stats, btn);
+                }, { once: true });
+            }
         }
-    }
-    // Salvar histórico completo (params + results), limite 20 na função
-    salvarHistoricoConstruto({
-        data: new Date().toLocaleString(),
-        alma: stats.almaTotal,
-        params: { estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao, vontadePts, espiritoPts },
-        results: stats
+        // Salvar histórico completo (params + results), limite 20 na função
+        salvarHistoricoConstruto({
+            data: new Date().toLocaleString(),
+            alma: stats.almaTotal,
+            params: { estilo, almaExtra, blocosDano, blocosDefesa, blocosVitalidade, blocosDuracao, vontadePts, espiritoPts },
+            results: stats
+        });
     });
-});
+}
+
+// Inicializa o formulário quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initForgeForm);
+} else {
+    initForgeForm();
+}
 
 // --- Execução do ataque do construto ---
 function executarAtaqueDoConstruto(stats, btnEl) {
