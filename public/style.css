@@ -39,16 +39,18 @@
     display: flex;
     gap: 0;
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto 18px auto;
     border-bottom: 2px solid var(--border);
     background: var(--surface);
     border-radius: 0 0 10px 10px;
     overflow: hidden;
+    flex-shrink: 0;
 }
 .tab-btn {
     flex: 1 1 0;
-    padding: 14px 0;
+    min-width: 0;
+    padding: 14px 12px;
     background: none;
     border: none;
     font-size: 1.1em;
@@ -57,6 +59,9 @@
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     border-bottom: 2.5px solid transparent;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .tab-btn.active {
     background: var(--surface-2);
@@ -497,10 +502,7 @@ button#forjarBtn:hover {
     font-weight: 700;
     text-align: center;
     margin-bottom: 32px;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text);
 }
 
 .status-section {
@@ -601,6 +603,7 @@ button#forjarBtn:hover {
 .stat-inputs {
     display: flex;
     gap: 12px;
+    justify-content: center;
 }
 
 .stat-inputs.single-input {
@@ -608,16 +611,18 @@ button#forjarBtn:hover {
 }
 
 .input-group {
-    flex: 1;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    max-width: 140px;
 }
 
 .input-group label {
     font-size: 0.9em;
     color: var(--muted);
     font-weight: 500;
+    text-align: center;
 }
 
 .stat-inputs input[type="number"] {

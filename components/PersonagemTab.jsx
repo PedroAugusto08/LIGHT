@@ -40,8 +40,6 @@ export default function PersonagemTab() {
       <h1 className="personagem-title">Status do Personagem</h1>
       
       <div className="status-section">
-        <h2 className="section-heading">Status Base</h2>
-        
         <div className="stat-card">
           <div className="stat-header">
             <label>Vitalidade</label>
