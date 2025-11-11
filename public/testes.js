@@ -280,9 +280,8 @@ function executarFavorito(index) {
 function __lightInitTestesForm(){
   if (window.__LIGHT_TESTES_FORM_INIT__) return; // evita dupla
   const form = document.getElementById('testsForm');
-  const saida = document.getElementById('resultadoTesteContent') || document.getElementById('resultadoTeste');
   const addFavBtn = document.getElementById('addFavoritoBtn');
-  if (!form || !saida) return; // tab ainda não montada
+  if (!form) return; // tab ainda não montada
   window.__LIGHT_TESTES_FORM_INIT__ = true;
 
   // Render inicial de favoritos
@@ -342,20 +341,6 @@ function __lightInitTestesForm(){
           </div>
         `;
       }
-    } else {
-      // Fallback se createModal não estiver disponível
-      saida.innerHTML = `
-        <div class="result-container">
-          <div class="result-main">
-            <strong>Perícia:</strong> ${pericia}<br>
-            <strong>Atributo:</strong> ${atributo}<br>
-            <strong>Total do Teste:</strong> ${total}
-          </div>
-          <div class="result-details">
-            ${det.map(li => `<div style='margin:4px 0;'>${li}</div>`).join('')}
-          </div>
-        </div>
-      `;
     }
 
   // Envio assíncrono para Discord via backend (se permitido)

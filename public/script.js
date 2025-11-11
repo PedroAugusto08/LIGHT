@@ -27,6 +27,9 @@ window.createModal = function createModal(title) {
     
     document.body.appendChild(overlay);
     
+    // Bloqueia scroll do body
+    document.body.style.overflow = 'hidden';
+    
     // Ativa com animação
     requestAnimationFrame(() => {
         overlay.classList.add('active');
@@ -36,7 +39,11 @@ window.createModal = function createModal(title) {
     const closeBtn = overlay.querySelector('#modal-close-btn');
     const close = () => {
         overlay.classList.remove('active');
-        setTimeout(() => overlay.remove(), 300);
+        setTimeout(() => {
+            overlay.remove();
+            // Restaura scroll do body
+            document.body.style.overflow = '';
+        }, 300);
     };
     closeBtn.addEventListener('click', close);
     
@@ -53,6 +60,22 @@ window.createModal = function createModal(title) {
         }
     };
     document.addEventListener('keydown', escHandler);
+    
+    // Previne scroll com roda do mouse fora do modal
+    const preventScroll = (e) => {
+        if (!overlay.querySelector('.modal-container').contains(e.target)) {
+            e.preventDefault();
+        }
+    };
+    document.addEventListener('wheel', preventScroll, { passive: false });
+    
+    // Limpa listener ao fechar
+    const originalClose = close;
+    close = () => {
+        document.removeEventListener('wheel', preventScroll);
+        originalClose();
+    };
+    closeBtn.addEventListener('click', close);
     
     return overlay.querySelector('#modal-body-content');
 };

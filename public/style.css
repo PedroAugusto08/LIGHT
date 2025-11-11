@@ -666,6 +666,8 @@ button#forjarBtn:hover {
     transition: opacity 0.3s ease;
     padding: 20px;
     box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .modal-overlay.active {
