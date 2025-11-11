@@ -479,6 +479,169 @@ button#forjarBtn:hover {
     background: var(--chip-empty);
     border-radius: 999px;
 }
+
+/* ==================== Aba Personagem ==================== */
+.personagem-container {
+    max-width: 700px;
+    margin: 32px auto;
+    padding: 32px 28px;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: 0 6px 22px -6px rgba(0,0,0,0.55), 
+                0 0 0 1px rgba(255,255,255,0.06), 
+                0 0 18px -4px rgba(34,211,238,0.25);
+}
+
+.personagem-title {
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 32px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.section-heading {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+}
+
+.stat-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.stat-header label {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.stat-values {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.stat-bar-container {
+    width: 100%;
+    height: 24px;
+    background: var(--chip-empty);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.stat-bar {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0.1) 0%, 
+        rgba(255,255,255,0.2) 50%, 
+        rgba(255,255,255,0.1) 100%);
+    animation: shine 2s ease-in-out infinite;
+}
+
+@keyframes shine {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+.vida-bar {
+    background: linear-gradient(90deg, #dc2626 0%, #f87171 100%);
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.6);
+}
+
+.alma-bar {
+    background: linear-gradient(90deg, #0ea5e9 0%, #22d3ee 100%);
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
+}
+
+.stat-inputs {
+    display: flex;
+    gap: 12px;
+}
+
+.stat-inputs.single-input {
+    justify-content: center;
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 0.9em;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.stat-inputs input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 1em;
+    font-weight: 600;
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.stat-inputs input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(24, 216, 237, 0.2);
+}
+
+.stat-inputs.single-input input[type="number"] {
+    max-width: 200px;
+}
 .hybrid-control input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     margin-top: -6px;

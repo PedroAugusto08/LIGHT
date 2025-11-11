@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Script from 'next/script'
 import { useEffect } from 'react'
 import HabilidadesTab from '../components/HabilidadesTab'
+import PersonagemTab from '../components/PersonagemTab'
 
 export default function Home() {
   // Removido carregamento manual duplicado (Next Script já injeta)
@@ -24,13 +25,17 @@ export default function Home() {
       <div className="bg-layer" aria-hidden="true"></div>
       <div className="tabs-container">
         <div className="tabs-bar">
-          <button className="tab-btn active" data-tab="forja">Forja</button>
+          <button className="tab-btn active" data-tab="personagem">Personagem</button>
+          <button className="tab-btn" data-tab="forja">Forja</button>
           <button className="tab-btn" data-tab="testes">Testes</button>
           <button className="tab-btn" data-tab="habilidades">Habilidades</button>
           <button className="tab-btn" data-tab="historico">Histórico de Construtos</button>
         </div>
         <div className="tabs-content">
-          <div className="tab-pane" id="tab-forja" style={{display:'flex'}}>
+          <div className="tab-pane" id="tab-personagem" style={{display:'flex'}}>
+            <PersonagemTab />
+          </div>
+          <div className="tab-pane" id="tab-forja" style={{display:'none'}}>
             <div className="main-flex">
               <div className="container">
                 <h1>Forjador de Construtos</h1>

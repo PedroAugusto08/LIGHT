@@ -84,20 +84,9 @@ export default function HabilidadesTab() {
       {/* Coluna esquerda: formulário de estado e ações */}
       <div className="container">
         <h2 style={{textAlign:'center', marginBottom: 6}}>Habilidades</h2>
-  <label>Alma atual</label>
-  <input type="number" min={0} value={state.alma} onChange={(e)=>updateField('alma')(Number(e.target.value))} />
-
-  <label>Alma máxima</label>
-  <input type="number" min={0} value={state.almaMax} onChange={(e)=>updateField('almaMax')(Number(e.target.value))} />
-
-  <label>Vitalidade Máxima</label>
-  <input type="number" min={1} value={state.maxVitalidade} onChange={(e)=>updateField('maxVitalidade')(Number(e.target.value))} />
-
-  <label>Vitalidade Atual</label>
-  <input type="number" min={0} value={state.vitalidadeAtual} onChange={(e)=>updateField('vitalidadeAtual')(Number(e.target.value))} />
-
-        <label>Defesa base</label>
-        <input type="number" min={0} value={state.defesaBase} onChange={(e)=>updateField('defesaBase')(Number(e.target.value))} />
+        <p style={{color:'var(--muted)', fontSize:'0.95em', marginBottom: 16, textAlign:'center'}}>
+          Gerencie suas habilidades ativas e seus efeitos em combate.
+        </p>
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
           <button type="button" onClick={onActivateInsano}>Ativar Insano & Forte (-15 Alma)</button>
