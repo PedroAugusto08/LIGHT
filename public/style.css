@@ -1311,13 +1311,6 @@ button#forjarBtn:hover {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Responsivo - esconde o card em telas pequenas */
-@media (max-width: 1400px) {
-    .character-portrait-card {
-        display: none;
-    }
-}
-
 /* ========== Notes Card (Fixed Right) ========== */
 .notes-card {
     position: fixed;
@@ -1406,11 +1399,4 @@ button#forjarBtn:hover {
 .notes-display:empty::before {
     content: 'Clique para adicionar anotações...';
     color: var(--muted);
-}
-
-/* Responsivo - esconde o card de notas em telas pequenas */
-@media (max-width: 1800px) {
-    .notes-card {
-        display: none;
-    }
 }
