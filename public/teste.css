@@ -1,6 +1,7 @@
 #tab-testes h2 {
-  margin: 6px 80px;
+  margin: 0 0 12px 0;
   font-weight: 600;
+  font-size: 1.4em;
 }
 
 /* Layout: formulário à esquerda; à direita ficam Favoritos (acima) e Resultado (abaixo) */

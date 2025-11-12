@@ -40,9 +40,9 @@ export default function Home() {
             <PersonagemTab />
           </div>
           <div className="tab-pane" id="tab-forja" style={{display:'none'}}>
+            <h1 className="personagem-title">Forja de Construtos</h1>
             <div className="main-flex">
               <div className="container">
-                <h1>Forjador de Construtos</h1>
                 <form id="forgeForm" onSubmit={(e)=>e.preventDefault()}>
                   <label htmlFor="estilo">Estilo do Construto</label>
                   <div className="select-wrapper">
@@ -89,9 +89,9 @@ export default function Home() {
             </div>
           </div>
           <div className="tab-pane" id="tab-testes" style={{display:'none'}}>
+            <h1 className="personagem-title">Testes e Favoritos</h1>
             <div className="main-flex">
               <div className="container">
-                <h2>Testes Interativos</h2>
                 <form id="testsForm" onSubmit={(e)=>e.preventDefault()}>
                   <label htmlFor="teste-pericia">Perícia</label>
                   <div className="select-wrapper">
@@ -120,7 +120,6 @@ export default function Home() {
                 </form>
               </div>
               <div className="favoritos-container" style={{maxWidth:'500px',margin:'0 auto'}}>
-                <h2>Favoritos</h2>
                 <div id="favoritos-vazio" className="favoritos-empty">Nenhum favorito ainda.</div>
                 <div id="favoritos-list"></div>
               </div>
