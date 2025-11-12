@@ -798,46 +798,76 @@ button#forjarBtn:hover {
 /* ==================== Gerenciador de Atributos e Perícias ==================== */
 .character-stats-manager {
     margin-top: 40px;
-}
-
-.stats-tabs {
     display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-    border-bottom: 2px solid var(--border);
+    flex-direction: column;
+    gap: 16px;
 }
 
-.stats-tab-btn {
-    flex: 1;
-    padding: 14px 20px;
-    background: var(--surface-2);
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: var(--muted);
-    font-size: 1.1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-radius: 8px 8px 0 0;
-}
-
-.stats-tab-btn:hover {
-    background: var(--surface);
-    color: var(--text);
-}
-
-.stats-tab-btn.active {
-    background: var(--surface);
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-}
-
-.stats-content {
+/* Acordeão */
+.stats-accordion {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 24px;
+    overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.stats-accordion:hover {
+    border-color: var(--accent);
+}
+
+.accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    background: var(--surface-2);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text);
+}
+
+.accordion-header:hover {
+    background: var(--surface);
+}
+
+.accordion-header.open {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.accordion-icon {
+    font-size: 1.5em;
+    line-height: 1;
+}
+
+.accordion-title {
+    flex: 1;
+    font-size: 1.3em;
+    font-weight: 700;
+    text-align: left;
+}
+
+.accordion-arrow {
+    font-size: 1em;
+    color: var(--accent);
+    transition: transform 0.3s ease;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    padding: 0 24px;
+}
+
+.accordion-content.open {
+    max-height: 800px;
+    padding: 24px;
+    overflow-y: auto;
 }
 
 /* Grid de Atributos */
@@ -884,26 +914,23 @@ button#forjarBtn:hover {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-height: 600px;
-    overflow-y: auto;
-    padding-right: 8px;
 }
 
-.pericias-list::-webkit-scrollbar {
+.accordion-content.open::-webkit-scrollbar {
     width: 8px;
 }
 
-.pericias-list::-webkit-scrollbar-track {
+.accordion-content.open::-webkit-scrollbar-track {
     background: var(--surface-2);
     border-radius: 4px;
 }
 
-.pericias-list::-webkit-scrollbar-thumb {
+.accordion-content.open::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 4px;
 }
 
-.pericias-list::-webkit-scrollbar-thumb:hover {
+.accordion-content.open::-webkit-scrollbar-thumb:hover {
     background: var(--accent);
 }
 

@@ -3,7 +3,8 @@ import CharacterStats from '../lib/character/stats';
 
 export default function CharacterStatsManager() {
   const [charState, setCharState] = useState(CharacterStats.getState());
-  const [activeTab, setActiveTab] = useState('atributos');
+  const [atributosOpen, setAtributosOpen] = useState(false);
+  const [periciasOpen, setPericiasOpen] = useState(false);
 
   useEffect(() => {
     // Sincronização com mudanças externas
@@ -39,23 +40,18 @@ export default function CharacterStatsManager() {
 
   return (
     <div className="character-stats-manager">
-      <div className="stats-tabs">
+      {/* Acordeão de Atributos */}
+      <div className="stats-accordion">
         <button 
-          className={`stats-tab-btn ${activeTab === 'atributos' ? 'active' : ''}`}
-          onClick={() => setActiveTab('atributos')}
+          className={`accordion-header ${atributosOpen ? 'open' : ''}`}
+          onClick={() => setAtributosOpen(!atributosOpen)}
         >
-          📊 Atributos
+          <span className="accordion-icon">📊</span>
+          <span className="accordion-title">Atributos</span>
+          <span className="accordion-arrow">{atributosOpen ? '▼' : '▶'}</span>
         </button>
-        <button 
-          className={`stats-tab-btn ${activeTab === 'pericias' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pericias')}
-        >
-          ⚔️ Perícias
-        </button>
-      </div>
-
-      {activeTab === 'atributos' && (
-        <div className="stats-content">
+        
+        <div className={`accordion-content ${atributosOpen ? 'open' : ''}`}>
           <div className="stats-grid">
             {atributosList.map(nome => (
               <div key={nome} className="stat-item">
@@ -72,10 +68,20 @@ export default function CharacterStatsManager() {
             ))}
           </div>
         </div>
-      )}
+      </div>
 
-      {activeTab === 'pericias' && (
-        <div className="stats-content">
+      {/* Acordeão de Perícias */}
+      <div className="stats-accordion">
+        <button 
+          className={`accordion-header ${periciasOpen ? 'open' : ''}`}
+          onClick={() => setPericiasOpen(!periciasOpen)}
+        >
+          <span className="accordion-icon">⚔️</span>
+          <span className="accordion-title">Perícias</span>
+          <span className="accordion-arrow">{periciasOpen ? '▼' : '▶'}</span>
+        </button>
+        
+        <div className={`accordion-content ${periciasOpen ? 'open' : ''}`}>
           <div className="pericias-list">
             {periciasList.map(nome => {
               const pericia = charState.pericias[nome];
@@ -119,7 +125,7 @@ export default function CharacterStatsManager() {
             })}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
