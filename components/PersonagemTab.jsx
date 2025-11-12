@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SkillEngine from '../lib/skills/engine';
+import CharacterStatsManager from './CharacterStatsManager';
 
 export default function PersonagemTab() {
   const [state, setState] = useState(SkillEngine.getState());
@@ -252,6 +253,9 @@ export default function PersonagemTab() {
           </button>
         </div>
       </div>
+
+      {/* Gerenciador de Atributos e Perícias */}
+      <CharacterStatsManager />
     </div>
   );
 }

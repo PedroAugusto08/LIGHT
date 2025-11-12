@@ -795,6 +795,206 @@ button#forjarBtn:hover {
     transform: translateY(-1px);
 }
 
+/* ==================== Gerenciador de Atributos e Perícias ==================== */
+.character-stats-manager {
+    margin-top: 40px;
+}
+
+.stats-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--border);
+}
+
+.stats-tab-btn {
+    flex: 1;
+    padding: 14px 20px;
+    background: var(--surface-2);
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--muted);
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
+}
+
+.stats-tab-btn:hover {
+    background: var(--surface);
+    color: var(--text);
+}
+
+.stats-tab-btn.active {
+    background: var(--surface);
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.stats-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Grid de Atributos */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-item-label {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: capitalize;
+}
+
+.stat-item-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1.1em;
+    font-weight: 700;
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.stat-item-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(24, 216, 237, 0.2);
+}
+
+/* Lista de Perícias */
+.pericias-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.pericias-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pericias-list::-webkit-scrollbar-track {
+    background: var(--surface-2);
+    border-radius: 4px;
+}
+
+.pericias-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.pericias-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+.pericia-item {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    transition: all 0.2s ease;
+}
+
+.pericia-item:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+}
+
+.pericia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.pericia-name {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.pericia-perito-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.pericia-perito-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.toggle-text {
+    font-size: 0.9em;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.pericia-perito-toggle input:checked + .toggle-text {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.pericia-inputs {
+    display: flex;
+    gap: 12px;
+}
+
+.pericia-input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pericia-input-group label {
+    font-size: 0.85em;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.pericia-input-group input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 1em;
+    font-weight: 600;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.pericia-input-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
 /* ==================== Modal de Resultados ==================== */
 .modal-overlay {
     position: fixed;

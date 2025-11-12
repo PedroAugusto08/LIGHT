@@ -5,97 +5,100 @@ window.__LIGHT_TESTES_LOADED__ = true;
 
 // --- Testes Interativos ---
 
-// Atributos (rodados com d6 sempre)
-var ATRIBUTOS = {
-  "AGILIDADE": 0,
-  "CARISMA": 0,
-  "CONHECIMENTO": 0,
-  "ESPÍRITO": 2,
-  "FORÇA": 0,
-  "FORTITUDE": 1,
-  "PERCEPÇÃO": 0,
-};
+// Função para carregar stats do personagem do localStorage
+function loadCharacterStats() {
+  const STORAGE_KEY = 'character_stats_v1';
+  const DEFAULT_ATRIBUTOS = {
+    "AGILIDADE": 0,
+    "CARISMA": 0,
+    "CONHECIMENTO": 0,
+    "ESPÍRITO": 2,
+    "FORÇA": 0,
+    "FORTITUDE": 1,
+    "PERCEPÇÃO": 0,
+  };
 
-// Perícias
-// Quantidade de dados por perícia (ajuste conforme seu personagem)
-var PERICIAS_QTD = {
-  "ARCANISMO": 1,
-  "CIÊNCIAS": 0,
-  "CULINÁRIA": 0,
-  "DIPLOMACIA": 0,
-  "DESTREZA": 0,
-  "FURTIVIDADE": 0,
-  "FULGOR": 2,
-  "INVESTIGAÇÃO": 0,
-  "INTELIGÊNCIA": 0,
-  "INTUIÇÃO": 0,
-  "INICIATIVA": 0,
-  "LUTA": 0,
-  "MENTE": 1,
-  "MEDICINA": 0,
-  "OBSERVAÇÃO": 0,
-  "PONTARIA": 0,
-  "REFLEXO": 0,
-  "SOBREVIVÊNCIA": 0,
-  "SORTE": 0,
-  "TÉCNICA": 0,
-  "VIGOR": 0,
-  "VONTADE": 3,
-};
+  const DEFAULT_PERICIAS = {
+    "ARCANISMO": { qtd: 1, bonusFixo: 0, perito: false },
+    "CIÊNCIAS": { qtd: 0, bonusFixo: 0, perito: false },
+    "CULINÁRIA": { qtd: 0, bonusFixo: 0, perito: false },
+    "DIPLOMACIA": { qtd: 0, bonusFixo: 0, perito: false },
+    "DESTREZA": { qtd: 0, bonusFixo: 0, perito: false },
+    "FURTIVIDADE": { qtd: 0, bonusFixo: 0, perito: false },
+    "FULGOR": { qtd: 2, bonusFixo: 0, perito: true },
+    "INVESTIGAÇÃO": { qtd: 0, bonusFixo: 0, perito: false },
+    "INTELIGÊNCIA": { qtd: 0, bonusFixo: 0, perito: false },
+    "INTUIÇÃO": { qtd: 0, bonusFixo: 0, perito: false },
+    "INICIATIVA": { qtd: 0, bonusFixo: 0, perito: false },
+    "LUTA": { qtd: 0, bonusFixo: 0, perito: false },
+    "MENTE": { qtd: 1, bonusFixo: 0, perito: false },
+    "MEDICINA": { qtd: 0, bonusFixo: 0, perito: false },
+    "OBSERVAÇÃO": { qtd: 0, bonusFixo: 0, perito: false },
+    "PONTARIA": { qtd: 0, bonusFixo: 0, perito: false },
+    "REFLEXO": { qtd: 0, bonusFixo: 0, perito: false },
+    "SOBREVIVÊNCIA": { qtd: 0, bonusFixo: 0, perito: false },
+    "SORTE": { qtd: 0, bonusFixo: 0, perito: false },
+    "TÉCNICA": { qtd: 0, bonusFixo: 0, perito: false },
+    "VIGOR": { qtd: 0, bonusFixo: 0, perito: false },
+    "VONTADE": { qtd: 3, bonusFixo: 12, perito: true },
+  };
 
-// Bônus fixo por perícia (opcional)
-var PERICIAS_BONUS_FIXO = {
-  "ARCANISMO": 0,
-  "CIÊNCIAS": 0,
-  "CULINÁRIA": 0,
-  "DIPLOMACIA": 0,
-  "DESTREZA": 0,
-  "FURTIVIDADE": 0,
-  "FULGOR": 0,
-  "INVESTIGAÇÃO": 0,
-  "INTELIGÊNCIA": 0,
-  "INTUIÇÃO": 0,
-  "INICIATIVA": 0,
-  "LUTA": 0,
-  "MENTE": 0,
-  "MEDICINA": 0,
-  "OBSERVAÇÃO": 0,
-  "PONTARIA": 0,
-  "REFLEXO": 0,
-  "SOBREVIVÊNCIA": 0,
-  "SORTE": 0,
-  "TÉCNICA": 0,
-  "VIGOR": 0,
-  "VONTADE": 12,
-};
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        atributos: { ...DEFAULT_ATRIBUTOS, ...(parsed.atributos || {}) },
+        pericias: { ...DEFAULT_PERICIAS, ...(parsed.pericias || {}) }
+      };
+    }
+  } catch (e) {
+    console.warn('Erro ao carregar stats:', e);
+  }
+  
+  return {
+    atributos: DEFAULT_ATRIBUTOS,
+    pericias: DEFAULT_PERICIAS
+  };
+}
 
-// Mapa fixo de Peritos por perícia (true = usa d12; false = usa d10)
-// Edite este objeto quando você se tornar perito em alguma perícia.
-// Ex.: PERICIAS_PERITO['FULGOR'] = true
-var PERICIAS_PERITO = {
-  "ARCANISMO": false,
-  "CIÊNCIAS": false,
-  "CULINÁRIA": false,
-  "DIPLOMACIA": false,
-  "DESTREZA": false,
-  "FURTIVIDADE": false,
-  "FULGOR": true,
-  "INVESTIGAÇÃO": false,
-  "INTELIGÊNCIA": false,
-  "INTUIÇÃO": false,
-  "INICIATIVA": false,
-  "LUTA": false,
-  "MENTE": false,
-  "MEDICINA": false,
-  "OBSERVAÇÃO": false,
-  "PONTARIA": false,
-  "REFLEXO": false,
-  "SOBREVIVÊNCIA": false,
-  "SORTE": false,
-  "TÉCNICA": false,
-  "VIGOR": false,
-  "VONTADE": true,
-};
+// Carrega os stats e converte para formato antigo (compatibilidade)
+var characterData = loadCharacterStats();
+var ATRIBUTOS = characterData.atributos;
+
+var PERICIAS_QTD = {};
+var PERICIAS_BONUS_FIXO = {};
+var PERICIAS_PERITO = {};
+
+Object.keys(characterData.pericias).forEach(nome => {
+  const p = characterData.pericias[nome];
+  PERICIAS_QTD[nome] = p.qtd;
+  PERICIAS_BONUS_FIXO[nome] = p.bonusFixo;
+  PERICIAS_PERITO[nome] = p.perito;
+});
+
+// Listener para atualizar quando os dados mudarem
+if (typeof window !== 'undefined') {
+  window.addEventListener('character_stats_changed', function(e) {
+    if (e.detail) {
+      ATRIBUTOS = e.detail.atributos;
+      Object.keys(e.detail.pericias).forEach(nome => {
+        const p = e.detail.pericias[nome];
+        PERICIAS_QTD[nome] = p.qtd;
+        PERICIAS_BONUS_FIXO[nome] = p.bonusFixo;
+        PERICIAS_PERITO[nome] = p.perito;
+      });
+      
+      // Atualiza window.__LIGHT_RULES
+      window.__LIGHT_RULES = {
+        ATRIBUTOS,
+        PERICIAS_QTD,
+        PERICIAS_BONUS_FIXO,
+        PERICIAS_PERITO,
+      };
+    }
+  });
+}
 
 // Expõe configuração básica para outros módulos (ataque automático da Forja)
 try {
