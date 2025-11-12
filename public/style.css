@@ -1189,18 +1189,18 @@ button#forjarBtn:hover {
 /* ========== Character Portrait Card (Fixed Left) ========== */
 .character-portrait-card {
     position: fixed;
-    left: 20px;
-    top: 120px;
-    width: 280px;
+    left: 15px;
+    top: 110px;
+    width: 240px;
     background: var(--surface);
     border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 10px;
+    padding: 14px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     z-index: 100;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .portrait-container {
@@ -1241,17 +1241,17 @@ button#forjarBtn:hover {
 .portrait-stats {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .portrait-stat-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 }
 
 .portrait-stat-item label {
-    font-size: 0.85em;
+    font-size: 0.75em;
     font-weight: 600;
     color: var(--muted);
     text-transform: uppercase;
@@ -1261,10 +1261,10 @@ button#forjarBtn:hover {
 .portrait-stat-bar {
     position: relative;
     width: 100%;
-    height: 28px;
+    height: 24px;
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 5px;
     overflow: hidden;
 }
 
@@ -1289,7 +1289,7 @@ button#forjarBtn:hover {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 0.85em;
+    font-size: 0.75em;
     font-weight: 700;
     color: var(--text);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -1298,14 +1298,14 @@ button#forjarBtn:hover {
 
 .portrait-stat-value {
     width: 100%;
-    height: 28px;
+    height: 24px;
     background: linear-gradient(90deg, #059669, #10b981);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: 700;
     color: var(--text);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -1314,59 +1314,59 @@ button#forjarBtn:hover {
 /* ========== Notes Card (Fixed Right) ========== */
 .notes-card {
     position: fixed;
-    right: 20px;
-    top: 120px;
-    width: 320px;
-    max-height: calc(100vh - 140px);
+    right: 15px;
+    top: 110px;
+    width: 280px;
+    max-height: calc(100vh - 130px);
     background: var(--surface);
     border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 10px;
+    padding: 14px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     z-index: 100;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .notes-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding-bottom: 12px;
+    gap: 6px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--border);
 }
 
 .notes-icon {
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 .notes-header h3 {
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1.05em;
     color: var(--text);
     font-weight: 600;
 }
 
 .notes-content {
     flex: 1;
-    min-height: 400px;
-    max-height: calc(100vh - 240px);
+    min-height: 350px;
+    max-height: calc(100vh - 220px);
     overflow-y: auto;
 }
 
 .notes-textarea {
     width: 100%;
     height: 100%;
-    min-height: 400px;
+    min-height: 350px;
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
+    border-radius: 7px;
+    padding: 10px;
     color: var(--text);
-    font-size: 0.95em;
+    font-size: 0.85em;
     font-family: inherit;
-    line-height: 1.6;
+    line-height: 1.5;
     resize: vertical;
     outline: none;
     transition: border-color 0.3s ease;
@@ -1378,14 +1378,14 @@ button#forjarBtn:hover {
 
 .notes-display {
     width: 100%;
-    min-height: 400px;
+    min-height: 350px;
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
+    border-radius: 7px;
+    padding: 10px;
     color: var(--text);
-    font-size: 0.95em;
-    line-height: 1.6;
+    font-size: 0.85em;
+    line-height: 1.5;
     cursor: text;
     white-space: pre-wrap;
     word-wrap: break-word;
