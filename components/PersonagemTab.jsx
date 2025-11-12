@@ -4,6 +4,13 @@ import SkillEngine from '../lib/skills/engine';
 export default function PersonagemTab() {
   const [state, setState] = useState(SkillEngine.getState());
   const [editingField, setEditingField] = useState(null);
+  const [animations, setAnimations] = useState({
+    vitalidadeAtual: null,
+    alma: null,
+    maxVitalidade: null,
+    almaMax: null,
+    defesaBase: null
+  });
 
   useEffect(() => {
     setState(SkillEngine.getState());
@@ -27,8 +34,23 @@ export default function PersonagemTab() {
     };
   }, []);
 
+  const triggerAnimation = (field, isIncrease) => {
+    setAnimations(prev => ({ ...prev, [field]: isIncrease ? 'increase' : 'decrease' }));
+    setTimeout(() => {
+      setAnimations(prev => ({ ...prev, [field]: null }));
+    }, 600);
+  };
+
   const updateField = (field, val) => {
-    const next = SkillEngine.setState({ [field]: val });
+    const oldValue = state[field] || 0;
+    const newValue = typeof val === 'number' ? val : 0;
+    
+    // Detecta se aumentou ou diminuiu
+    if (newValue !== oldValue) {
+      triggerAnimation(field, newValue > oldValue);
+    }
+    
+    const next = SkillEngine.setState({ [field]: newValue });
     setState(next);
   };
 
@@ -45,10 +67,22 @@ export default function PersonagemTab() {
       newValue = Math.max(0, newValue);
     }
     
-    updateField(field, newValue);
+    // Só aplica se houve mudança real
+    if (newValue !== currentValue) {
+      triggerAnimation(field, delta > 0);
+      updateField(field, newValue);
+    }
   };
 
   const restoreAll = () => {
+    // Anima ambos os campos se houver mudança
+    if (state.vitalidadeAtual < state.maxVitalidade) {
+      triggerAnimation('vitalidadeAtual', true);
+    }
+    if (state.alma < state.almaMax) {
+      triggerAnimation('alma', true);
+    }
+    
     const next = SkillEngine.setState({ 
       vitalidadeAtual: state.maxVitalidade,
       alma: state.almaMax
@@ -76,7 +110,7 @@ export default function PersonagemTab() {
             <span className="stat-label">Vitalidade</span>
             <div className="stat-value-display">
               <span 
-                className="stat-value-num editable" 
+                className={`stat-value-num editable ${animations.vitalidadeAtual ? `animate-${animations.vitalidadeAtual}` : ''}`}
                 onClick={() => setEditingField('vitalidadeAtual')}
                 title="Clique para editar"
               >
@@ -96,7 +130,7 @@ export default function PersonagemTab() {
               </span>
               <span className="stat-separator">/</span>
               <span 
-                className="stat-value-num editable" 
+                className={`stat-value-num editable ${animations.maxVitalidade ? `animate-${animations.maxVitalidade}` : ''}`}
                 onClick={() => setEditingField('maxVitalidade')}
                 title="Clique para editar"
               >
@@ -133,7 +167,7 @@ export default function PersonagemTab() {
             <span className="stat-label">Alma</span>
             <div className="stat-value-display">
               <span 
-                className="stat-value-num editable" 
+                className={`stat-value-num editable ${animations.alma ? `animate-${animations.alma}` : ''}`}
                 onClick={() => setEditingField('alma')}
                 title="Clique para editar"
               >
@@ -153,7 +187,7 @@ export default function PersonagemTab() {
               </span>
               <span className="stat-separator">/</span>
               <span 
-                className="stat-value-num editable" 
+                className={`stat-value-num editable ${animations.almaMax ? `animate-${animations.almaMax}` : ''}`} 
                 onClick={() => setEditingField('almaMax')}
                 title="Clique para editar"
               >
@@ -190,7 +224,7 @@ export default function PersonagemTab() {
             <span className="stat-label">Defesa Base</span>
             <div className="stat-value-display">
               <span 
-                className="stat-value-num editable single" 
+                className={`stat-value-num editable single ${animations.defesaBase ? `animate-${animations.defesaBase}` : ''}`}
                 onClick={() => setEditingField('defesaBase')}
                 title="Clique para editar"
               >
