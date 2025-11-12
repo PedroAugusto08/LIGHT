@@ -5,13 +5,6 @@ export default function HabilidadesTab() {
   const [state, setState] = useState(SkillEngine.getState());
   const [lastMsg, setLastMsg] = useState(null);
 
-  // Testes rápidos
-  const [testDamageIn, setTestDamageIn] = useState(50);
-  const [testVitMaxAlvo, setTestVitMaxAlvo] = useState(200);
-  const [testBlockSuccess, setTestBlockSuccess] = useState(true);
-  const [lastInRes, setLastInRes] = useState(null);
-  // Removido: teste rápido de ataque (ataque agora acontece com construtos na aba Forja)
-
   const defesaTotal = useMemo(() => SkillEngine.getDefesaTotal(), [state.almaMax, state.defesaBase, state.insano.activeRounds]);
 
   useEffect(() => {
@@ -136,16 +129,6 @@ export default function HabilidadesTab() {
     }
   }
 
-  function onTestIncoming() {
-    const res = SkillEngine.processIncomingPhysical({
-      damage: Number(testDamageIn) || 0,
-      isBlockSuccess: Boolean(testBlockSuccess),
-      targetMaxVitalidade: Number(testVitMaxAlvo) || 0,
-    });
-    setState(res.state);
-    setLastInRes(res);
-  }
-
   function onTestarBloqueio() {
     // Buscar valores atuais
     const rules = (typeof window !== 'undefined' && window.__LIGHT_RULES) ? window.__LIGHT_RULES : null;
@@ -157,7 +140,17 @@ export default function HabilidadesTab() {
     // Rolar dados
     const d20 = Math.floor(Math.random() * 20) + 1;
     const d4 = Math.floor(Math.random() * 4) + 1;
-    const totalBloqueio = d20 + fortitude + defesaBase + defesaAdicional;
+    
+    // Rolar 1d6 por ponto de Fortitude
+    const fortitudeDice = [];
+    let fortitudeTotal = 0;
+    for (let i = 0; i < fortitude; i++) {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      fortitudeDice.push(roll);
+      fortitudeTotal += roll;
+    }
+    
+    const totalBloqueio = d20 + fortitudeTotal + defesaBase + defesaAdicional;
     
     // Abrir modal com resultado
     if (typeof window !== 'undefined' && window.createModal) {
@@ -176,7 +169,7 @@ export default function HabilidadesTab() {
                 🎲 <strong>1d20:</strong> <span style="color: #1976d2; font-size: 1.2em;">${d20}</span>
               </li>
               <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">
-                💪 <strong>Fortitude:</strong> +${fortitude}
+                💪 <strong>Fortitude (${fortitude}d6):</strong> +${fortitudeTotal}${fortitudeDice.length > 0 ? ` <span style="color: var(--muted); font-size: 0.9em;">[${fortitudeDice.join(', ')}]</span>` : ''}
               </li>
               <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">
                 🛡️ <strong>Defesa Base:</strong> +${defesaBase}
@@ -215,10 +208,104 @@ export default function HabilidadesTab() {
           Gerencie suas habilidades ativas e seus efeitos em combate.
         </p>
 
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
-          <button type="button" onClick={onActivateInsano}>Ativar Insano & Forte (-15 Alma)</button>
-          <button type="button" onClick={onAdvanceRound}>Avançar Rodada</button>
-          <button type="button" onClick={onArmFuria}>Armar Fúria Ancestral (-15 Alma)</button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
+          <button 
+            type="button" 
+            onClick={onActivateInsano}
+            style={{
+              padding: '14px 18px',
+              fontSize: '1em',
+              fontWeight: '600',
+              background: 'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)',
+              border: 'none',
+              borderRadius: '10px',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(156, 39, 176, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 4px 12px rgba(156, 39, 176, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 2px 8px rgba(156, 39, 176, 0.3)';
+            }}
+          >
+            <span style={{ fontSize: '1.3em' }}>💪</span>
+            <span>Ativar Insano & Forte</span>
+            <span style={{ fontSize: '0.85em', opacity: 0.9 }}>(-15 Alma)</span>
+          </button>
+
+          <button 
+            type="button" 
+            onClick={onArmFuria}
+            style={{
+              padding: '14px 18px',
+              fontSize: '1em',
+              fontWeight: '600',
+              background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+              border: 'none',
+              borderRadius: '10px',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(244, 67, 54, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 4px 12px rgba(244, 67, 54, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 2px 8px rgba(244, 67, 54, 0.3)';
+            }}
+          >
+            <span style={{ fontSize: '1.3em' }}>⚡</span>
+            <span>Armar Fúria Ancestral</span>
+            <span style={{ fontSize: '0.85em', opacity: 0.9 }}>(-15 Alma)</span>
+          </button>
+
+          <button 
+            type="button" 
+            onClick={onAdvanceRound}
+            style={{
+              padding: '12px 16px',
+              fontSize: '0.95em',
+              fontWeight: '500',
+              background: 'linear-gradient(135deg, #607d8b 0%, #455a64 100%)',
+              border: 'none',
+              borderRadius: '10px',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(96, 125, 139, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 4px 12px rgba(96, 125, 139, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 2px 8px rgba(96, 125, 139, 0.3)';
+            }}
+          >
+            <span style={{ fontSize: '1.2em' }}>⏭️</span>
+            <span>Avançar Rodada</span>
+          </button>
         </div>
 
         {lastMsg && (
@@ -268,40 +355,10 @@ export default function HabilidadesTab() {
                 e.target.style.boxShadow = 'none';
               }}
             >
-              Testar Bloqueio
+              Bloqueio
             </button>
           </div>
         )}
-
-        <hr className="section-divider" />
-        <h3 className="result-heading">Testes rápidos — bloqueio</h3>
-        <label>Dano recebido</label>
-        <input type="number" min={0} value={testDamageIn} onChange={(e)=>setTestDamageIn(Number(e.target.value))} />
-
-        <label>Bloqueio bem-sucedido?</label>
-        <div>
-          <label style={{ marginRight: 12 }}>
-            <input type="radio" name="blk" checked={testBlockSuccess} onChange={()=>setTestBlockSuccess(true)} /> Sim
-          </label>
-          <label>
-            <input type="radio" name="blk" checked={!testBlockSuccess} onChange={()=>setTestBlockSuccess(false)} /> Não
-          </label>
-        </div>
-
-        <label>Vit. Máx. do alvo</label>
-        <input type="number" min={0} value={testVitMaxAlvo} onChange={(e)=>setTestVitMaxAlvo(Number(e.target.value))} />
-
-        <button type="button" onClick={onTestIncoming} style={{ marginTop: 8 }}>Simular bloqueio</button>
-
-        {lastInRes && (
-          <div style={{ marginTop: 8 }}>
-            <div>Dano após passivo: <strong>{lastInRes.damageAfter}</strong></div>
-            <div>Cura de Alma: <strong>{lastInRes.almaHeal}</strong></div>
-            <div>Dano direto ao alvo: <strong>{lastInRes.extraDirectDamageToTarget}</strong></div>
-          </div>
-        )}
-
-        {/* Removido bloco de Testes rápidos — ataque */}
       </div>
 
       {/* Coluna direita: estado e indicadores */}
