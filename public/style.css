@@ -602,10 +602,6 @@ button#forjarBtn:hover {
     transform: scale(1.05);
 }
 
-.stat-value-num.single {
-    font-size: 1.6em;
-}
-
 .stat-separator {
     color: var(--muted);
     font-weight: 400;
@@ -666,13 +662,15 @@ button#forjarBtn:hover {
 
 /* Input inline para edição */
 .inline-edit {
-    width: 70px;
+    width: 70px !important;
+    max-width: 70px !important;
+    min-width: 70px !important;
     padding: 4px 8px;
     background: var(--bg);
     border: 2px solid var(--accent);
     border-radius: 6px;
     color: var(--text);
-    font-size: 1em;
+    font-size: 1em !important;
     font-weight: 700;
     text-align: center;
     box-shadow: 0 0 0 3px rgba(24, 216, 237, 0.2);
@@ -771,7 +769,6 @@ button#forjarBtn:hover {
 .stat-actions {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid var(--border);
     display: flex;
     justify-content: center;
 }
