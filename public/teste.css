@@ -4,53 +4,55 @@
 }
 
 /* Layout: formulário à esquerda; à direita ficam Favoritos (acima) e Resultado (abaixo) */
-#tab-testes .main-flex { gap: 24px; }
+#tab-testes .main-flex { gap: 20px; }
 .right-col {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 16px;
+  gap: 14px;
   flex: 1 1 0;
-  max-width: 520px;
+  max-width: 450px;
 }
 
 /* Container de Favoritos */
 .favoritos-container {
   background: var(--surface);
-  padding: 12px 10px;
-  border-radius: 12px;
+  padding: 10px 8px;
+  border-radius: 10px;
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
   width: 100%;
-  max-height: 40vh;
+  max-height: 35vh;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 .favoritos-empty {
   color: var(--muted);
-  font-size: .95em;
+  font-size: .85em;
 }
 .favorito-item {
   display: grid;
   grid-template-columns: 1fr max-content;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 8px;
+  border-radius: 7px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  font-size: 0.9em;
 }
-.favorito-meta { color: var(--muted); font-size: .92em; }
-.favorito-actions { display: flex; gap: 6px; }
+.favorito-meta { color: var(--muted); font-size: .85em; }
+.favorito-actions { display: flex; gap: 5px; }
 .btn {
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 8px;
+  border-radius: 5px;
+  padding: 5px 7px;
   cursor: pointer;
   white-space: nowrap;
+  font-size: 0.85em;
 }
 .btn:hover { filter: brightness(1.1); }
 .btn.run { border-color: #22c55e; }
@@ -58,12 +60,13 @@
 
 /* Botão secundário do formulário */
 #addFavoritoBtn.sec {
-  margin-top: 6px;
+  margin-top: 5px;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 5px;
+  border-radius: 7px;
+  padding: 8px 5px;
+  font-size: 0.95em;
 }
 
 /* Formulário em coluna, como na aba Forja */
@@ -91,43 +94,44 @@
     background: linear-gradient(90deg, #0ea5e9 0%, var(--accent-2) 100%);
     color: var(--text);
     border: none;
-    border-radius: 8px;
-    padding: 12px 5px;
-    font-size: 1.1em;
+    border-radius: 7px;
+    padding: 10px 5px;
+    font-size: 1em;
     font-weight: bold;
-    margin-top: 22px;
+    margin-top: 18px;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(34,211,238,0.33);
     transition: background 0.2s, box-shadow 0.2s;
 }
 
 /* Resultado do teste com leve destaque */
-#tab-testes .result-heading { margin: 10px 0 6px; font-size: 1rem; color: var(--muted); font-weight: 600; letter-spacing: .3px; }
+#tab-testes .result-heading { margin: 8px 0 5px; font-size: 0.95rem; color: var(--muted); font-weight: 600; letter-spacing: .3px; }
 #resultadoTeste {
-  min-width: 320px;
+  min-width: 280px;
   width: 100%;
   max-width: 100%;
   background: var(--surface-2);
-  border-radius: 10px;
-  padding: 18px 10px;
+  border-radius: 9px;
+  padding: 14px 8px;
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
+  font-size: 0.9em;
 }
 #resultadoTeste .result-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 7px;
 }
 #resultadoTeste .result-main {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
 }
 #resultadoTeste .result-details {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
 }
 /* Micro-efeitos para suavidade */
 #testsForm select,

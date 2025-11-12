@@ -133,9 +133,6 @@ export default function HabilidadesTab() {
       <div className="result">
         <h2 className="card-title">Estado Atual</h2>
         <div className="result-col">
-          <div className="result-heading">Recursos</div>
-          <div>Alma: <strong>{state.alma}</strong> / <strong>{state.almaMax}</strong></div>
-          <div>Vitalidade: <strong>{state.vitalidadeAtual}</strong> / <strong>{state.maxVitalidade}</strong></div>
           <div className="result-heading">Insano & Forte</div>
           <div>Ativo por: <strong>{state.insano.activeRounds}</strong> rodada(s)</div>
           <div>Recarga: <strong>{state.insano.cooldownRounds}</strong> rodada(s)</div>
