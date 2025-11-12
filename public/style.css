@@ -810,7 +810,6 @@ button#forjarBtn:hover {
 
 /* ==================== Gerenciador de Atributos e Perícias ==================== */
 .character-stats-manager {
-    margin-top: 40px;
     display: flex;
     flex-direction: column;
     gap: 16px;

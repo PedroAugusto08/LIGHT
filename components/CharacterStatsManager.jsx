@@ -35,8 +35,15 @@ export default function CharacterStatsManager() {
     setCharState(newState);
   };
 
-  const atributosList = Object.keys(charState.atributos).sort();
-  const periciasList = Object.keys(charState.pericias).sort();
+  // Ordenar atributos do maior para o menor valor
+  const atributosList = Object.entries(charState.atributos)
+    .sort(([, a], [, b]) => b - a)
+    .map(([nome]) => nome);
+
+  // Ordenar perícias do maior para o menor valor (considerando qtd)
+  const periciasList = Object.entries(charState.pericias)
+    .sort(([, a], [, b]) => b.qtd - a.qtd)
+    .map(([nome]) => nome);
 
   return (
     <div className="character-stats-manager">
