@@ -60,10 +60,41 @@ export default function HabilidadesTab() {
 
   function onArmFuria() {
     const res = SkillEngine.armFuria();
-    if (!res.ok) setLastMsg(res.reason);
-    else {
+    if (!res.ok) {
+      setLastMsg(res.reason);
+    } else {
       setState(res.state);
       setLastMsg('Fúria Ancestral armada para o próximo ataque.');
+      
+      // Abrir modal estilizado
+      if (typeof window !== 'undefined' && window.createModal) {
+        const modalContent = window.createModal('⚔️ Fúria Ancestral');
+        modalContent.innerHTML = `
+          <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 4em; margin-bottom: 16px;">⚔️</div>
+            <h2 style="color: var(--accent); margin-bottom: 16px; font-size: 1.8em;">Fúria Ancestral Ativada!</h2>
+            <p style="font-size: 1.05em; margin-bottom: 20px; line-height: 1.6; color: var(--muted); font-style: italic;">
+              "Ao canalizar a força de seus ancestrais, você transforma sua próxima ofensiva em pura destruição."
+            </p>
+            <div style="background: var(--surface-2); padding: 20px; border-radius: 10px; border-left: 4px solid var(--accent); margin: 20px 0;">
+              <h3 style="color: var(--accent); margin-bottom: 16px; font-size: 1.3em;">Efeitos do Próximo Ataque:</h3>
+              <ul style="text-align: left; list-style: none; padding: 0;">
+                <li style="padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1.1em;">
+                  💥 <strong style="color: #ef4444;">+100% de dano</strong> (dano dobrado)
+                </li>
+                <li style="padding: 12px 0; font-size: 1.1em;">
+                  🎯 <strong style="color: var(--accent);">+15 de soma fixa</strong> no teste de acerto
+                </li>
+              </ul>
+            </div>
+            <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3); margin-top: 16px;">
+              <p style="color: #fca5a5; font-size: 0.95em; margin: 0;">
+                ⚠️ <strong>Custo:</strong> 15 Alma | A Fúria será consumida automaticamente no próximo ataque.
+              </p>
+            </div>
+          </div>
+        `;
+      }
     }
   }
 
