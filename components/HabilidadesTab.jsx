@@ -78,13 +78,10 @@ export default function HabilidadesTab() {
                   ⏱️ <strong style="color: var(--accent);">Duração:</strong> ${res.duration} rodada(s)
                 </li>
                 <li style="padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1.1em;">
-                  🛡️ <strong style="color: #10b981;">Defesa Adicional:</strong> +${defesaAdicional} (¼ da Alma Máxima)
-                </li>
-                <li style="padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1.1em;">
-                  🔄 <strong>Bloqueio Ativo:</strong> Pode realizar testes de bloqueio
+                  � <strong>Dano de Bloqueio:</strong> Todo bloqueio (falho ou bem-sucedido) causa 1d4% de Dano na Vitalidade Máxima do alvo.
                 </li>
                 <li style="padding: 12px 0; font-size: 1.1em;">
-                  💥 <strong>Dano de Bloqueio:</strong> Causa dano baseado na Vitalidade Máxima do alvo
+                  �️ <strong style="color: #10b981;">Defesa Adicional:</strong> ¼ da Alma Máxima passa a contar como Defesa adicional (+${defesaAdicional}).
                 </li>
               </ul>
             </div>
@@ -166,40 +163,82 @@ export default function HabilidadesTab() {
   }
 
   function onTestarBloqueio() {
-    // Buscar valores atuais
-    const rules = (typeof window !== 'undefined' && window.__LIGHT_RULES) ? window.__LIGHT_RULES : null;
-    const ATR = rules && rules.ATRIBUTOS ? rules.ATRIBUTOS : {};
-    const fortitude = (ATR['FORTITUDE'] || 0);
-    const defesaBase = state.defesaBase || 0;
-    const defesaAdicional = Math.floor(state.almaMax / 4);
-    
-    // Rolar dados
-    const d20 = Math.floor(Math.random() * 20) + 1;
-    const d4 = Math.floor(Math.random() * 4) + 1;
-    
-    // Rolar 1d6 por ponto de Fortitude
-    const fortitudeDice = [];
-    let fortitudeTotal = 0;
-    for (let i = 0; i < fortitude; i++) {
-      const roll = Math.floor(Math.random() * 6) + 1;
-      fortitudeDice.push(roll);
-      fortitudeTotal += roll;
-    }
-    
-    const totalBloqueio = d20 + fortitudeTotal + defesaBase + defesaAdicional;
-    
-    // Abrir modal com resultado
+    // Abrir modal interativo
     if (typeof window !== 'undefined' && window.createModal) {
       const modalContent = window.createModal('🛡️ Teste de Bloqueio');
       modalContent.innerHTML = `
         <div style="padding: 20px;">
           <div style="text-align: center; margin-bottom: 20px;">
             <div style="font-size: 3em; margin-bottom: 12px;">🛡️</div>
-            <h2 style="color: var(--accent); font-size: 1.6em;">Resultado do Bloqueio</h2>
+            <h2 style="color: var(--accent); font-size: 1.6em;">Teste de Bloqueio</h2>
           </div>
           
+          <div style="background: var(--surface-2); padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 1.1em;">
+              <input type="checkbox" id="bloqueioMalSucedido" style="width: 18px; height: 18px; cursor: pointer;">
+              <span>Bloqueio mal-sucedido?</span>
+            </label>
+          </div>
+
+          <div id="danoSection" style="display: none; background: rgba(239, 68, 68, 0.05); padding: 16px; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.3); margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+              Dano do ataque:
+            </label>
+            <input type="number" id="danoAtaque" min="0" value="0" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--background); color: var(--text); font-size: 1em; margin-bottom: 12px;">
+            
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 1em;">
+              <input type="checkbox" id="ataqueFisico" style="width: 18px; height: 18px; cursor: pointer;">
+              <span>Ataque físico?</span>
+            </label>
+          </div>
+
+          <button id="calcularBtn" style="width: 100%; padding: 14px; font-size: 1.1em; font-weight: bold; background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%); border: none; border-radius: 10px; color: white; cursor: pointer; margin-bottom: 16px;">
+            Calcular Resultado
+          </button>
+
+          <div id="resultadoDiv" style="display: none;"></div>
+        </div>
+      `;
+
+      // Adicionar event listeners
+      const checkboxMalSucedido = modalContent.querySelector('#bloqueioMalSucedido');
+      const danoSection = modalContent.querySelector('#danoSection');
+      const calcularBtn = modalContent.querySelector('#calcularBtn');
+      const resultadoDiv = modalContent.querySelector('#resultadoDiv');
+
+      checkboxMalSucedido.addEventListener('change', (e) => {
+        danoSection.style.display = e.target.checked ? 'block' : 'none';
+      });
+
+      calcularBtn.addEventListener('click', () => {
+        // Buscar valores atuais
+        const rules = window.__LIGHT_RULES || {};
+        const ATR = rules.ATRIBUTOS || {};
+        const fortitude = (ATR['FORTITUDE'] || 0);
+        const defesaBase = state.defesaBase || 0;
+        const defesaAdicional = Math.floor(state.almaMax / 4);
+        
+        // Rolar dados
+        const d20 = Math.floor(Math.random() * 20) + 1;
+        const d4 = Math.floor(Math.random() * 4) + 1;
+        
+        // Rolar 1d6 por ponto de Fortitude
+        const fortitudeDice = [];
+        let fortitudeTotal = 0;
+        for (let i = 0; i < fortitude; i++) {
+          const roll = Math.floor(Math.random() * 6) + 1;
+          fortitudeDice.push(roll);
+          fortitudeTotal += roll;
+        }
+        
+        const totalBloqueio = d20 + fortitudeTotal + defesaBase + defesaAdicional;
+        
+        // Verificar se bloqueio foi mal-sucedido
+        const malSucedido = checkboxMalSucedido.checked;
+        
+        let resultadoHTML = `
           <div style="background: var(--surface-2); padding: 16px; border-radius: 10px; margin-bottom: 20px;">
-            <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.2em;">Teste de Bloqueio</h3>
+            <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.2em;">📊 Teste de Bloqueio</h3>
             <ul style="list-style: none; padding: 0; margin: 0;">
               <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">
                 🎲 <strong>1d20:</strong> <span style="color: #1976d2; font-size: 1.2em;">${d20}</span>
@@ -219,7 +258,7 @@ export default function HabilidadesTab() {
             </ul>
           </div>
           
-          <div style="background: rgba(239, 68, 68, 0.1); padding: 16px; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.3);">
+          <div style="background: rgba(239, 68, 68, 0.1); padding: 16px; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.3); margin-bottom: 16px;">
             <h3 style="color: #ef4444; margin-bottom: 12px; font-size: 1.2em;">💥 Dano no Alvo</h3>
             <p style="margin: 0; font-size: 1.1em;">
               O bloqueio causa <strong style="color: #ef4444; font-size: 1.3em;">${d4}%</strong> da Vitalidade Máxima do alvo como dano.
@@ -228,8 +267,68 @@ export default function HabilidadesTab() {
               (Rolado 1d4 = ${d4})
             </p>
           </div>
-        </div>
-      `;
+        `;
+
+        if (malSucedido) {
+          const danoAtaque = parseFloat(modalContent.querySelector('#danoAtaque').value) || 0;
+          const ataqueFisico = modalContent.querySelector('#ataqueFisico').checked;
+          
+          // Cálculos de redução
+          let danoFinal = danoAtaque * 0.75; // Bloqueio mal-sucedido reduz para 3/4
+          let explicacao = [`Dano base: ${danoAtaque}`, `Bloqueio mal-sucedido (×0.75): ${(danoAtaque * 0.75).toFixed(2)}`];
+          
+          if (ataqueFisico) {
+            // Armadura Natural (Insano & Forte): -25%
+            danoFinal = danoFinal * 0.75;
+            explicacao.push(`Armadura Natural Insano (×0.75): ${(danoAtaque * 0.75 * 0.75).toFixed(2)}`);
+          }
+          
+          // Armadura Eroques: -20%
+          danoFinal = danoFinal * 0.8;
+          explicacao.push(`Armadura Eroques (×0.8): ${(danoFinal).toFixed(2)}`);
+          
+          // Armadura Medalhão: -7
+          const armaduraMedalhao = 7;
+          danoFinal = Math.max(0, danoFinal - armaduraMedalhao);
+          explicacao.push(`Armadura Medalhão (-7): ${danoFinal.toFixed(2)}`);
+          
+          const multiplicadorTotal = ataqueFisico ? 0.45 : 0.6;
+          
+          resultadoHTML += `
+            <div style="background: rgba(239, 68, 68, 0.15); padding: 16px; border-radius: 10px; border: 2px solid rgba(239, 68, 68, 0.5);">
+              <h3 style="color: #ef4444; margin-bottom: 12px; font-size: 1.3em;">⚔️ Dano Recebido</h3>
+              
+              <div style="margin-bottom: 12px;">
+                <p style="margin: 0 0 8px 0; font-weight: bold;">Cálculo:</p>
+                <ul style="list-style: none; padding: 0 0 0 12px; margin: 0; font-size: 0.95em;">
+                  ${explicacao.map(e => `<li style="padding: 4px 0; color: var(--muted);">• ${e}</li>`).join('')}
+                </ul>
+              </div>
+              
+              <div style="background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <p style="margin: 0 0 4px 0; font-size: 0.9em; color: var(--muted);">
+                  Fórmula: X × ${multiplicadorTotal} - 7
+                </p>
+                <p style="margin: 0; font-size: 1.6em; font-weight: bold; color: #ef4444;">
+                  ${Math.round(danoFinal)} de dano
+                </p>
+              </div>
+            </div>
+          `;
+        } else {
+          resultadoHTML += `
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 16px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center;">
+              <h3 style="color: #10b981; margin-bottom: 8px; font-size: 1.3em;">✅ Bloqueio Bem-Sucedido!</h3>
+              <p style="margin: 0; font-size: 1.2em; font-weight: bold;">
+                Nenhum dano recebido
+              </p>
+            </div>
+          `;
+        }
+
+        resultadoDiv.innerHTML = resultadoHTML;
+        resultadoDiv.style.display = 'block';
+      });
     }
   }
 
