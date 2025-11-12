@@ -731,7 +731,9 @@ function executarAtaqueDoConstruto(stats, btnEl) {
                     furiaConsumida = true;
                     // Dispara evento para notificar componentes React que o estado mudou
                     try {
-                        window.dispatchEvent(new CustomEvent('skills_state_changed', { detail: 'skills_state_changed' }));
+                        window.dispatchEvent(new CustomEvent('skills_state_changed', { detail: s }));
+                        // Também dispara um evento storage para sincronização adicional
+                        window.dispatchEvent(new Event('storage'));
                     } catch(_) {}
                 }
             }

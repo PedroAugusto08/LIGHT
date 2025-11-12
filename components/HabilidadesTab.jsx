@@ -17,10 +17,8 @@ export default function HabilidadesTab() {
     window.addEventListener('storage', syncFromStorage);
     
     // Listener customizado para mudanças na mesma aba/janela
-    const syncLocal = (e) => {
-      if (e.detail === 'skills_state_changed') {
-        setState(SkillEngine.getState());
-      }
+    const syncLocal = () => {
+      setState(SkillEngine.getState());
     };
     window.addEventListener('skills_state_changed', syncLocal);
     
@@ -36,6 +34,25 @@ export default function HabilidadesTab() {
   };
 
   function onActivateInsano() {
+    // Verificar se tem Alma suficiente
+    if (state.alma < 15) {
+      setLastMsg('❌ Alma insuficiente! Necessário: 15 Alma');
+      if (typeof window !== 'undefined' && window.createModal) {
+        const modalContent = window.createModal('⚠️ Alma Insuficiente');
+        modalContent.innerHTML = `
+          <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 4em; margin-bottom: 16px;">⚠️</div>
+            <h2 style="color: #ef4444; margin-bottom: 16px;">Alma Insuficiente</h2>
+            <p style="font-size: 1.1em; line-height: 1.6;">
+              Você precisa de <strong>15 Alma</strong> para ativar Insano & Forte.<br>
+              Alma atual: <strong>${state.alma}</strong>
+            </p>
+          </div>
+        `;
+      }
+      return;
+    }
+
     const res = SkillEngine.activateInsano();
     if (!res.ok) {
       setLastMsg(res.reason);
@@ -90,6 +107,25 @@ export default function HabilidadesTab() {
   }
 
   function onArmFuria() {
+    // Verificar se tem Alma suficiente
+    if (state.alma < 15) {
+      setLastMsg('❌ Alma insuficiente! Necessário: 15 Alma');
+      if (typeof window !== 'undefined' && window.createModal) {
+        const modalContent = window.createModal('⚠️ Alma Insuficiente');
+        modalContent.innerHTML = `
+          <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 4em; margin-bottom: 16px;">⚠️</div>
+            <h2 style="color: #ef4444; margin-bottom: 16px;">Alma Insuficiente</h2>
+            <p style="font-size: 1.1em; line-height: 1.6;">
+              Você precisa de <strong>15 Alma</strong> para armar Fúria Ancestral.<br>
+              Alma atual: <strong>${state.alma}</strong>
+            </p>
+          </div>
+        `;
+      }
+      return;
+    }
+
     const res = SkillEngine.armFuria();
     if (!res.ok) {
       setLastMsg(res.reason);

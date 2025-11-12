@@ -22,10 +22,8 @@ export default function PersonagemTab() {
     };
     window.addEventListener('storage', syncFromStorage);
     
-    const syncLocal = (e) => {
-      if (e.detail === 'skills_state_changed') {
-        setState(SkillEngine.getState());
-      }
+    const syncLocal = () => {
+      setState(SkillEngine.getState());
     };
     window.addEventListener('skills_state_changed', syncLocal);
     
