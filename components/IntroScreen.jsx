@@ -39,18 +39,30 @@ export default function IntroScreen({ onComplete }) {
       <div className="intro-fadeout">
         <div className="intro-container">
           <svg className="intro-logo" viewBox="0 0 200 200" width="200" height="200">
-            {/* Círculos externos (arcos) */}
+            {/* Arco esquerdo */}
             <path
               className="intro-arc intro-arc-left"
-              d="M 60,100 A 40,40 0 0,1 60,60"
+              d="M 60,80 A 50,50 0 0,0 40,130"
               fill="none"
               stroke="#00bcd4"
               strokeWidth="8"
               strokeLinecap="round"
             />
+            
+            {/* Arco direito */}
             <path
               className="intro-arc intro-arc-right"
-              d="M 140,60 A 40,40 0 0,1 140,100"
+              d="M 160,130 A 50,50 0 0,0 140,80"
+              fill="none"
+              stroke="#00bcd4"
+              strokeWidth="8"
+              strokeLinecap="round"
+            />
+            
+            {/* Arco inferior (completa o círculo externo) */}
+            <path
+              className="intro-arc intro-arc-bottom"
+              d="M 40,130 A 60,60 0 0,0 160,130"
               fill="none"
               stroke="#00bcd4"
               strokeWidth="8"
@@ -61,9 +73,9 @@ export default function IntroScreen({ onComplete }) {
             <line
               className="intro-line intro-line-vertical"
               x1="100"
-              y1="40"
+              y1="30"
               x2="100"
-              y2="130"
+              y2="115"
               stroke="#00bcd4"
               strokeWidth="8"
               strokeLinecap="round"
@@ -73,18 +85,18 @@ export default function IntroScreen({ onComplete }) {
             <circle
               className="intro-circle"
               cx="100"
-              cy="130"
+              cy="115"
               r="20"
               fill="none"
               stroke="#00bcd4"
               strokeWidth="8"
             />
             
-            {/* Círculo interno menor */}
+            {/* Círculo interno menor (preenchido) */}
             <circle
               className="intro-circle-inner"
               cx="100"
-              cy="130"
+              cy="115"
               r="8"
               fill="#00bcd4"
             />
@@ -93,8 +105,8 @@ export default function IntroScreen({ onComplete }) {
             <circle
               className="intro-glow"
               cx="100"
-              cy="130"
-              r="25"
+              cy="115"
+              r="28"
               fill="none"
               stroke="#00bcd4"
               strokeWidth="2"
@@ -132,18 +144,30 @@ export default function IntroScreen({ onComplete }) {
     <div className="intro-screen">
       <div className="intro-container">
         <svg className="intro-logo" viewBox="0 0 200 200" width="200" height="200">
-          {/* Círculos externos (arcos) */}
+          {/* Arco esquerdo */}
           <path
             className="intro-arc intro-arc-left"
-            d="M 60,100 A 40,40 0 0,1 60,60"
+            d="M 60,80 A 50,50 0 0,0 40,130"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="8"
             strokeLinecap="round"
           />
+          
+          {/* Arco direito */}
           <path
             className="intro-arc intro-arc-right"
-            d="M 140,60 A 40,40 0 0,1 140,100"
+            d="M 160,130 A 50,50 0 0,0 140,80"
+            fill="none"
+            stroke="#00bcd4"
+            strokeWidth="8"
+            strokeLinecap="round"
+          />
+          
+          {/* Arco inferior (completa o círculo externo) */}
+          <path
+            className="intro-arc intro-arc-bottom"
+            d="M 40,130 A 60,60 0 0,0 160,130"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="8"
@@ -154,9 +178,9 @@ export default function IntroScreen({ onComplete }) {
           <line
             className="intro-line intro-line-vertical"
             x1="100"
-            y1="40"
+            y1="30"
             x2="100"
-            y2="130"
+            y2="115"
             stroke="#00bcd4"
             strokeWidth="8"
             strokeLinecap="round"
@@ -166,18 +190,18 @@ export default function IntroScreen({ onComplete }) {
           <circle
             className="intro-circle"
             cx="100"
-            cy="130"
+            cy="115"
             r="20"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="8"
           />
           
-          {/* Círculo interno menor */}
+          {/* Círculo interno menor (preenchido) */}
           <circle
             className="intro-circle-inner"
             cx="100"
-            cy="130"
+            cy="115"
             r="8"
             fill="#00bcd4"
           />
@@ -186,8 +210,8 @@ export default function IntroScreen({ onComplete }) {
           <circle
             className="intro-glow"
             cx="100"
-            cy="130"
-            r="25"
+            cy="115"
+            r="28"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="2"
@@ -248,12 +272,19 @@ export default function IntroScreen({ onComplete }) {
           animation-delay: 0.4s;
         }
 
+        .intro-arc-bottom {
+          stroke-dasharray: 188;
+          stroke-dashoffset: 188;
+          animation: drawArc 1.2s ease-out forwards;
+          animation-delay: 0.6s;
+        }
+
         /* Animação da linha vertical */
         .intro-line-vertical {
           stroke-dasharray: 100;
           stroke-dashoffset: 100;
           animation: drawLine 0.8s ease-out forwards;
-          animation-delay: 0.6s;
+          animation-delay: 1s;
         }
 
         /* Animação do círculo central */
@@ -261,20 +292,20 @@ export default function IntroScreen({ onComplete }) {
           stroke-dasharray: 126;
           stroke-dashoffset: 126;
           animation: drawCircle 0.8s ease-out forwards;
-          animation-delay: 1.2s;
+          animation-delay: 1.6s;
         }
 
         /* Animação do círculo interno */
         .intro-circle-inner {
           opacity: 0;
           animation: fadeIn 0.4s ease-out forwards;
-          animation-delay: 1.8s;
+          animation-delay: 2.2s;
         }
 
         /* Animação do glow */
         .intro-glow {
           animation: pulse 1.5s ease-in-out forwards;
-          animation-delay: 2s;
+          animation-delay: 2.4s;
         }
 
         @keyframes drawArc {
