@@ -40,8 +40,8 @@ export default function IntroScreen({ onComplete }) {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.3,
-        delayChildren: 0.2
+        staggerChildren: 0.15,
+        delayChildren: 0.3
       }
     },
     exit: {
@@ -50,18 +50,18 @@ export default function IntroScreen({ onComplete }) {
     }
   };
 
-  // Variantes para os paths do SVG
+  // Variantes para os paths do SVG - fade in limpo, sem efeito de desenho
   const pathVariants = {
     hidden: {
-      pathLength: 0,
-      opacity: 0
+      opacity: 0,
+      scale: 0.8
     },
     visible: {
-      pathLength: 1,
       opacity: 1,
+      scale: 1,
       transition: {
-        pathLength: { duration: 1, ease: "easeInOut" },
-        opacity: { duration: 0.3 }
+        duration: 0.8,
+        ease: "easeOut"
       }
     }
   };
@@ -69,15 +69,15 @@ export default function IntroScreen({ onComplete }) {
   // Variantes para o círculo preenchido
   const circleVariants = {
     hidden: {
-      scale: 0,
+      scale: 0.5,
       opacity: 0
     },
     visible: {
       scale: 1,
       opacity: 1,
       transition: {
-        duration: 0.5,
-        ease: "backOut"
+        duration: 0.6,
+        ease: "easeOut"
       }
     }
   };
