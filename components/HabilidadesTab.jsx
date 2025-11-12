@@ -44,10 +44,48 @@ export default function HabilidadesTab() {
 
   function onActivateInsano() {
     const res = SkillEngine.activateInsano();
-    if (!res.ok) setLastMsg(res.reason);
-    else {
+    if (!res.ok) {
+      setLastMsg(res.reason);
+    } else {
       setState(res.state);
       setLastMsg(`Insano & Forte ativado por ${res.duration} rodada(s).`);
+      
+      // Abrir modal estilizado
+      if (typeof window !== 'undefined' && window.createModal) {
+        const defesaAdicional = Math.floor(res.state.almaMax / 4);
+        const modalContent = window.createModal('💪 Insano & Forte');
+        modalContent.innerHTML = `
+          <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 4em; margin-bottom: 16px;">⚡</div>
+            <h2 style="color: var(--accent); margin-bottom: 16px; font-size: 1.8em;">Insano & Forte Ativado!</h2>
+            <p style="font-size: 1.05em; margin-bottom: 20px; line-height: 1.6; color: var(--muted); font-style: italic;">
+              "Você libera sua força interior, tornando-se uma fortaleza inabalável."
+            </p>
+            <div style="background: var(--surface-2); padding: 20px; border-radius: 10px; border-left: 4px solid var(--accent); margin: 20px 0;">
+              <h3 style="color: var(--accent); margin-bottom: 16px; font-size: 1.3em;">Efeitos Ativos:</h3>
+              <ul style="text-align: left; list-style: none; padding: 0;">
+                <li style="padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1.1em;">
+                  ⏱️ <strong style="color: var(--accent);">Duração:</strong> ${res.duration} rodada(s)
+                </li>
+                <li style="padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1.1em;">
+                  🛡️ <strong style="color: #10b981;">Defesa Adicional:</strong> +${defesaAdicional} (¼ da Alma Máxima)
+                </li>
+                <li style="padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1.1em;">
+                  🔄 <strong>Bloqueio Ativo:</strong> Pode realizar testes de bloqueio
+                </li>
+                <li style="padding: 12px 0; font-size: 1.1em;">
+                  💥 <strong>Dano de Bloqueio:</strong> Causa dano baseado na Vitalidade Máxima do alvo
+                </li>
+              </ul>
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3); margin-top: 16px;">
+              <p style="color: #6ee7b7; font-size: 0.95em; margin: 0;">
+                ⚠️ <strong>Custo:</strong> 15 Alma | Use o botão "Testar Bloqueio" enquanto ativo para realizar bloqueios.
+              </p>
+            </div>
+          </div>
+        `;
+      }
     }
   }
 
@@ -108,6 +146,64 @@ export default function HabilidadesTab() {
     setLastInRes(res);
   }
 
+  function onTestarBloqueio() {
+    // Buscar valores atuais
+    const rules = (typeof window !== 'undefined' && window.__LIGHT_RULES) ? window.__LIGHT_RULES : null;
+    const ATR = rules && rules.ATRIBUTOS ? rules.ATRIBUTOS : {};
+    const fortitude = (ATR['FORTITUDE'] || 0);
+    const defesaBase = state.defesaBase || 0;
+    const defesaAdicional = Math.floor(state.almaMax / 4);
+    
+    // Rolar dados
+    const d20 = Math.floor(Math.random() * 20) + 1;
+    const d4 = Math.floor(Math.random() * 4) + 1;
+    const totalBloqueio = d20 + fortitude + defesaBase + defesaAdicional;
+    
+    // Abrir modal com resultado
+    if (typeof window !== 'undefined' && window.createModal) {
+      const modalContent = window.createModal('🛡️ Teste de Bloqueio');
+      modalContent.innerHTML = `
+        <div style="padding: 20px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 3em; margin-bottom: 12px;">🛡️</div>
+            <h2 style="color: var(--accent); font-size: 1.6em;">Resultado do Bloqueio</h2>
+          </div>
+          
+          <div style="background: var(--surface-2); padding: 16px; border-radius: 10px; margin-bottom: 20px;">
+            <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.2em;">Teste de Bloqueio</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+                🎲 <strong>1d20:</strong> <span style="color: #1976d2; font-size: 1.2em;">${d20}</span>
+              </li>
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+                💪 <strong>Fortitude:</strong> +${fortitude}
+              </li>
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+                🛡️ <strong>Defesa Base:</strong> +${defesaBase}
+              </li>
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+                ⚡ <strong>Defesa Adicional (Insano):</strong> +${defesaAdicional}
+              </li>
+              <li style="padding: 12px 0; font-size: 1.3em; font-weight: bold;">
+                📊 <strong>Total:</strong> <span style="color: var(--accent);">${totalBloqueio}</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div style="background: rgba(239, 68, 68, 0.1); padding: 16px; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h3 style="color: #ef4444; margin-bottom: 12px; font-size: 1.2em;">💥 Dano no Alvo</h3>
+            <p style="margin: 0; font-size: 1.1em;">
+              O bloqueio causa <strong style="color: #ef4444; font-size: 1.3em;">${d4}%</strong> da Vitalidade Máxima do alvo como dano.
+            </p>
+            <p style="margin: 8px 0 0 0; color: var(--muted); font-size: 0.9em;">
+              (Rolado 1d4 = ${d4})
+            </p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
   // Sem simulador de ataque aqui
 
   return (
@@ -127,6 +223,54 @@ export default function HabilidadesTab() {
 
         {lastMsg && (
           <div style={{ marginTop: 8, color: 'var(--muted)' }}>{lastMsg}</div>
+        )}
+
+        {/* Teste de Bloqueio - Aparece apenas quando Insano & Forte está ativo */}
+        {state.insano && state.insano.activeRounds > 0 && (
+          <div style={{
+            marginTop: 16,
+            padding: '14px',
+            background: 'rgba(156, 39, 176, 0.1)',
+            border: '1px solid rgba(156, 39, 176, 0.3)',
+            borderRadius: '10px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#9c27b0', fontSize: '1.1em' }}>
+                  🛡️ Bloqueio Ativo
+                </h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.9em', color: 'var(--muted)' }}>
+                  Rodadas restantes: {state.insano.activeRounds}
+                </p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onClick={onTestarBloqueio}
+              style={{ 
+                width: '100%',
+                padding: '10px',
+                fontSize: '1em',
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)',
+                border: 'none',
+                borderRadius: '8px',
+                color: 'white',
+                cursor: 'pointer',
+                transition: 'transform 0.2s, box-shadow 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 4px 12px rgba(156, 39, 176, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = 'none';
+              }}
+            >
+              Testar Bloqueio
+            </button>
+          </div>
         )}
 
         <hr className="section-divider" />
