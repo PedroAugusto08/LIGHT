@@ -103,7 +103,8 @@ export default function PersonagemTab() {
     <div className="personagem-container">
       <h1 className="personagem-title">Status do Personagem</h1>
       
-      <div className={`status-card-unified ${isCritical ? 'critical' : ''}`}>
+      <div className="personagem-layout">
+        <div className={`status-card-unified ${isCritical ? 'critical' : ''}`}>
         {/* Vitalidade */}
         <div className="stat-row">
           <div className="stat-row-header">
@@ -252,10 +253,11 @@ export default function PersonagemTab() {
             ✨ Restaurar Tudo
           </button>
         </div>
-      </div>
+        </div>
 
-      {/* Gerenciador de Atributos e Perícias */}
-      <CharacterStatsManager />
+        {/* Gerenciador de Atributos e Perícias */}
+        <CharacterStatsManager />
+      </div>
     </div>
   );
 }
