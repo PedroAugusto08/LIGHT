@@ -22,10 +22,10 @@ export default function CharacterPortraitCard() {
     const state = SkillEngine.getState();
     setStats({
       vitalidadeAtual: state.vitalidadeAtual || 0,
-      vitalidadeMax: state.vitalidadeMax || 0,
-      almaAtual: state.almaAtual || 0,
+      vitalidadeMax: state.maxVitalidade || 0,
+      almaAtual: state.alma || 0,
       almaMax: state.almaMax || 0,
-      defesa: state.defesa || 0
+      defesa: state.defesaBase || 0
     });
 
     // Listener para mudanças nos stats
@@ -33,10 +33,10 @@ export default function CharacterPortraitCard() {
       const newState = SkillEngine.getState();
       setStats({
         vitalidadeAtual: newState.vitalidadeAtual || 0,
-        vitalidadeMax: newState.vitalidadeMax || 0,
-        almaAtual: newState.almaAtual || 0,
+        vitalidadeMax: newState.maxVitalidade || 0,
+        almaAtual: newState.alma || 0,
         almaMax: newState.almaMax || 0,
-        defesa: newState.defesa || 0
+        defesa: newState.defesaBase || 0
       });
     };
 
