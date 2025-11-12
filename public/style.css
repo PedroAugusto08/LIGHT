@@ -497,12 +497,6 @@ button#forjarBtn:hover {
 .personagem-container {
     max-width: 700px;
     margin: 32px auto;
-    padding: 32px 28px;
-    background: var(--surface);
-    border-radius: 12px;
-    box-shadow: 0 6px 22px -6px rgba(0,0,0,0.55), 
-                0 0 0 1px rgba(255,255,255,0.06), 
-                0 0 18px -4px rgba(34,211,238,0.25);
 }
 
 .personagem-title {
@@ -513,68 +507,143 @@ button#forjarBtn:hover {
     color: var(--text);
 }
 
-.status-section {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.section-heading {
-    font-size: 1.4em;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--border);
-}
-
-.stat-card {
-    background: var(--surface-2);
+/* Card Unificado */
+.status-card-unified {
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 6px 22px -6px rgba(0,0,0,0.55), 
+                0 0 0 1px rgba(255,255,255,0.06), 
+                0 0 18px -4px rgba(34,211,238,0.25);
+    transition: box-shadow 0.3s ease;
 }
 
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+/* Estado crítico - vitalidade baixa */
+.status-card-unified.critical {
+    border-color: #dc2626;
+    box-shadow: 0 6px 22px -6px rgba(0,0,0,0.55), 
+                0 0 0 2px rgba(220, 38, 38, 0.5), 
+                0 0 30px rgba(220, 38, 38, 0.4);
+    animation: pulse-danger 2s ease-in-out infinite;
 }
 
-.stat-header {
+@keyframes pulse-danger {
+    0%, 100% { 
+        box-shadow: 0 6px 22px -6px rgba(0,0,0,0.55), 
+                    0 0 0 2px rgba(220, 38, 38, 0.5), 
+                    0 0 30px rgba(220, 38, 38, 0.4);
+    }
+    50% { 
+        box-shadow: 0 6px 22px -6px rgba(0,0,0,0.55), 
+                    0 0 0 2px rgba(220, 38, 38, 0.8), 
+                    0 0 40px rgba(220, 38, 38, 0.6);
+    }
+}
+
+/* Linha de Stat (Vitalidade, Alma, Defesa) */
+.stat-row {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.stat-row:last-of-type {
+    border-bottom: none;
+}
+
+.stat-row.defense-row {
+    padding-bottom: 0;
+}
+
+.stat-row-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    gap: 12px;
+    margin-bottom: 14px;
 }
 
-.stat-header label {
-    font-size: 1.2em;
+.stat-icon {
+    font-size: 1.8em;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.stat-label {
+    font-size: 1.3em;
     font-weight: 600;
     color: var(--text);
+    flex: 1;
 }
 
-.stat-values {
-    font-size: 1.1em;
+.stat-value-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.4em;
     font-weight: 700;
     color: var(--accent);
 }
 
+.stat-value-num {
+    min-width: 40px;
+    text-align: center;
+}
+
+.stat-value-num.editable {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.stat-value-num.editable:hover {
+    background: rgba(24, 216, 237, 0.15);
+    transform: scale(1.05);
+}
+
+.stat-value-num.single {
+    font-size: 1.6em;
+}
+
+.stat-separator {
+    color: var(--muted);
+    font-weight: 400;
+}
+
+/* Input inline para edição */
+.inline-edit {
+    width: 70px;
+    padding: 4px 8px;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 1em;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 0 0 3px rgba(24, 216, 237, 0.2);
+}
+
+.inline-edit:focus {
+    outline: none;
+    border-color: var(--accent-2);
+}
+
+/* Barra de progresso */
 .stat-bar-container {
     width: 100%;
-    height: 24px;
+    height: 28px;
     background: var(--chip-empty);
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
 }
 
 .stat-bar {
     height: 100%;
-    border-radius: 12px;
-    transition: width 0.4s ease;
+    border-radius: 14px;
+    transition: width 0.5s ease;
     position: relative;
     overflow: hidden;
 }
@@ -588,9 +657,9 @@ button#forjarBtn:hover {
     bottom: 0;
     background: linear-gradient(90deg, 
         rgba(255,255,255,0.1) 0%, 
-        rgba(255,255,255,0.2) 50%, 
+        rgba(255,255,255,0.25) 50%, 
         rgba(255,255,255,0.1) 100%);
-    animation: shine 2s ease-in-out infinite;
+    animation: shine 2.5s ease-in-out infinite;
 }
 
 @keyframes shine {
@@ -600,60 +669,79 @@ button#forjarBtn:hover {
 
 .vida-bar {
     background: linear-gradient(90deg, #dc2626 0%, #f87171 100%);
-    box-shadow: 0 0 12px rgba(220, 38, 38, 0.6);
+    box-shadow: 0 0 14px rgba(220, 38, 38, 0.6);
+}
+
+.vida-bar.low {
+    background: linear-gradient(90deg, #ea580c 0%, #fb923c 100%);
+    box-shadow: 0 0 14px rgba(234, 88, 12, 0.6);
 }
 
 .alma-bar {
     background: linear-gradient(90deg, #0ea5e9 0%, #22d3ee 100%);
-    box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
+    box-shadow: 0 0 14px rgba(14, 165, 233, 0.6);
 }
 
-.stat-inputs {
+/* Controles de ajuste rápido */
+.stat-controls {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     justify-content: center;
 }
 
-.stat-inputs.single-input {
-    justify-content: center;
-}
-
-.input-group {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-width: 140px;
-}
-
-.input-group label {
-    font-size: 0.9em;
-    color: var(--muted);
-    font-weight: 500;
-    text-align: center;
-}
-
-.stat-inputs input[type="number"] {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--bg);
+.stat-btn {
+    padding: 8px 16px;
+    background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 8px;
     color: var(--text);
-    font-size: 1em;
+    font-size: 0.95em;
     font-weight: 600;
-    text-align: center;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 50px;
 }
 
-.stat-inputs input[type="number"]:focus {
-    outline: none;
+.stat-btn:hover {
+    background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(24, 216, 237, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(24, 216, 237, 0.4);
 }
 
-.stat-inputs.single-input input[type="number"] {
-    max-width: 200px;
+.stat-btn:active {
+    transform: translateY(0);
+}
+
+/* Ações (botão restaurar) */
+.stat-actions {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+}
+
+.restore-btn {
+    padding: 14px 32px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+    border: none;
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(24, 216, 237, 0.3);
+}
+
+.restore-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(24, 216, 237, 0.5);
+}
+
+.restore-btn:active {
+    transform: translateY(-1px);
 }
 
 /* ==================== Modal de Resultados ==================== */
