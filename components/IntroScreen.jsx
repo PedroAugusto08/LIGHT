@@ -40,7 +40,7 @@ export default function IntroScreen({ onComplete }) {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.2,
         delayChildren: 0.3
       }
     },
@@ -50,35 +50,64 @@ export default function IntroScreen({ onComplete }) {
     }
   };
 
-  // Variantes para os paths do SVG - fade in limpo, sem efeito de desenho
-  const pathVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.8
-    },
+  // Arcos laterais - deslizam de fora para dentro
+  const arcLeftVariants = {
+    hidden: { opacity: 0, x: -50, scale: 0.8 },
     visible: {
       opacity: 1,
+      x: 0,
       scale: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
+      transition: { duration: 0.8, ease: "easeOut" }
     }
   };
 
-  // Variantes para o círculo preenchido
-  const circleVariants = {
-    hidden: {
-      scale: 0.5,
-      opacity: 0
-    },
+  const arcRightVariants = {
+    hidden: { opacity: 0, x: 50, scale: 0.8 },
     visible: {
-      scale: 1,
       opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
+      x: 0,
+      scale: 1,
+      transition: { duration: 0.8, ease: "easeOut" }
+    }
+  };
+
+  // Arco inferior - desliza de baixo para cima
+  const arcBottomVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" }
+    }
+  };
+
+  // Linha vertical - desce de cima
+  const lineVariants = {
+    hidden: { opacity: 0, y: -30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" }
+    }
+  };
+
+  // Círculo central - expande do centro
+  const circleCenterVariants = {
+    hidden: { opacity: 0, scale: 0 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  // Círculo interno preenchido
+  const circleInnerVariants = {
+    hidden: { opacity: 0, scale: 0 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.5, ease: "easeOut", delay: 0.2 }
     }
   };
 
@@ -143,8 +172,8 @@ export default function IntroScreen({ onComplete }) {
         {/* Logo SVG com animação */}
         <motion.svg
           viewBox="0 0 200 200"
-          width="240"
-          height="240"
+          width="260"
+          height="260"
           style={{
             filter: 'drop-shadow(0 0 30px rgba(0, 188, 212, 0.6))'
           }}
@@ -152,74 +181,74 @@ export default function IntroScreen({ onComplete }) {
           {/* Glow de fundo */}
           <motion.circle
             cx="100"
-            cy="115"
-            r="35"
+            cy="120"
+            r="40"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="3"
             variants={glowVariants}
           />
 
-          {/* Arco esquerdo */}
+          {/* Arco esquerdo - desliza da esquerda */}
           <motion.path
-            d="M 60,80 A 50,50 0 0,0 40,130"
+            d="M 60,75 A 50,50 0 0,0 35,125"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="8"
             strokeLinecap="round"
-            variants={pathVariants}
+            variants={arcLeftVariants}
           />
           
-          {/* Arco direito */}
+          {/* Arco direito - desliza da direita */}
           <motion.path
-            d="M 160,130 A 50,50 0 0,0 140,80"
+            d="M 165,125 A 50,50 0 0,0 140,75"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="8"
             strokeLinecap="round"
-            variants={pathVariants}
+            variants={arcRightVariants}
           />
           
-          {/* Arco inferior */}
+          {/* Arco inferior - sobe de baixo */}
           <motion.path
-            d="M 40,130 A 60,60 0 0,0 160,130"
+            d="M 35,125 A 65,65 0 0,0 165,125"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="8"
             strokeLinecap="round"
-            variants={pathVariants}
+            variants={arcBottomVariants}
           />
           
-          {/* Linha vertical central */}
+          {/* Linha vertical central - desce do topo */}
           <motion.line
             x1="100"
             y1="30"
             x2="100"
-            y2="115"
+            y2="100"
             stroke="#00bcd4"
             strokeWidth="8"
             strokeLinecap="round"
-            variants={pathVariants}
+            variants={lineVariants}
           />
           
-          {/* Círculo central */}
+          {/* Círculo central - expande */}
           <motion.circle
             cx="100"
-            cy="115"
+            cy="120"
             r="20"
             fill="none"
             stroke="#00bcd4"
             strokeWidth="8"
-            variants={pathVariants}
+            variants={circleCenterVariants}
           />
           
-          {/* Círculo interno preenchido */}
+          {/* Círculo interno preenchido - aparece por último */}
           <motion.circle
             cx="100"
-            cy="115"
+            cy="120"
             r="8"
             fill="#00bcd4"
-            variants={circleVariants}
+            variants={circleInnerVariants}
           />
         </motion.svg>
 
