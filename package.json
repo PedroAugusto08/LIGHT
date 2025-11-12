@@ -5,9 +5,9 @@
   "type": "module",
   "main": "next.config.mjs",
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +25,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "framer-motion": "^12.23.24",
     "next": "^15.5.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
