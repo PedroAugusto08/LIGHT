@@ -82,43 +82,31 @@ export default function CharacterPortraitCard() {
 
       <div className="portrait-stats">
         <div className="portrait-stat-item">
-          <label>Vida:</label>
+          <label>Vitalidade:</label>
           <div className="portrait-stat-bar">
             <div 
-              className="portrait-stat-fill vida-fill" 
-              style={{ width: `${(stats.vitalidadeAtual / stats.vitalidadeMax) * 100}%` }}
+              className="portrait-stat-fill vitalidade-fill" 
+              style={{ width: `${stats.vitalidadeMax > 0 ? (stats.vitalidadeAtual / stats.vitalidadeMax) * 100 : 0}%` }}
             ></div>
             <span className="portrait-stat-text">{stats.vitalidadeAtual} / {stats.vitalidadeMax}</span>
           </div>
         </div>
 
         <div className="portrait-stat-item">
-          <label>Éter:</label>
+          <label>Alma:</label>
           <div className="portrait-stat-bar">
             <div 
-              className="portrait-stat-fill eter-fill" 
-              style={{ width: `${(stats.almaAtual / stats.almaMax) * 100}%` }}
+              className="portrait-stat-fill alma-fill" 
+              style={{ width: `${stats.almaMax > 0 ? (stats.almaAtual / stats.almaMax) * 100 : 0}%` }}
             ></div>
             <span className="portrait-stat-text">{stats.almaAtual} / {stats.almaMax}</span>
           </div>
         </div>
 
         <div className="portrait-stat-item">
-          <label>Sanidade:</label>
-          <div className="portrait-stat-bar">
-            <div 
-              className="portrait-stat-fill sanidade-fill" 
-              style={{ width: '100%' }}
-            ></div>
-            <span className="portrait-stat-text">0 / 100</span>
-          </div>
-        </div>
-
-        <div className="portrait-stat-item">
           <label>Defesa:</label>
-          <div className="portrait-stat-bar">
-            <div className="portrait-stat-fill defesa-fill" style={{ width: '100%' }}></div>
-            <span className="portrait-stat-text">{stats.defesa} / 100</span>
+          <div className="portrait-stat-value">
+            {stats.defesa}
           </div>
         </div>
       </div>

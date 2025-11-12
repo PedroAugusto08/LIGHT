@@ -1276,20 +1276,12 @@ button#forjarBtn:hover {
     transition: width 0.3s ease;
 }
 
-.vida-fill {
+.vitalidade-fill {
     background: linear-gradient(90deg, #dc2626, #ef4444);
 }
 
-.eter-fill {
+.alma-fill {
     background: linear-gradient(90deg, #2563eb, #3b82f6);
-}
-
-.sanidade-fill {
-    background: linear-gradient(90deg, #7c3aed, #8b5cf6);
-}
-
-.defesa-fill {
-    background: linear-gradient(90deg, #059669, #10b981);
 }
 
 .portrait-stat-text {
@@ -1304,24 +1296,24 @@ button#forjarBtn:hover {
     z-index: 1;
 }
 
-/* Ajuste do conteúdo das tabs para dar espaço ao card fixo */
-.tabs-content {
+.portrait-stat-value {
     width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    flex: 1 1 0;
-    padding: 0 32px 48px;
-    box-sizing: border-box;
-    margin-left: 320px; /* Espaço para o card fixo (280px + 40px gap) */
+    height: 28px;
+    background: linear-gradient(90deg, #059669, #10b981);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--text);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 /* Responsivo - esconde o card em telas pequenas */
 @media (max-width: 1400px) {
     .character-portrait-card {
         display: none;
-    }
-    
-    .tabs-content {
-        margin-left: auto;
     }
 }
