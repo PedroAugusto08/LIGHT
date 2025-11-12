@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import HabilidadesTab from '../components/HabilidadesTab'
 import PersonagemTab from '../components/PersonagemTab'
 import CharacterPortraitCard from '../components/CharacterPortraitCard'
+import NotesCard from '../components/NotesCard'
 
 export default function Home() {
   // Removido carregamento manual duplicado (Next Script já injeta)
@@ -25,6 +26,7 @@ export default function Home() {
       <Script src="/testes.js?v=20250904" strategy="afterInteractive" />
       <div className="bg-layer" aria-hidden="true"></div>
       <CharacterPortraitCard />
+      <NotesCard />
       <div className="tabs-container">
         <div className="tabs-bar">
           <button className="tab-btn active" data-tab="personagem">Personagem</button>

@@ -1317,3 +1317,100 @@ button#forjarBtn:hover {
         display: none;
     }
 }
+
+/* ========== Notes Card (Fixed Right) ========== */
+.notes-card {
+    position: fixed;
+    right: 20px;
+    top: 120px;
+    width: 320px;
+    max-height: calc(100vh - 140px);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notes-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+}
+
+.notes-icon {
+    font-size: 1.5em;
+}
+
+.notes-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.notes-content {
+    flex: 1;
+    min-height: 400px;
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
+}
+
+.notes-textarea {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text);
+    font-size: 0.95em;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.notes-textarea:focus {
+    border-color: var(--accent);
+}
+
+.notes-display {
+    width: 100%;
+    min-height: 400px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text);
+    font-size: 0.95em;
+    line-height: 1.6;
+    cursor: text;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    transition: border-color 0.3s ease;
+}
+
+.notes-display:hover {
+    border-color: var(--accent);
+}
+
+.notes-display:empty::before {
+    content: 'Clique para adicionar anotações...';
+    color: var(--muted);
+}
+
+/* Responsivo - esconde o card de notas em telas pequenas */
+@media (max-width: 1800px) {
+    .notes-card {
+        display: none;
+    }
+}
