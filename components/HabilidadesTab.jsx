@@ -60,6 +60,12 @@ export default function HabilidadesTab() {
       setState(res.state);
       setLastMsg(`Insano & Forte ativado por ${res.duration} rodada(s).`);
       
+      // Dispara eventos para sincronizar com outros componentes
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('skills_state_changed', { detail: res.state }));
+        window.dispatchEvent(new Event('storage'));
+      }
+      
       // Abrir modal estilizado
       if (typeof window !== 'undefined' && window.createModal) {
         const defesaAdicional = Math.floor(res.state.almaMax / 4);
@@ -101,6 +107,12 @@ export default function HabilidadesTab() {
     setState(res.state);
     if (res.changes.enteredCooldown) setLastMsg(`Insano & Forte terminou. Recarga: ${res.changes.enteredCooldown} rodada(s).`);
     else setLastMsg('Rodada avançada.');
+    
+    // Dispara eventos para sincronizar com outros componentes
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('skills_state_changed', { detail: res.state }));
+      window.dispatchEvent(new Event('storage'));
+    }
   }
 
   function onArmFuria() {
@@ -129,6 +141,12 @@ export default function HabilidadesTab() {
     } else {
       setState(res.state);
       setLastMsg('Fúria Ancestral armada para o próximo ataque.');
+      
+      // Dispara eventos para sincronizar com outros componentes
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('skills_state_changed', { detail: res.state }));
+        window.dispatchEvent(new Event('storage'));
+      }
       
       // Abrir modal estilizado
       if (typeof window !== 'undefined' && window.createModal) {

@@ -32,7 +32,7 @@ body.modal-open {
 }
 
 .tabs-container {
-    width: 105%;
+    width: 100%;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
@@ -225,7 +225,7 @@ body.modal-open {
     flex-wrap: wrap;
     gap: 32px;
     align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: center;
     width: 100%;
     box-sizing: border-box;
     padding: 0;
