@@ -33,7 +33,7 @@ export default function Home() {
           <button className="tab-btn" data-tab="forja">Forja</button>
           <button className="tab-btn" data-tab="testes">Testes</button>
           <button className="tab-btn" data-tab="habilidades">Habilidades</button>
-          <button className="tab-btn" data-tab="historico">Histórico de Construtos</button>
+          <button className="tab-btn" data-tab="historico">Histórico</button>
         </div>
         <div className="tabs-content">
           <div className="tab-pane" id="tab-personagem" style={{display:'flex'}}>
@@ -134,7 +134,7 @@ export default function Home() {
           </div>
           <div className="tab-pane" id="tab-historico" style={{display:'none'}}>
             <div className="historico-container">
-              <h2>Histórico de Construtos</h2>
+              <h2>Histórico</h2>
               <div className="historico-actions">
                 <button id="limparHistoricoBtn" type="button" className="clear-history-btn">Limpar histórico</button>
               </div>
