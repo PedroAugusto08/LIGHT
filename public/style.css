@@ -291,9 +291,9 @@ body::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 .container {
     background: var(--surface);
-    padding: 24px 24px;
-    border-radius: 12px;
-    box-shadow: 0 6px 22px -6px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06), 0 0 18px -4px rgba(34,211,238,0.25);
+    padding: 28px 26px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px -4px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
     max-width: 360px; /* valor base em telas menores */
     width: 100%;
     margin: 0 0 0 0;
@@ -342,22 +342,24 @@ h1 {
 }
 
 label {
-    margin-top: 14px;
-    margin-bottom: 2px;
-    font-size: 1em;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    font-size: 0.95em;
     font-weight: 500;
-    color: var(--text);
+    color: var(--muted);
+    letter-spacing: 0.3px;
 }
 input[type="number"], select {
     width: 100%;
-    padding: 10px 1px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    margin-bottom: 6px;
-    font-size: 1em;
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
     background: var(--surface-2);
+    margin-bottom: 4px;
+    font-size: 0.98em;
     color: var(--text);
-    transition: border 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 
 /* Select: remover UI nativa e usar seta escura customizada */
@@ -414,8 +416,8 @@ input[type="number"] {
 .hybrid-control {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin: 6px 0 12px 0;
+    gap: 10px;
+    margin: 8px 0 10px 0;
 }
 
 .hybrid-control input[type="range"] {
@@ -459,27 +461,31 @@ input[type="number"] {
 }
 
 input[type="number"]:focus, select:focus {
-    border: 1.5px solid var(--accent);
+    border: 1px solid var(--accent);
     outline: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 0 0 3px rgba(24,216,237,0.1);
+    background: var(--surface);
 }
 
 button#forjarBtn {
-    background: linear-gradient(90deg, #0ea5e9 0%, var(--accent-2) 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, var(--accent-2) 100%);
     color: var(--text);
     border: none;
-    border-radius: 8px;
-    padding: 12px 5px;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin-top: 22px;
+    border-radius: 10px;
+    padding: 13px 5px;
+    font-size: 1.05em;
+    font-weight: 600;
+    margin-top: 28px;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(34,211,238,0.33);
-    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(34,211,238,0.25);
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
 }
 
 button#forjarBtn:hover {
-    background: linear-gradient(90deg, var(--accent-2) 0%, #0ea5e9 100%);
-    box-shadow: 0 4px 16px rgba(34,211,238,0.55);
+    background: linear-gradient(135deg, var(--accent-2) 0%, #0ea5e9 100%);
+    box-shadow: 0 6px 20px rgba(34,211,238,0.45);
+    transform: translateY(-1px);
 }
 
 /* Estilização do range para tema escuro */
