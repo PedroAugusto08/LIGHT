@@ -30,7 +30,7 @@ export default function CharacterPortraitCard() {
 
     // Listener para mudanças nos stats
     const handleStatsChange = () => {
-      const newState = SkillEngine.getState();
+      const newState = SkillEngine.reloadState();
       setStats({
         vitalidadeAtual: newState.vitalidadeAtual || 0,
         vitalidadeMax: newState.maxVitalidade || 0,

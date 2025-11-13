@@ -12,13 +12,13 @@ export default function HabilidadesTab() {
     
     // Listener para sincronizar quando o localStorage mudar externamente (ex: ataque consumiu Fúria)
     const syncFromStorage = () => {
-      setState(SkillEngine.getState());
+      setState(SkillEngine.reloadState());
     };
     window.addEventListener('storage', syncFromStorage);
     
     // Listener customizado para mudanças na mesma aba/janela
     const syncLocal = () => {
-      setState(SkillEngine.getState());
+      setState(SkillEngine.reloadState());
     };
     window.addEventListener('skills_state_changed', syncLocal);
     

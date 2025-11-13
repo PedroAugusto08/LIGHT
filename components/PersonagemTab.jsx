@@ -18,12 +18,12 @@ export default function PersonagemTab() {
     
     // Sincronização com mudanças externas no localStorage
     const syncFromStorage = () => {
-      setState(SkillEngine.getState());
+      setState(SkillEngine.reloadState());
     };
     window.addEventListener('storage', syncFromStorage);
     
     const syncLocal = () => {
-      setState(SkillEngine.getState());
+      setState(SkillEngine.reloadState());
     };
     window.addEventListener('skills_state_changed', syncLocal);
     
