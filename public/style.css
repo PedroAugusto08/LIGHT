@@ -46,14 +46,14 @@ body.modal-open {
 .tabs-bar {
     display: flex;
     gap: 0;
-    width: 100%;
-    max-width: 1000px;
+    width: 1000px;
     margin: 0 auto 18px auto;
     border-bottom: 2px solid var(--border);
     background: var(--surface);
     border-radius: 0 0 10px 10px;
     overflow: hidden;
     flex-shrink: 0;
+    position: relative;
 }
 .tab-btn {
     flex: 1 1 0;
