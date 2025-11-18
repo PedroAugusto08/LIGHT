@@ -58,28 +58,28 @@ export default function Home() {
                     <span className="select-caret" aria-hidden="true"></span>
                   </div>
                   <label htmlFor="almaExtra">Alma Extra</label>
-                  <input type="number" id="almaExtra" name="almaExtra" min="0" defaultValue="0" required />
+                  <input type="number" id="almaExtra" name="almaExtra" min="0" defaultValue="0" required className="full-width-input" />
                   <div id="blocos-info"></div>
                   <label htmlFor="dano">Blocos em Dano</label>
-                  <input type="number" id="dano" name="dano" min="0" defaultValue="0" required />
+                  <input type="number" id="dano" name="dano" min="0" defaultValue="0" required className="full-width-input" />
                   <div className="hybrid-control">
                     <input type="range" id="danoSlider" min="0" max="0" defaultValue="0" step="1" />
                     <div className="block-bar" id="danoBar"></div>
                   </div>
                   <label htmlFor="defesa">Blocos em Defesa</label>
-                  <input type="number" id="defesa" name="defesa" min="0" defaultValue="0" required />
+                  <input type="number" id="defesa" name="defesa" min="0" defaultValue="0" required className="full-width-input" />
                   <div className="hybrid-control">
                     <input type="range" id="defesaSlider" min="0" max="0" defaultValue="0" step="1" />
                     <div className="block-bar" id="defesaBar"></div>
                   </div>
                   <label htmlFor="vitalidade">Blocos em Vitalidade</label>
-                  <input type="number" id="vitalidade" name="vitalidade" min="0" defaultValue="0" required />
+                  <input type="number" id="vitalidade" name="vitalidade" min="0" defaultValue="0" required className="full-width-input" />
                   <div className="hybrid-control">
                     <input type="range" id="vitalidadeSlider" min="0" max="0" defaultValue="0" step="1" />
                     <div className="block-bar" id="vitalidadeBar"></div>
                   </div>
                   <label htmlFor="duracao">Blocos em Duração</label>
-                  <input type="number" id="duracao" name="duracao" min="0" defaultValue="0" required />
+                  <input type="number" id="duracao" name="duracao" min="0" defaultValue="0" required className="full-width-input" />
                   <div className="hybrid-control">
                     <input type="range" id="duracaoSlider" min="0" max="0" defaultValue="0" step="1" />
                     <div className="block-bar" id="duracaoBar"></div>
@@ -108,11 +108,11 @@ export default function Home() {
                   </div>
                   {/* Perícia perito agora é configurada no código (public/testes.js → PERICIAS_PERITO) */}
                   <label htmlFor="teste-vantagens">Vantagens</label>
-                  <input type="number" id="teste-vantagens" min="0" defaultValue="0" />
+                  <input type="number" id="teste-vantagens" min="0" defaultValue="0" className="full-width-input" />
                   <label htmlFor="teste-desvantagens">Desvantagens</label>
-                  <input type="number" id="teste-desvantagens" min="0" defaultValue="0" />
+                  <input type="number" id="teste-desvantagens" min="0" defaultValue="0" className="full-width-input" />
                   <label htmlFor="teste-bonus">Bônus adicional (opcional)</label>
-                  <input type="number" id="teste-bonus" defaultValue="0" />
+                  <input type="number" id="teste-bonus" defaultValue="0" className="full-width-input" />
                   <button type="submit" id="rolarTesteBtn">Rolar Teste</button>
                   <button type="button" id="addFavoritoBtn" className="sec">Adicionar aos Favoritos</button>
                   <div className="inline" style={{marginTop:'8px'}}>

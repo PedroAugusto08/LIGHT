@@ -399,6 +399,11 @@ select {
 /* Ocultar seta no IE/Edge legado */
 select::-ms-expand { display: none; }
 
+/* Inputs com largura total igual aos selects */
+input.full-width-input[type="number"] {
+    width: 100%;
+}
+
 /* Wrapper e caret interativo dos selects */
 .select-wrapper {
     position: relative;
