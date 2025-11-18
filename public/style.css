@@ -387,6 +387,7 @@ input[type="number"], select {
     color: var(--text);
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
 }
 
 /* Select: remover UI nativa e usar seta escura customizada */
@@ -413,6 +414,7 @@ input.full-width-input[type="number"] {
 .select-wrapper select {
     width: 100%;
     padding-right: 34px; /* espaço para a seta */
+    box-sizing: border-box;
 }
 .select-wrapper .select-caret {
     position: absolute;
